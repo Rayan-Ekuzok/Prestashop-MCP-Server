@@ -1,5 +1,13 @@
 # PrestaShop MCP Server
 
+[![PrestaShop](.github/badges/prestashop.svg)](https://prestashop.com)
+[![PHP](.github/badges/php.svg)](https://php.net)
+[![MCP](.github/badges/mcp.svg)](https://modelcontextprotocol.io)
+![Multistore](.github/badges/multistore.svg)
+[![License](.github/badges/license.svg)](LICENSE.txt)
+![Version](.github/badges/version.svg)
+[![PRs welcome](.github/badges/prs.svg)](CONTRIBUTING.md)
+
 A PrestaShop module that turns a shop into an [MCP](https://modelcontextprotocol.io)
 server. Claude, ChatGPT or any MCP client can then work with the shop's orders,
 through a standard protocol, with OAuth 2.1 and the employee's own back office

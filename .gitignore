@@ -18,3 +18,8 @@ Thumbs.db
 
 # The Addons package, built with git archive
 /somcp.zip
+
+# Badge generator dependencies (see .github/badges/README.md)
+/node_modules/
+/package.json
+/package-lock.json
