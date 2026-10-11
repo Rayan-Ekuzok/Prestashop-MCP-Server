@@ -41,10 +41,12 @@ jobs:
         with:
           php-version: '8.1'
           coverage: none
+          tools: cs2pr
       - name: Install dev tools
         run: composer install --working-dir=dev/tools --no-interaction --no-progress
       - name: php-cs-fixer
-        run: dev/tools/vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
+        # cs2pr turns each finding into an annotation on the file and line.
+        run: dev/tools/vendor/bin/php-cs-fixer fix --dry-run --using-cache=no --format=checkstyle | cs2pr
 
   phpstan:
     name: PHPStan on PrestaShop ${{ matrix.prestashop }}
@@ -72,7 +74,7 @@ jobs:
             --entrypoint php \
             prestashop/prestashop:${{ matrix.prestashop }} \
             -d memory_limit=1G \
-            dev/tools/vendor/bin/phpstan analyse -c phpstan.dist.neon --no-progress
+            dev/tools/vendor/bin/phpstan analyse -c phpstan.dist.neon --no-progress --error-format=github
 
   translations:
     name: Translations
@@ -112,8 +114,11 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/sf"
           cd "$RUNNER_TEMP/sf"
-          echo '{}' > composer.json
-          composer require --no-interaction --no-progress \
+          # Symfony 4.4 is end of life and carries security advisories, which
+          # Composer refuses by default. Nothing here runs a request: the
+          # components only parse and compile two configuration files.
+          echo '{"config": {"audit": {"block-insecure": false}}}' > composer.json
+          COMPOSER_NO_SECURITY_BLOCKING=1 composer require --no-interaction --no-progress \
             symfony/dependency-injection:^${{ matrix.symfony }} \
             symfony/config:^${{ matrix.symfony }} \
             symfony/yaml:^${{ matrix.symfony }} \
