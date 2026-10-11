@@ -17,7 +17,16 @@
 
 // The PrestaShop coding standard, from prestashop/php-dev-tools.
 // Run: dev/tools/vendor/bin/php-cs-fixer fix --dry-run --diff
-$config = new PrestaShop\CodingStandards\CsFixer\Config();
+// The license header sits right under <?php, as in PrestaShop's own modules.
+// php-dev-tools turned this rule off after its last release (v5), and its
+// Config returns a fixed rule list, so the rule is turned off in a subclass
+// until the next release ships it.
+$config = new class extends PrestaShop\CodingStandards\CsFixer\Config {
+    public function getRules(): array
+    {
+        return array_merge(parent::getRules(), ['blank_line_after_opening_tag' => false]);
+    }
+};
 
 /** @var Symfony\Component\Finder\Finder $finder */
 $finder = $config->setUsingCache(true)->getFinder();
