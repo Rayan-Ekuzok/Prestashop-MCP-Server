@@ -1,0 +1,20 @@
+# Development tools, installed with: composer install --working-dir=dev/tools
+/dev/tools/vendor/
+/dev/tools/composer.lock
+
+# Tool caches
+.php-cs-fixer.cache
+.phpunit.result.cache
+
+# Python
+__pycache__/
+
+# Editors and systems
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# The Addons package, built with git archive
+/somcp.zip

@@ -1,0 +1,66 @@
+name: Bug report
+description: Something does not work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A security problem? Do not open an issue: see SECURITY.md.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Connect Claude to the shop
+        2. Ask for order 42
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: prestashop
+    attributes:
+      label: PrestaShop version
+      placeholder: 8.0.3
+    validations:
+      required: true
+  - type: input
+    id: php
+    attributes:
+      label: PHP version
+      placeholder: '8.1'
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: MCP client and version
+      placeholder: Claude desktop, Claude Code 2.x, ChatGPT developer mode, ...
+    validations:
+      required: true
+  - type: dropdown
+    id: multistore
+    attributes:
+      label: Multistore
+      options:
+        - 'No'
+        - 'Yes'
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostic
+    attributes:
+      label: Diagnostic result
+      description: What the "Run the diagnostic" button in the module settings reports. A screenshot is fine.
+  - type: textarea
+    id: log
+    attributes:
+      label: Log excerpt
+      description: The matching lines of the module's security log, or the PHP error. Remove shop domains and customer data before posting.
+      render: text

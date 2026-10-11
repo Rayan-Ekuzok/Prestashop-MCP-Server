@@ -1,0 +1,8 @@
+# O'So MCP Server - Novalo
+# Keeps the module files from being listed by the web server.
+# Wrapped in <IfModule> so the directive is ignored, instead of raising a 500,
+# on servers where mod_autoindex is not loaded.
+
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>

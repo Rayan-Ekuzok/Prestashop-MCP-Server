@@ -1,0 +1,17 @@
+{
+    "name": "novalo/somcp-dev-tools",
+    "description": "Development tools for somcp, kept apart so they never touch the module's own vendor folder.",
+    "license": "AFL-3.0",
+    "require": {
+        "php": ">=8.1",
+        "prestashop/php-dev-tools": "^5.0",
+        "phpstan/phpstan": "^2.1",
+        "friendsofphp/php-cs-fixer": "^3.64"
+    },
+    "config": {
+        "platform": {
+            "php": "8.1.0"
+        },
+        "sort-packages": true
+    }
+}

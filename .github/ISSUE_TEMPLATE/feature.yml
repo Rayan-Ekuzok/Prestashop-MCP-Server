@@ -1,0 +1,29 @@
+name: Feature request
+description: A change to how the module works, outside of a new tool.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What a merchant, an employee or a developer cannot do today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you propose
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+  - type: dropdown
+    id: help
+    attributes:
+      label: Would you write it?
+      options:
+        - 'Yes, with some guidance'
+        - 'Yes'
+        - 'No'

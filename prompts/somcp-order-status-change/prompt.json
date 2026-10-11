@@ -1,0 +1,27 @@
+{
+  "title": "Change an order status",
+  "description": "Change the status of an order in the PrestaShop shop, one order at a time, with the checks that keep a customer from being emailed twice.",
+  "scopes": [
+    "mcp.orders.write"
+  ],
+  "tools": [
+    "somcp_ping",
+    "somcp_list_order_statuses",
+    "somcp_get_order",
+    "somcp_set_order_status"
+  ],
+  "controller": "AdminOrders",
+  "action": "edit",
+  "arguments": [
+    {
+      "name": "order",
+      "description": "Reference or number of the order",
+      "required": false
+    },
+    {
+      "name": "status",
+      "description": "Status to set",
+      "required": false
+    }
+  ]
+}

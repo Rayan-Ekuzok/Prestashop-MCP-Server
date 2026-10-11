@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS `PREFIX_somcp_upload_file`;
+DROP TABLE IF EXISTS `PREFIX_somcp_upload`;
+DROP TABLE IF EXISTS `PREFIX_somcp_log`;
+DROP TABLE IF EXISTS `PREFIX_somcp_oauth_consent`;
+DROP TABLE IF EXISTS `PREFIX_somcp_oauth_refresh_token`;
+DROP TABLE IF EXISTS `PREFIX_somcp_oauth_access_token`;
+DROP TABLE IF EXISTS `PREFIX_somcp_oauth_code`;
+DROP TABLE IF EXISTS `PREFIX_somcp_oauth_request`;
+DROP TABLE IF EXISTS `PREFIX_somcp_oauth_client`;

@@ -1,0 +1,11 @@
+{
+  "title": "Check the shop connection",
+  "description": "Check that the connection to the PrestaShop shop works, and report what it reached - which shop, which account, which language and currency the answers are in.",
+  "scopes": [
+    "mcp.access"
+  ],
+  "tools": [
+    "somcp_ping"
+  ],
+  "arguments": []
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Find an order",
+  "description": "Find orders in the PrestaShop shop and read one in full - search by reference, customer, date, status or amount, then open the order that matters.",
+  "scopes": [
+    "mcp.orders.read"
+  ],
+  "tools": [
+    "somcp_ping",
+    "somcp_search_orders",
+    "somcp_get_order",
+    "somcp_list_order_statuses"
+  ],
+  "controller": "AdminOrders",
+  "action": "view",
+  "arguments": [
+    {
+      "name": "order",
+      "description": "Order reference, number or customer name",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+name: New tool
+description: Propose a tool, before writing it. A tool is described in docs/TOOLS.md first.
+labels: [new tool]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Read the conventions at the top of docs/TOOLS.md first. Answering these
+        questions is most of the entry that will go there.
+  - type: input
+    id: name
+    attributes:
+      label: Tool name
+      placeholder: somcp_search_products
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What it does
+      description: One or two sentences, as the assistant will read them.
+    validations:
+      required: true
+  - type: textarea
+    id: when
+    attributes:
+      label: When an assistant should use it, and when it should use another tool instead
+    validations:
+      required: true
+  - type: input
+    id: permission
+    attributes:
+      label: Back office page and right
+      description: The page where a merchant does the same thing by hand, and view, add, edit or delete.
+      placeholder: view on AdminProducts
+    validations:
+      required: true
+  - type: input
+    id: scope
+    attributes:
+      label: Scope
+      placeholder: mcp.catalog.read
+    validations:
+      required: true
+  - type: textarea
+    id: input
+    attributes:
+      label: Arguments
+      description: Name, type, required or not, and what each one means.
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: What it returns
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: What can go wrong
+      description: For a write - emails sent, stock moved, what happens if the call is repeated.
+  - type: dropdown
+    id: versions
+    attributes:
+      label: Differences between PrestaShop 8 and 9
+      options:
+        - None that I know of
+        - Yes, described above

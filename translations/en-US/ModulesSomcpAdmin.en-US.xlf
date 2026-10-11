@@ -1,0 +1,987 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="ModulesSomcpAdmin" source-language="en-US" target-language="en-US" datatype="plaintext">
+    <body>
+    <!-- O'So MCP Server -->
+    <trans-unit id="2052b8f269e2f3e66273134c948ea8dd" resname="O&#x27;So MCP Server">
+      <source>O'So MCP Server</source>
+      <target>O'So MCP Server</target>
+    </trans-unit>
+    <!-- Lets AI assistants such as Claude, ChatGPT or Cursor connect to this shop, with each employee approving what they may do. -->
+    <trans-unit id="1290c6ded80920ecedf49af62b77d231" resname="Lets AI assistants such as Claude, ChatGPT or Cursor connect to this shop, with each employee approving what they may do.">
+      <source>Lets AI assistants such as Claude, ChatGPT or Cursor connect to this shop, with each employee approving what they may do.</source>
+      <target>Lets AI assistants such as Claude, ChatGPT or Cursor connect to this shop, with each employee approving what they may do.</target>
+    </trans-unit>
+    <!-- Uninstalling deletes every connected assistant, approval and token. Assistants connected right now lose their access immediately. Continue? -->
+    <trans-unit id="b17b5c231379ed57cdf75f825772084b" resname="Uninstalling deletes every connected assistant, approval and token. Assistants connected right now lose their access immediately. Continue?">
+      <source>Uninstalling deletes every connected assistant, approval and token. Assistants connected right now lose their access immediately. Continue?</source>
+      <target>Uninstalling deletes every connected assistant, approval and token. Assistants connected right now lose their access immediately. Continue?</target>
+    </trans-unit>
+    <!-- The %hook% hook could not be registered, and the module cannot answer without it. -->
+    <trans-unit id="aac38934a6240ee3112027f4d1b5e2f2" resname="The %hook% hook could not be registered, and the module cannot answer without it.">
+      <source>The %hook% hook could not be registered, and the module cannot answer without it.</source>
+      <target>The %hook% hook could not be registered, and the module cannot answer without it.</target>
+    </trans-unit>
+    <!-- The module tables could not be created. -->
+    <trans-unit id="becff7cff79614ec213b31464f098cda" resname="The module tables could not be created.">
+      <source>The module tables could not be created.</source>
+      <target>The module tables could not be created.</target>
+    </trans-unit>
+    <!-- The module pages could not be installed. -->
+    <trans-unit id="e784bcff85121d5618f5e3223cc144ca" resname="The module pages could not be installed.">
+      <source>The module pages could not be installed.</source>
+      <target>The module pages could not be installed.</target>
+    </trans-unit>
+    <!-- The assistant has been disconnected. -->
+    <trans-unit id="19b5bc0bb79938ec85fd92d87136c137" resname="The assistant has been disconnected.">
+      <source>The assistant has been disconnected.</source>
+      <target>The assistant has been disconnected.</target>
+    </trans-unit>
+    <!-- The log has been emptied. -->
+    <trans-unit id="deb10b3f10ecb1b89b34d6d44a8c04ba" resname="The log has been emptied.">
+      <source>The log has been emptied.</source>
+      <target>The log has been emptied.</target>
+    </trans-unit>
+    <!-- Settings saved. -->
+    <trans-unit id="9a7e58ee13cb727cb7c4acc68f4cafe5" resname="Settings saved.">
+      <source>Settings saved.</source>
+      <target>Settings saved.</target>
+    </trans-unit>
+    <!-- Nothing to approve -->
+    <trans-unit id="70b4860f6924675f94b8416e3838230e" resname="Nothing to approve">
+      <source>Nothing to approve</source>
+      <target>Nothing to approve</target>
+    </trans-unit>
+    <!-- This connection request has expired or has already been answered. Start the connection again from your assistant. -->
+    <trans-unit id="54991db2bae4951265de5f01f0e667a6" resname="This connection request has expired or has already been answered. Start the connection again from your assistant.">
+      <source>This connection request has expired or has already been answered. Start the connection again from your assistant.</source>
+      <target>This connection request has expired or has already been answered. Start the connection again from your assistant.</target>
+    </trans-unit>
+    <!-- The application behind this request is no longer known to the shop. -->
+    <trans-unit id="09fdb0237c71dead304799a20d9d9b03" resname="The application behind this request is no longer known to the shop.">
+      <source>The application behind this request is no longer known to the shop.</source>
+      <target>The application behind this request is no longer known to the shop.</target>
+    </trans-unit>
+    <!-- Connect an assistant -->
+    <trans-unit id="1d3106889f4f5b717317255e6c9e8812" resname="Connect an assistant">
+      <source>Connect an assistant</source>
+      <target>Connect an assistant</target>
+    </trans-unit>
+    <!-- Your account is not allowed to connect assistants to this shop. Ask an administrator to change the required profile in the module settings. -->
+    <trans-unit id="9e447929970e342164debb02d3302637" resname="Your account is not allowed to connect assistants to this shop. Ask an administrator to change the required profile in the module settings.">
+      <source>Your account is not allowed to connect assistants to this shop. Ask an administrator to change the required profile in the module settings.</source>
+      <target>Your account is not allowed to connect assistants to this shop. Ask an administrator to change the required profile in the module settings.</target>
+    </trans-unit>
+    <!-- Identified by the description it publishes at that address -->
+    <trans-unit id="1b885966cbb809a432ac074a83a6118c" resname="Identified by the description it publishes at that address">
+      <source>Identified by the description it publishes at that address</source>
+      <target>Identified by the description it publishes at that address</target>
+    </trans-unit>
+    <!-- Registered by hand in the module settings -->
+    <trans-unit id="587e81c3ce13f9555a75203989816e44" resname="Registered by hand in the module settings">
+      <source>Registered by hand in the module settings</source>
+      <target>Registered by hand in the module settings</target>
+    </trans-unit>
+    <!-- Registered itself automatically -->
+    <trans-unit id="ae8ef3134663603da57227e1e4504d52" resname="Registered itself automatically">
+      <source>Registered itself automatically</source>
+      <target>Registered itself automatically</target>
+    </trans-unit>
+    <!-- This shop is not accepting connections from assistants right now. -->
+    <trans-unit id="3f1922ef09272c33a7fcb5cdf3546c4f" resname="This shop is not accepting connections from assistants right now.">
+      <source>This shop is not accepting connections from assistants right now.</source>
+      <target>This shop is not accepting connections from assistants right now.</target>
+    </trans-unit>
+    <!-- This connection request is not valid, so nothing was sent back to the application that made it. -->
+    <trans-unit id="2381b06010ab6fa0bc01ea6d48cbd7a9" resname="This connection request is not valid, so nothing was sent back to the application that made it.">
+      <source>This connection request is not valid, so nothing was sent back to the application that made it.</source>
+      <target>This connection request is not valid, so nothing was sent back to the application that made it.</target>
+    </trans-unit>
+    <!-- The module cannot find the administration area of this shop yet. Open the module settings once and save them, then try again. -->
+    <trans-unit id="b204962c75ef9a14503bc1813f3814dd" resname="The module cannot find the administration area of this shop yet. Open the module settings once and save them, then try again.">
+      <source>The module cannot find the administration area of this shop yet. Open the module settings once and save them, then try again.</source>
+      <target>The module cannot find the administration area of this shop yet. Open the module settings once and save them, then try again.</target>
+    </trans-unit>
+    <!-- Connect to this shop, see the list of available tools, and read your account details and the shop configuration -->
+    <trans-unit id="001491cd9b5bd52f9ad1460a192aa6bd" resname="Connect to this shop, see the list of available tools, and read your account details and the shop configuration">
+      <source>Connect to this shop, see the list of available tools, and read your account details and the shop configuration</source>
+      <target>Connect to this shop, see the list of available tools, and read your account details and the shop configuration</target>
+    </trans-unit>
+    <!-- Read the orders of this shop, and who placed them -->
+    <trans-unit id="ec7b86e84a88027f15bec2902db42939" resname="Read the orders of this shop, and who placed them">
+      <source>Read the orders of this shop, and who placed them</source>
+      <target>Read the orders of this shop, and who placed them</target>
+    </trans-unit>
+    <!-- Change the orders of this shop, which can email your customers -->
+    <trans-unit id="42f09cc9fe8d5b46bb289ce33988fa7a" resname="Change the orders of this shop, which can email your customers">
+      <source>Change the orders of this shop, which can email your customers</source>
+      <target>Change the orders of this shop, which can email your customers</target>
+    </trans-unit>
+    <!-- Outgoing HTTP requests -->
+    <trans-unit id="44dc1cd9380e6350a77f6d24def569f7" resname="Outgoing HTTP requests">
+      <source>Outgoing HTTP requests</source>
+      <target>Outgoing HTTP requests</target>
+    </trans-unit>
+    <!-- The cURL extension is available. -->
+    <trans-unit id="0fa2f888d7564f941b6cdaa1f030b291" resname="The cURL extension is available.">
+      <source>The cURL extension is available.</source>
+      <target>The cURL extension is available.</target>
+    </trans-unit>
+    <!-- The cURL extension is missing. The module cannot read the metadata document published by a client, so no assistant can connect. -->
+    <trans-unit id="2f3c6c31978a58f160b0e2ab61e66933" resname="The cURL extension is missing. The module cannot read the metadata document published by a client, so no assistant can connect.">
+      <source>The cURL extension is missing. The module cannot read the metadata document published by a client, so no assistant can connect.</source>
+      <target>The cURL extension is missing. The module cannot read the metadata document published by a client, so no assistant can connect.</target>
+    </trans-unit>
+    <!-- Friendly URLs -->
+    <trans-unit id="f78a4710a582f6bb2b32576c0cc70a5d" resname="Friendly URLs">
+      <source>Friendly URLs</source>
+      <target>Friendly URLs</target>
+    </trans-unit>
+    <!-- Friendly URLs are enabled. -->
+    <trans-unit id="237f3666a7c888413f7f3bcf3554d240" resname="Friendly URLs are enabled.">
+      <source>Friendly URLs are enabled.</source>
+      <target>Friendly URLs are enabled.</target>
+    </trans-unit>
+    <!-- Friendly URLs are disabled. PrestaShop then routes nothing outside index.php, so the discovery documents cannot be reached and no assistant can connect. Enable them in Shop parameters, Traffic and SEO. -->
+    <trans-unit id="d5b2503489e2baff64197810bb826776" resname="Friendly URLs are disabled. PrestaShop then routes nothing outside index.php, so the discovery documents cannot be reached and no assistant can connect. Enable them in Shop parameters, Traffic and SEO.">
+      <source>Friendly URLs are disabled. PrestaShop then routes nothing outside index.php, so the discovery documents cannot be reached and no assistant can connect. Enable them in Shop parameters, Traffic and SEO.</source>
+      <target>Friendly URLs are disabled. PrestaShop then routes nothing outside index.php, so the discovery documents cannot be reached and no assistant can connect. Enable them in Shop parameters, Traffic and SEO.</target>
+    </trans-unit>
+    <!-- Shop location -->
+    <trans-unit id="a47691412b8ff740d929c274bcea8bb1" resname="Shop location">
+      <source>Shop location</source>
+      <target>Shop location</target>
+    </trans-unit>
+    <!-- This shop is installed in a subdirectory. The authorization server document has to sit at the root of the domain, which is outside the shop, so PrestaShop cannot serve it. Moving the shop to the root of a domain or a subdomain is the only way around it. -->
+    <trans-unit id="9bf341e64b4633087005e6044866e15e" resname="This shop is installed in a subdirectory. The authorization server document has to sit at the root of the domain, which is outside the shop, so PrestaShop cannot serve it. Moving the shop to the root of a domain or a subdomain is the only way around it.">
+      <source>This shop is installed in a subdirectory. The authorization server document has to sit at the root of the domain, which is outside the shop, so PrestaShop cannot serve it. Moving the shop to the root of a domain or a subdomain is the only way around it.</source>
+      <target>This shop is installed in a subdirectory. The authorization server document has to sit at the root of the domain, which is outside the shop, so PrestaShop cannot serve it. Moving the shop to the root of a domain or a subdomain is the only way around it.</target>
+    </trans-unit>
+    <!-- The shop sits at the root of its domain. -->
+    <trans-unit id="b0ec8a1d80b02f92e1fa462d12217a32" resname="The shop sits at the root of its domain.">
+      <source>The shop sits at the root of its domain.</source>
+      <target>The shop sits at the root of its domain.</target>
+    </trans-unit>
+    <!-- Consent screen -->
+    <trans-unit id="b5b4f3f787f2e5a15a6c5da5015c923c" resname="Consent screen">
+      <source>Consent screen</source>
+      <target>Consent screen</target>
+    </trans-unit>
+    <!-- The consent screen can be reached from the authorization flow. -->
+    <trans-unit id="189dd480f172dad83a6edae97bf4faf8" resname="The consent screen can be reached from the authorization flow.">
+      <source>The consent screen can be reached from the authorization flow.</source>
+      <target>The consent screen can be reached from the authorization flow.</target>
+    </trans-unit>
+    <!-- The administration folder is not known yet. Save the settings once and this resolves itself. -->
+    <trans-unit id="e9fb83e2898fe03e702e4657f2c2dca3" resname="The administration folder is not known yet. Save the settings once and this resolves itself.">
+      <source>The administration folder is not known yet. Save the settings once and this resolves itself.</source>
+      <target>The administration folder is not known yet. Save the settings once and this resolves itself.</target>
+    </trans-unit>
+    <!-- Authorization server document -->
+    <trans-unit id="e9cf133f4f916056fe1fc93f17138df4" resname="Authorization server document">
+      <source>Authorization server document</source>
+      <target>Authorization server document</target>
+    </trans-unit>
+    <!-- This address answered %status% instead of 200. Assistants read it to find out where to sign in, so none of them can connect until it works. Some hosting setups answer paths starting with .well-known themselves, before PrestaShop ever sees them; a rewrite rule sending that path to index.php fixes it. -->
+    <trans-unit id="6cffff3d6158d7094adc2e413c274460" resname="This address answered %status% instead of 200. Assistants read it to find out where to sign in, so none of them can connect until it works. Some hosting setups answer paths starting with .well-known themselves, before PrestaShop ever sees them; a rewrite rule sending that path to index.php fixes it.">
+      <source>This address answered %status% instead of 200. Assistants read it to find out where to sign in, so none of them can connect until it works. Some hosting setups answer paths starting with .well-known themselves, before PrestaShop ever sees them; a rewrite rule sending that path to index.php fixes it.</source>
+      <target>This address answered %status% instead of 200. Assistants read it to find out where to sign in, so none of them can connect until it works. Some hosting setups answer paths starting with .well-known themselves, before PrestaShop ever sees them; a rewrite rule sending that path to index.php fixes it.</target>
+    </trans-unit>
+    <!-- This address answered, but not with the expected document. Something else on the hosting is serving that path. -->
+    <trans-unit id="d8f7bd523643b122b43a510fcd1a6986" resname="This address answered, but not with the expected document. Something else on the hosting is serving that path.">
+      <source>This address answered, but not with the expected document. Something else on the hosting is serving that path.</source>
+      <target>This address answered, but not with the expected document. Something else on the hosting is serving that path.</target>
+    </trans-unit>
+    <!-- Served correctly. -->
+    <trans-unit id="7d85cbaf727787a9b211ec04eb620402" resname="Served correctly.">
+      <source>Served correctly.</source>
+      <target>Served correctly.</target>
+    </trans-unit>
+    <!-- Protected resource document -->
+    <trans-unit id="2baead4297f6f2e954de0847d01a67e1" resname="Protected resource document">
+      <source>Protected resource document</source>
+      <target>Protected resource document</target>
+    </trans-unit>
+    <!-- This address answered %status% instead of the expected document. -->
+    <trans-unit id="d327dad10bb7416455edc10c8c09756f" resname="This address answered %status% instead of the expected document.">
+      <source>This address answered %status% instead of the expected document.</source>
+      <target>This address answered %status% instead of the expected document.</target>
+    </trans-unit>
+    <!-- MCP endpoint -->
+    <trans-unit id="f94a303ddb4fcea8c0b4f679273b73c3" resname="MCP endpoint">
+      <source>MCP endpoint</source>
+      <target>MCP endpoint</target>
+    </trans-unit>
+    <!-- The endpoint answered %status% where an unauthenticated call must answer 401. -->
+    <trans-unit id="7be8352085d2cd64491131665945c490" resname="The endpoint answered %status% where an unauthenticated call must answer 401.">
+      <source>The endpoint answered %status% where an unauthenticated call must answer 401.</source>
+      <target>The endpoint answered %status% where an unauthenticated call must answer 401.</target>
+    </trans-unit>
+    <!-- The endpoint answered 401 but without the challenge that tells an assistant where to sign in. -->
+    <trans-unit id="7fb10a30332f65819e485b4a29769aaf" resname="The endpoint answered 401 but without the challenge that tells an assistant where to sign in.">
+      <source>The endpoint answered 401 but without the challenge that tells an assistant where to sign in.</source>
+      <target>The endpoint answered 401 but without the challenge that tells an assistant where to sign in.</target>
+    </trans-unit>
+    <!-- The endpoint answers correctly, but the Authorization header never reached PHP: this hosting drops it. Assistants will always be treated as signed out. Adding a rewrite rule that copies the header into the environment fixes it. -->
+    <trans-unit id="82e4eda483f70345e854a2da4b4912fb" resname="The endpoint answers correctly, but the Authorization header never reached PHP: this hosting drops it. Assistants will always be treated as signed out. Adding a rewrite rule that copies the header into the environment fixes it.">
+      <source>The endpoint answers correctly, but the Authorization header never reached PHP: this hosting drops it. Assistants will always be treated as signed out. Adding a rewrite rule that copies the header into the environment fixes it.</source>
+      <target>The endpoint answers correctly, but the Authorization header never reached PHP: this hosting drops it. Assistants will always be treated as signed out. Adding a rewrite rule that copies the header into the environment fixes it.</target>
+    </trans-unit>
+    <!-- Answers with the expected challenge, and credentials reach the module. -->
+    <trans-unit id="730ad63203931c109190a5882bd51178" resname="Answers with the expected challenge, and credentials reach the module.">
+      <source>Answers with the expected challenge, and credentials reach the module.</source>
+      <target>Answers with the expected challenge, and credentials reach the module.</target>
+    </trans-unit>
+    <!-- An application is asking to connect to your shop on your behalf. -->
+    <trans-unit id="8f7ee43c0da7822a1b4449591af4aeee" resname="An application is asking to connect to your shop on your behalf.">
+      <source>An application is asking to connect to your shop on your behalf.</source>
+      <target>An application is asking to connect to your shop on your behalf.</target>
+    </trans-unit>
+    <!-- Application -->
+    <trans-unit id="e498749f3c42246d50b15c81c101d988" resname="Application">
+      <source>Application</source>
+      <target>Application</target>
+    </trans-unit>
+    <!-- Identifier -->
+    <trans-unit id="29ee5d1ebcc033234938a5234f1f2075" resname="Identifier">
+      <source>Identifier</source>
+      <target>Identifier</target>
+    </trans-unit>
+    <!-- Signed in as -->
+    <trans-unit id="4b3b4f21e1287f0f38de9a3a8bb40b6e" resname="Signed in as">
+      <source>Signed in as</source>
+      <target>Signed in as</target>
+    </trans-unit>
+    <!-- Shop -->
+    <trans-unit id="9f82518d468b9fee614fcc92f76bb163" resname="Shop">
+      <source>Shop</source>
+      <target>Shop</target>
+    </trans-unit>
+    <!-- Will be sent back to -->
+    <trans-unit id="4ef961c3459a34ab2a1378504291c9dd" resname="Will be sent back to">
+      <source>Will be sent back to</source>
+      <target>Will be sent back to</target>
+    </trans-unit>
+    <!-- What it will be able to do -->
+    <trans-unit id="768c7a00d8142fa0b8eba54658b7a30a" resname="What it will be able to do">
+      <source>What it will be able to do</source>
+      <target>What it will be able to do</target>
+    </trans-unit>
+    <!-- The application never gets more rights than your own account. You can disconnect it at any time from the module settings. -->
+    <trans-unit id="31ce5d6e1bb4a15aa6ca694788c15db5" resname="The application never gets more rights than your own account. You can disconnect it at any time from the module settings.">
+      <source>The application never gets more rights than your own account. You can disconnect it at any time from the module settings.</source>
+      <target>The application never gets more rights than your own account. You can disconnect it at any time from the module settings.</target>
+    </trans-unit>
+    <!-- Refuse -->
+    <trans-unit id="dc7176d0b9ec5492c6a8f43f8a4b6d92" resname="Refuse">
+      <source>Refuse</source>
+      <target>Refuse</target>
+    </trans-unit>
+    <!-- Allow the connection -->
+    <trans-unit id="31e9a30fe5ae5c218434f304c1641ff6" resname="Allow the connection">
+      <source>Allow the connection</source>
+      <target>Allow the connection</target>
+    </trans-unit>
+    <!-- Address to give to your assistant -->
+    <trans-unit id="41d86bbf32e22ed911f6b3f5c797ea0d" resname="Address to give to your assistant">
+      <source>Address to give to your assistant</source>
+      <target>Address to give to your assistant</target>
+    </trans-unit>
+    <!-- Paste this address into Claude, ChatGPT, Cursor or any other assistant that speaks MCP. It will ask you to sign in to this shop and to approve the connection. -->
+    <trans-unit id="68e1e32abebb94d2b0097f01474bf346" resname="Paste this address into Claude, ChatGPT, Cursor or any other assistant that speaks MCP. It will ask you to sign in to this shop and to approve the connection.">
+      <source>Paste this address into Claude, ChatGPT, Cursor or any other assistant that speaks MCP. It will ask you to sign in to this shop and to approve the connection.</source>
+      <target>Paste this address into Claude, ChatGPT, Cursor or any other assistant that speaks MCP. It will ask you to sign in to this shop and to approve the connection.</target>
+    </trans-unit>
+    <!-- Authorization server: -->
+    <trans-unit id="d4edc75f9b6c7005cace0159f0c5f12a" resname="Authorization server:">
+      <source>Authorization server:</source>
+      <target>Authorization server:</target>
+    </trans-unit>
+    <!-- current shop -->
+    <trans-unit id="877babea5054459567b5d8e4aa703fd6" resname="current shop">
+      <source>current shop</source>
+      <target>current shop</target>
+    </trans-unit>
+    <!-- Each shop has its own address and its own connections. An assistant connected to one shop reaches that shop only. -->
+    <trans-unit id="75859f34948a64b2779e9cae23e54b0f" resname="Each shop has its own address and its own connections. An assistant connected to one shop reaches that shop only.">
+      <source>Each shop has its own address and its own connections. An assistant connected to one shop reaches that shop only.</source>
+      <target>Each shop has its own address and its own connections. An assistant connected to one shop reaches that shop only.</target>
+    </trans-unit>
+    <!-- Diagnostic -->
+    <trans-unit id="7f84beab04579bef70043ca0cc72fb85" resname="Diagnostic">
+      <source>Diagnostic</source>
+      <target>Diagnostic</target>
+    </trans-unit>
+    <!-- Shop enabled -->
+    <trans-unit id="73a910e532bbbc17742ac1ad88189026" resname="Shop enabled">
+      <source>Shop enabled</source>
+      <target>Shop enabled</target>
+    </trans-unit>
+    <!-- This shop is enabled. -->
+    <trans-unit id="09e13a6fddbf7a7307666d8888fbc438" resname="This shop is enabled.">
+      <source>This shop is enabled.</source>
+      <target>This shop is enabled.</target>
+    </trans-unit>
+    <!-- This shop is disabled in the multistore settings. It serves nothing at all, so no assistant can reach it. Enable it to use the MCP server on this shop. -->
+    <trans-unit id="b04a44be5e88f162a4ba85d065b865ce" resname="This shop is disabled in the multistore settings. It serves nothing at all, so no assistant can reach it. Enable it to use the MCP server on this shop.">
+      <source>This shop is disabled in the multistore settings. It serves nothing at all, so no assistant can reach it. Enable it to use the MCP server on this shop.</source>
+      <target>This shop is disabled in the multistore settings. It serves nothing at all, so no assistant can reach it. Enable it to use the MCP server on this shop.</target>
+    </trans-unit>
+    <!-- Shop open -->
+    <trans-unit id="111656f8fcdc7c5262043e0d5c090c84" resname="Shop open">
+      <source>Shop open</source>
+      <target>Shop open</target>
+    </trans-unit>
+    <!-- This shop is open. -->
+    <trans-unit id="2284b20d05ef873715a3fe83e1d91e20" resname="This shop is open.">
+      <source>This shop is open.</source>
+      <target>This shop is open.</target>
+    </trans-unit>
+    <!-- This shop is in maintenance. Assistants still connect and work: the MCP address belongs to you, not to your visitors. Turn off the MCP server above if you want it closed too. -->
+    <trans-unit id="5098cff3014a95d21de740296e2773c2" resname="This shop is in maintenance. Assistants still connect and work: the MCP address belongs to you, not to your visitors. Turn off the MCP server above if you want it closed too.">
+      <source>This shop is in maintenance. Assistants still connect and work: the MCP address belongs to you, not to your visitors. Turn off the MCP server above if you want it closed too.</source>
+      <target>This shop is in maintenance. Assistants still connect and work: the MCP address belongs to you, not to your visitors. Turn off the MCP server above if you want it closed too.</target>
+    </trans-unit>
+    <!-- Checks one shop the way an assistant would: it calls that shop own addresses from the outside and reports what comes back. -->
+    <trans-unit id="53558ed1363ff3490f769b59aa81f773" resname="Checks one shop the way an assistant would: it calls that shop own addresses from the outside and reports what comes back.">
+      <source>Checks one shop the way an assistant would: it calls that shop own addresses from the outside and reports what comes back.</source>
+      <target>Checks one shop the way an assistant would: it calls that shop own addresses from the outside and reports what comes back.</target>
+    </trans-unit>
+    <!-- Run the diagnostic -->
+    <trans-unit id="9df16b34842f78a21400d9661d8d66a8" resname="Run the diagnostic">
+      <source>Run the diagnostic</source>
+      <target>Run the diagnostic</target>
+    </trans-unit>
+    <!-- Settings reserved for the shop administrator -->
+    <trans-unit id="6dc3e1dd61004e2e29e46d978d5216b7" resname="Settings reserved for the shop administrator">
+      <source>Settings reserved for the shop administrator</source>
+      <target>Settings reserved for the shop administrator</target>
+    </trans-unit>
+    <!-- Only an administrator of this shop can change the O'So MCP Server settings. -->
+    <trans-unit id="049be90e06a844f019f89bdbe6d93a6f" resname="Only an administrator of this shop can change the O&#x27;So MCP Server settings.">
+      <source>Only an administrator of this shop can change the O'So MCP Server settings.</source>
+      <target>Only an administrator of this shop can change the O'So MCP Server settings.</target>
+    </trans-unit>
+    <!-- Only an administrator of this shop can change the O'So MCP Server settings, and your account is not allowed to connect an assistant. Ask an administrator if you need one. -->
+    <trans-unit id="e801149a4d7f9879e88eb1d77426f64a" resname="Only an administrator of this shop can change the O&#x27;So MCP Server settings, and your account is not allowed to connect an assistant. Ask an administrator if you need one.">
+      <source>Only an administrator of this shop can change the O'So MCP Server settings, and your account is not allowed to connect an assistant. Ask an administrator if you need one.</source>
+      <target>Only an administrator of this shop can change the O'So MCP Server settings, and your account is not allowed to connect an assistant. Ask an administrator if you need one.</target>
+    </trans-unit>
+    <!-- Copy -->
+    <trans-unit id="5fb63579fc981698f97d55bfecb213ea" resname="Copy">
+      <source>Copy</source>
+      <target>Copy</target>
+    </trans-unit>
+    <!-- Copied -->
+    <trans-unit id="a588b1abc58b8b758c4b34b69b9e10bb" resname="Copied">
+      <source>Copied</source>
+      <target>Copied</target>
+    </trans-unit>
+    <!-- Your account may connect an assistant. Paste this address into it, then approve the connection when the shop asks you to sign in. -->
+    <trans-unit id="8fd9db1338ab3f0d70ac7cb6d1428d9c" resname="Your account may connect an assistant. Paste this address into it, then approve the connection when the shop asks you to sign in.">
+      <source>Your account may connect an assistant. Paste this address into it, then approve the connection when the shop asks you to sign in.</source>
+      <target>Your account may connect an assistant. Paste this address into it, then approve the connection when the shop asks you to sign in.</target>
+    </trans-unit>
+    <!-- Settings -->
+    <trans-unit id="f4f70727dc34561dfde1a3c529b6205c" resname="Settings">
+      <source>Settings</source>
+      <target>Settings</target>
+    </trans-unit>
+    <!-- MCP server -->
+    <trans-unit id="fbac61d0c2e1f6a6f246fbacc84bdf6e" resname="MCP server">
+      <source>MCP server</source>
+      <target>MCP server</target>
+    </trans-unit>
+    <!-- Enable the MCP server -->
+    <trans-unit id="fa6ea3d29260dc056a510b6815acedc5" resname="Enable the MCP server">
+      <source>Enable the MCP server</source>
+      <target>Enable the MCP server</target>
+    </trans-unit>
+    <!-- Yes -->
+    <trans-unit id="93cba07454f06a4a960172bbd6e2a435" resname="Yes">
+      <source>Yes</source>
+      <target>Yes</target>
+    </trans-unit>
+    <!-- No -->
+    <trans-unit id="bafd7322c6e97d25b6299b5d6fe8920b" resname="No">
+      <source>No</source>
+      <target>No</target>
+    </trans-unit>
+    <!-- Turning this off closes the endpoint immediately. Tokens already issued stop working. -->
+    <trans-unit id="66de94389663a67d6b42d18d8b80b400" resname="Turning this off closes the endpoint immediately. Tokens already issued stop working.">
+      <source>Turning this off closes the endpoint immediately. Tokens already issued stop working.</source>
+      <target>Turning this off closes the endpoint immediately. Tokens already issued stop working.</target>
+    </trans-unit>
+    <!-- Employees allowed to connect an assistant -->
+    <trans-unit id="0ddf7a9dda9a001e8606d012c1c9e509" resname="Employees allowed to connect an assistant">
+      <source>Employees allowed to connect an assistant</source>
+      <target>Employees allowed to connect an assistant</target>
+    </trans-unit>
+    <!-- Any employee -->
+    <trans-unit id="6541e818f1d8f9bc7827f69a37763e5e" resname="Any employee">
+      <source>Any employee</source>
+      <target>Any employee</target>
+    </trans-unit>
+    <!-- An assistant never gets more rights than the employee who connected it. -->
+    <trans-unit id="da840da7763336ac18ce0f3d3305c49d" resname="An assistant never gets more rights than the employee who connected it.">
+      <source>An assistant never gets more rights than the employee who connected it.</source>
+      <target>An assistant never gets more rights than the employee who connected it.</target>
+    </trans-unit>
+    <!-- OAuth 2.1 -->
+    <trans-unit id="66ea2a089dc6885b7e59627915b43a57" resname="OAuth 2.1">
+      <source>OAuth 2.1</source>
+      <target>OAuth 2.1</target>
+    </trans-unit>
+    <!-- Accept new connections -->
+    <trans-unit id="c2dcddc0ec595b09db02ae020722f7fd" resname="Accept new connections">
+      <source>Accept new connections</source>
+      <target>Accept new connections</target>
+    </trans-unit>
+    <!-- Access token lifetime (seconds) -->
+    <trans-unit id="32b9df579c78d61821c0238338d75311" resname="Access token lifetime (seconds)">
+      <source>Access token lifetime (seconds)</source>
+      <target>Access token lifetime (seconds)</target>
+    </trans-unit>
+    <!-- Refresh token lifetime (seconds) -->
+    <trans-unit id="9c35888831ddfc39be54b38c4aa87b21" resname="Refresh token lifetime (seconds)">
+      <source>Refresh token lifetime (seconds)</source>
+      <target>Refresh token lifetime (seconds)</target>
+    </trans-unit>
+    <!-- How long an assistant can keep reconnecting on its own before the merchant has to approve it again. -->
+    <trans-unit id="6b14504066765279470e020a879712aa" resname="How long an assistant can keep reconnecting on its own before the merchant has to approve it again.">
+      <source>How long an assistant can keep reconnecting on its own before the merchant has to approve it again.</source>
+      <target>How long an assistant can keep reconnecting on its own before the merchant has to approve it again.</target>
+    </trans-unit>
+    <!-- Replace the refresh token on every use -->
+    <trans-unit id="063bbf42b87dfbf1c3597a550fad9706" resname="Replace the refresh token on every use">
+      <source>Replace the refresh token on every use</source>
+      <target>Replace the refresh token on every use</target>
+    </trans-unit>
+    <!-- Recommended. A token that is used twice then reveals a theft, and the shop cuts the whole connection. -->
+    <trans-unit id="4b2e362b6d3737f5ce9744fbd20e378d" resname="Recommended. A token that is used twice then reveals a theft, and the shop cuts the whole connection.">
+      <source>Recommended. A token that is used twice then reveals a theft, and the shop cuts the whole connection.</source>
+      <target>Recommended. A token that is used twice then reveals a theft, and the shop cuts the whole connection.</target>
+    </trans-unit>
+    <!-- Value of its own here -->
+    <trans-unit id="df41a4d4c48ea2729f93743ec37f7926" resname="Value of its own here">
+      <source>Value of its own here</source>
+      <target>Value of its own here</target>
+    </trans-unit>
+    <!-- inherited from the group -->
+    <trans-unit id="d969d2d6bd96f4c06c0f0aa00c5c3cfd" resname="inherited from the group">
+      <source>inherited from the group</source>
+      <target>inherited from the group</target>
+    </trans-unit>
+    <!-- inherited from all shops -->
+    <trans-unit id="e98fc5f2a89638c2d467a9cadf5bade2" resname="inherited from all shops">
+      <source>inherited from all shops</source>
+      <target>inherited from all shops</target>
+    </trans-unit>
+    <!-- module default -->
+    <trans-unit id="76d74fa71f0c870e939d69e6b280efc2" resname="module default">
+      <source>module default</source>
+      <target>module default</target>
+    </trans-unit>
+    <!-- Security -->
+    <trans-unit id="2fae32629d4ef4fc6341f1751b405e45" resname="Security">
+      <source>Security</source>
+      <target>Security</target>
+    </trans-unit>
+    <!-- Let applications identify themselves by address -->
+    <trans-unit id="4e5f939a522013ef62da9965ff26c573" resname="Let applications identify themselves by address">
+      <source>Let applications identify themselves by address</source>
+      <target>Let applications identify themselves by address</target>
+    </trans-unit>
+    <!-- This is how the Claude assistants connect. Turning it off will stop them from working. -->
+    <trans-unit id="87ea1f36ef9034fa4f7688bac849d928" resname="This is how the Claude assistants connect. Turning it off will stop them from working.">
+      <source>This is how the Claude assistants connect. Turning it off will stop them from working.</source>
+      <target>This is how the Claude assistants connect. Turning it off will stop them from working.</target>
+    </trans-unit>
+    <!-- Let applications register themselves -->
+    <trans-unit id="7421fc78fc09181cae23034f7654c507" resname="Let applications register themselves">
+      <source>Let applications register themselves</source>
+      <target>Let applications register themselves</target>
+    </trans-unit>
+    <!-- Older way of connecting, kept for assistants that know nothing else. Registering costs nothing on its own: an application still has to be approved by an employee before it can do anything. -->
+    <trans-unit id="e64671f998ae1c6e381e4c606eb1b0e4" resname="Older way of connecting, kept for assistants that know nothing else. Registering costs nothing on its own: an application still has to be approved by an employee before it can do anything.">
+      <source>Older way of connecting, kept for assistants that know nothing else. Registering costs nothing on its own: an application still has to be approved by an employee before it can do anything.</source>
+      <target>Older way of connecting, kept for assistants that know nothing else. Registering costs nothing on its own: an application still has to be approved by an employee before it can do anything.</target>
+    </trans-unit>
+    <!-- Only allow these return addresses -->
+    <trans-unit id="5284a80e9eab9a95c1e595d329cf5e36" resname="Only allow these return addresses">
+      <source>Only allow these return addresses</source>
+      <target>Only allow these return addresses</target>
+    </trans-unit>
+    <!-- Host names separated by spaces, for example claude.ai chatgpt.com. Leave empty to accept any address an application registers. Desktop assistants use your own computer and are always allowed. -->
+    <trans-unit id="8a0560036353c28ddab19dc97488ea5f" resname="Host names separated by spaces, for example claude.ai chatgpt.com. Leave empty to accept any address an application registers. Desktop assistants use your own computer and are always allowed.">
+      <source>Host names separated by spaces, for example claude.ai chatgpt.com. Leave empty to accept any address an application registers. Desktop assistants use your own computer and are always allowed.</source>
+      <target>Host names separated by spaces, for example claude.ai chatgpt.com. Leave empty to accept any address an application registers. Desktop assistants use your own computer and are always allowed.</target>
+    </trans-unit>
+    <!-- Keep a security log -->
+    <trans-unit id="321e5c4b4dcb88e9e562f3ee8923d55f" resname="Keep a security log">
+      <source>Keep a security log</source>
+      <target>Keep a security log</target>
+    </trans-unit>
+    <!-- Connections, approvals and refusals, kept for thirty days. Never contains a token. -->
+    <trans-unit id="8eec2f252f0d36f70ac9ed9ea6cae86c" resname="Connections, approvals and refusals, kept for thirty days. Never contains a token.">
+      <source>Connections, approvals and refusals, kept for thirty days. Never contains a token.</source>
+      <target>Connections, approvals and refusals, kept for thirty days. Never contains a token.</target>
+    </trans-unit>
+    <!-- Save -->
+    <trans-unit id="c9cc8cce247e49bae79f15173ce97354" resname="Save">
+      <source>Save</source>
+      <target>Save</target>
+    </trans-unit>
+    <!-- Connected assistants -->
+    <trans-unit id="97b88184730ca9a354ef6ba7782560ee" resname="Connected assistants">
+      <source>Connected assistants</source>
+      <target>Connected assistants</target>
+    </trans-unit>
+    <!-- Approved by -->
+    <trans-unit id="941af71eea04e1fb7167442f7fc06c82" resname="Approved by">
+      <source>Approved by</source>
+      <target>Approved by</target>
+    </trans-unit>
+    <!-- Profile -->
+    <trans-unit id="cce99c598cfdb9773ab041d54c3d973a" resname="Profile">
+      <source>Profile</source>
+      <target>Profile</target>
+    </trans-unit>
+    <!-- account disabled -->
+    <trans-unit id="39c945eda84e77421013c0cca3acc267" resname="account disabled">
+      <source>account disabled</source>
+      <target>account disabled</target>
+    </trans-unit>
+    <!-- unknown -->
+    <trans-unit id="ad921d60486366258809553a3db49a4a" resname="unknown">
+      <source>unknown</source>
+      <target>unknown</target>
+    </trans-unit>
+    <!-- Permissions -->
+    <trans-unit id="d08ccf52b4cdd08e41cfb99ec42e0b29" resname="Permissions">
+      <source>Permissions</source>
+      <target>Permissions</target>
+    </trans-unit>
+    <!-- Since -->
+    <trans-unit id="38c50b731f70abc42c8baa3e7399b413" resname="Since">
+      <source>Since</source>
+      <target>Since</target>
+    </trans-unit>
+    <!-- Disconnect -->
+    <trans-unit id="42ae25231906c83927831e0ef7c317ac" resname="Disconnect">
+      <source>Disconnect</source>
+      <target>Disconnect</target>
+    </trans-unit>
+    <!-- No assistant is connected to this shop yet. -->
+    <trans-unit id="49d1071770e6aa4d0d57c82d4928fa1a" resname="No assistant is connected to this shop yet.">
+      <source>No assistant is connected to this shop yet.</source>
+      <target>No assistant is connected to this shop yet.</target>
+    </trans-unit>
+    <!-- Security log -->
+    <trans-unit id="b27bd604b3a10b7247f1204bcda35921" resname="Security log">
+      <source>Security log</source>
+      <target>Security log</target>
+    </trans-unit>
+    <!-- Date -->
+    <trans-unit id="44749712dbec183e983dcd78a7736c41" resname="Date">
+      <source>Date</source>
+      <target>Date</target>
+    </trans-unit>
+    <!-- Event -->
+    <trans-unit id="a4ecfc70574394990cf17bd83df499f7" resname="Event">
+      <source>Event</source>
+      <target>Event</target>
+    </trans-unit>
+    <!-- Detail -->
+    <trans-unit id="a254c25adc7d10d7e9c4889484f875a5" resname="Detail">
+      <source>Detail</source>
+      <target>Detail</target>
+    </trans-unit>
+    <!-- Empty the log -->
+    <trans-unit id="8eeb936d9079e16bba905b285a363405" resname="Empty the log">
+      <source>Empty the log</source>
+      <target>Empty the log</target>
+    </trans-unit>
+    <!-- Nothing logged yet. -->
+    <trans-unit id="681577b5cee492e09281911af4fa60e5" resname="Nothing logged yet.">
+      <source>Nothing logged yet.</source>
+      <target>Nothing logged yet.</target>
+    </trans-unit>
+    <!-- Available tools -->
+    <trans-unit id="a6972927391ac65fb8726675ef9c638e" resname="Available tools">
+      <source>Available tools</source>
+      <target>Available tools</target>
+    </trans-unit>
+    <!-- What an assistant may ask this shop to do. A tool switched off here is offered to nobody, whatever permissions their account holds. Tools published by another module carry that module name in front of theirs. -->
+    <trans-unit id="01c4b521fae87e2d7c23cab78640583b" resname="What an assistant may ask this shop to do. A tool switched off here is offered to nobody, whatever permissions their account holds. Tools published by another module carry that module name in front of theirs.">
+      <source>What an assistant may ask this shop to do. A tool switched off here is offered to nobody, whatever permissions their account holds. Tools published by another module carry that module name in front of theirs.</source>
+      <target>What an assistant may ask this shop to do. A tool switched off here is offered to nobody, whatever permissions their account holds. Tools published by another module carry that module name in front of theirs.</target>
+    </trans-unit>
+    <!-- On -->
+    <trans-unit id="521c36a31c2762741cf0f8890cbe05e3" resname="On">
+      <source>On</source>
+      <target>On</target>
+    </trans-unit>
+    <!-- Tool -->
+    <trans-unit id="d421fd439cd14456726791338b3b397e" resname="Tool">
+      <source>Tool</source>
+      <target>Tool</target>
+    </trans-unit>
+    <!-- Published by -->
+    <trans-unit id="22b8bc009caba3214ef7ca0834a36827" resname="Published by">
+      <source>Published by</source>
+      <target>Published by</target>
+    </trans-unit>
+    <!-- Requires -->
+    <trans-unit id="bdc6acb4dbd44761e887045a3fa74ad6" resname="Requires">
+      <source>Requires</source>
+      <target>Requires</target>
+    </trans-unit>
+    <!-- changes data -->
+    <trans-unit id="0ec85581b40327e913499b0b66e3f6ce" resname="changes data">
+      <source>changes data</source>
+      <target>changes data</target>
+    </trans-unit>
+    <!-- This module -->
+    <trans-unit id="06c30a6fd25b6b0c535792db107cc8ce" resname="This module">
+      <source>This module</source>
+      <target>This module</target>
+    </trans-unit>
+    <!-- no particular permission -->
+    <trans-unit id="de43a0de3e38536be10180a677822dc5" resname="no particular permission">
+      <source>no particular permission</source>
+      <target>no particular permission</target>
+    </trans-unit>
+    <!-- No tool is available on this shop. -->
+    <trans-unit id="0dc6496786e8d27fe62cba07b576c81d" resname="No tool is available on this shop.">
+      <source>No tool is available on this shop.</source>
+      <target>No tool is available on this shop.</target>
+    </trans-unit>
+    <!-- Get an order -->
+    <trans-unit id="af419da3e75676cb2f37f655621011dc" resname="Get an order">
+      <source>Get an order</source>
+      <target>Get an order</target>
+    </trans-unit>
+    <!-- List order statuses -->
+    <trans-unit id="a2e71e4ebd63a644e6d1fc90170d8e7c" resname="List order statuses">
+      <source>List order statuses</source>
+      <target>List order statuses</target>
+    </trans-unit>
+    <!-- Test the connection -->
+    <trans-unit id="660fc9e01f52fb7f8a715e51167c4f8d" resname="Test the connection">
+      <source>Test the connection</source>
+      <target>Test the connection</target>
+    </trans-unit>
+    <!-- Search orders -->
+    <trans-unit id="3b5c949e5a7f93592ece65422e0496df" resname="Search orders">
+      <source>Search orders</source>
+      <target>Search orders</target>
+    </trans-unit>
+    <!-- Change the status of an order -->
+    <trans-unit id="66552223a3758445711444bb2e8d2e8c" resname="Change the status of an order">
+      <source>Change the status of an order</source>
+      <target>Change the status of an order</target>
+    </trans-unit>
+    <!-- view -->
+    <trans-unit id="1bda80f2be4d3658e0baa43fbe7ae8c1" resname="view">
+      <source>view</source>
+      <target>view</target>
+    </trans-unit>
+    <!-- add -->
+    <trans-unit id="34ec78fcc91ffb1e54cd85e4a0924332" resname="add">
+      <source>add</source>
+      <target>add</target>
+    </trans-unit>
+    <!-- edit -->
+    <trans-unit id="de95b43bceeb4b998aed4aed5cef1ae7" resname="edit">
+      <source>edit</source>
+      <target>edit</target>
+    </trans-unit>
+    <!-- delete -->
+    <trans-unit id="099af53f601532dbd31e0ea99ffdeb64" resname="delete">
+      <source>delete</source>
+      <target>delete</target>
+    </trans-unit>
+    <!-- Previous -->
+    <trans-unit id="dd1f775e443ff3b9a89270713580a51b" resname="Previous">
+      <source>Previous</source>
+      <target>Previous</target>
+    </trans-unit>
+    <!-- Next -->
+    <trans-unit id="10ac3d04253ef7e1ddc73e6091c0cd55" resname="Next">
+      <source>Next</source>
+      <target>Next</target>
+    </trans-unit>
+    <!-- Tools %from% to %to% of %total% -->
+    <trans-unit id="a0790fa2877abf45801f5110d66fe136" resname="Tools %from% to %to% of %total%">
+      <source>Tools %from% to %to% of %total%</source>
+      <target>Tools %from% to %to% of %total%</target>
+    </trans-unit>
+    <!-- How long an assistant keeps the list of tools -->
+    <trans-unit id="85bda97a11e0fe0736c39b07f2ed5bb9" resname="How long an assistant keeps the list of tools">
+      <source>How long an assistant keeps the list of tools</source>
+      <target>How long an assistant keeps the list of tools</target>
+    </trans-unit>
+    <!-- In seconds, between 10 and 3600. This shop cannot tell an assistant that the list changed - there is no connection open to it - so the assistant re-reads only when this has run out. A tool switched on or off appears or disappears after that delay, not before. Lower it while you are adding tools, raise it back afterwards. 300 by default. -->
+    <trans-unit id="eddbb6c47b8fdbf90b57757a88577722" resname="In seconds, between 10 and 3600. This shop cannot tell an assistant that the list changed - there is no connection open to it - so the assistant re-reads only when this has run out. A tool switched on or off appears or disappears after that delay, not before. Lower it while you are adding tools, raise it back afterwards. 300 by default.">
+      <source>In seconds, between 10 and 3600. This shop cannot tell an assistant that the list changed - there is no connection open to it - so the assistant re-reads only when this has run out. A tool switched on or off appears or disappears after that delay, not before. Lower it while you are adding tools, raise it back afterwards. 300 by default.</source>
+      <target>In seconds, between 10 and 3600. This shop cannot tell an assistant that the list changed - there is no connection open to it - so the assistant re-reads only when this has run out. A tool switched on or off appears or disappears after that delay, not before. Lower it while you are adding tools, raise it back afterwards. 300 by default.</target>
+    </trans-unit>
+    <!-- Available prompts -->
+    <trans-unit id="ca66b1a0069ab1314bc0bf61bdff07b1" resname="Available prompts">
+      <source>Available prompts</source>
+      <target>Available prompts</target>
+    </trans-unit>
+    <!-- Prompt -->
+    <trans-unit id="45d74bdb9de5d4f07a7b7eefac42610a" resname="Prompt">
+      <source>Prompt</source>
+      <target>Prompt</target>
+    </trans-unit>
+    <!-- Asks for -->
+    <trans-unit id="ec1ee597af7d894dd88170aff37de9d5" resname="Asks for">
+      <source>Asks for</source>
+      <target>Asks for</target>
+    </trans-unit>
+    <!-- nothing -->
+    <trans-unit id="3e47b75000b0924b6c9ba5759a7cf15d" resname="nothing">
+      <source>nothing</source>
+      <target>nothing</target>
+    </trans-unit>
+    <!-- Prompts %from% to %to% of %total% -->
+    <trans-unit id="68412adae2476c612a6ef2b47cbca01c" resname="Prompts %from% to %to% of %total%">
+      <source>Prompts %from% to %to% of %total%</source>
+      <target>Prompts %from% to %to% of %total%</target>
+    </trans-unit>
+    <!-- No prompt is available on this shop. -->
+    <trans-unit id="704666a7758fe1ff4d5909eadb4e615f" resname="No prompt is available on this shop.">
+      <source>No prompt is available on this shop.</source>
+      <target>No prompt is available on this shop.</target>
+    </trans-unit>
+    <!-- A prompt is a guided task you start yourself from your assistant menu. It costs nothing until you pick it, then hands the assistant step-by-step instructions for using the tools. A prompt published by another module puts that module words into your assistant, which is why you can switch each one off here. -->
+    <trans-unit id="a4663ffd37ee397196dba2c154724be7" resname="A prompt is a guided task you start yourself from your assistant menu. It costs nothing until you pick it, then hands the assistant step-by-step instructions for using the tools. A prompt published by another module puts that module words into your assistant, which is why you can switch each one off here.">
+      <source>A prompt is a guided task you start yourself from your assistant menu. It costs nothing until you pick it, then hands the assistant step-by-step instructions for using the tools. A prompt published by another module puts that module words into your assistant, which is why you can switch each one off here.</source>
+      <target>A prompt is a guided task you start yourself from your assistant menu. It costs nothing until you pick it, then hands the assistant step-by-step instructions for using the tools. A prompt published by another module puts that module words into your assistant, which is why you can switch each one off here.</target>
+    </trans-unit>
+    <!-- Check the shop connection -->
+    <trans-unit id="600ac574dbf4e7d18c54e8db5b8f113d" resname="Check the shop connection">
+      <source>Check the shop connection</source>
+      <target>Check the shop connection</target>
+    </trans-unit>
+    <!-- Find an order -->
+    <trans-unit id="645d3b7a5493a892faab7a56ee03cbf2" resname="Find an order">
+      <source>Find an order</source>
+      <target>Find an order</target>
+    </trans-unit>
+    <!-- Change an order status -->
+    <trans-unit id="12da55f293fda51d7c5d24939c60f7c0" resname="Change an order status">
+      <source>Change an order status</source>
+      <target>Change an order status</target>
+    </trans-unit>
+    <!-- Check that the connection to the PrestaShop shop works, and report what it reached - which shop, which account, which language and currency the answers are in. -->
+    <trans-unit id="911ba9aa6db02bd840aa72147dc37333" resname="Check that the connection to the PrestaShop shop works, and report what it reached - which shop, which account, which language and currency the answers are in.">
+      <source>Check that the connection to the PrestaShop shop works, and report what it reached - which shop, which account, which language and currency the answers are in.</source>
+      <target>Check that the connection to the PrestaShop shop works, and report what it reached - which shop, which account, which language and currency the answers are in.</target>
+    </trans-unit>
+    <!-- Find orders in the PrestaShop shop and read one in full - search by reference, customer, date, status or amount, then open the order that matters. -->
+    <trans-unit id="1fc3d3ac15b38c077cde0357b5d07e85" resname="Find orders in the PrestaShop shop and read one in full - search by reference, customer, date, status or amount, then open the order that matters.">
+      <source>Find orders in the PrestaShop shop and read one in full - search by reference, customer, date, status or amount, then open the order that matters.</source>
+      <target>Find orders in the PrestaShop shop and read one in full - search by reference, customer, date, status or amount, then open the order that matters.</target>
+    </trans-unit>
+    <!-- Change the status of an order in the PrestaShop shop, one order at a time, with the checks that keep a customer from being emailed twice. -->
+    <trans-unit id="cf3facc41eb8240844526892a7f7570b" resname="Change the status of an order in the PrestaShop shop, one order at a time, with the checks that keep a customer from being emailed twice.">
+      <source>Change the status of an order in the PrestaShop shop, one order at a time, with the checks that keep a customer from being emailed twice.</source>
+      <target>Change the status of an order in the PrestaShop shop, one order at a time, with the checks that keep a customer from being emailed twice.</target>
+    </trans-unit>
+    <!-- Order reference, number or customer name -->
+    <trans-unit id="257b671f0fd599af83977738ac7c7bea" resname="Order reference, number or customer name">
+      <source>Order reference, number or customer name</source>
+      <target>Order reference, number or customer name</target>
+    </trans-unit>
+    <!-- Reference or number of the order -->
+    <trans-unit id="3142ba95ec9825be0e098512909ab0a8" resname="Reference or number of the order">
+      <source>Reference or number of the order</source>
+      <target>Reference or number of the order</target>
+    </trans-unit>
+    <!-- Status to set -->
+    <trans-unit id="7ba9173fdf75ebd71504c07fbbcb944f" resname="Status to set">
+      <source>Status to set</source>
+      <target>Status to set</target>
+    </trans-unit>
+    <!-- Send a file to your assistant -->
+    <trans-unit id="bc445a0e56169dfb1aa11611f145dff9" resname="Send a file to your assistant">
+      <source>Send a file to your assistant</source>
+      <target>Send a file to your assistant</target>
+    </trans-unit>
+    <!-- Your assistant is asking for a file. It is sent straight to your shop - the assistant never sees it. -->
+    <trans-unit id="25b24920c234f5507023f6193069d422" resname="Your assistant is asking for a file. It is sent straight to your shop - the assistant never sees it.">
+      <source>Your assistant is asking for a file. It is sent straight to your shop - the assistant never sees it.</source>
+      <target>Your assistant is asking for a file. It is sent straight to your shop - the assistant never sees it.</target>
+    </trans-unit>
+    <!-- What for -->
+    <trans-unit id="eab093615d72cd7f5aa2f4cb8308497e" resname="What for">
+      <source>What for</source>
+      <target>What for</target>
+    </trans-unit>
+    <!-- Asked by -->
+    <trans-unit id="7427134b928911ff01f0e20014f6dd37" resname="Asked by">
+      <source>Asked by</source>
+      <target>Asked by</target>
+    </trans-unit>
+    <!-- Accepted -->
+    <trans-unit id="382ab522931673c11e398ead1b7b1678" resname="Accepted">
+      <source>Accepted</source>
+      <target>Accepted</target>
+    </trans-unit>
+    <!-- up to %count% MB -->
+    <trans-unit id="1596d5d2951a827b7b98389ae43eaa22" resname="up to %count% MB">
+      <source>up to %count% MB</source>
+      <target>up to %count% MB</target>
+    </trans-unit>
+    <!-- One file, once. The request is dropped after fifteen minutes. -->
+    <trans-unit id="7fd9cd014441d44d4bb7874872878442" resname="One file, once. The request is dropped after fifteen minutes.">
+      <source>One file, once. The request is dropped after fifteen minutes.</source>
+      <target>One file, once. The request is dropped after fifteen minutes.</target>
+    </trans-unit>
+    <!-- Send nothing -->
+    <trans-unit id="b7ee910906bb19877fef4b79ff45fb5e" resname="Send nothing">
+      <source>Send nothing</source>
+      <target>Send nothing</target>
+    </trans-unit>
+    <!-- Send this file -->
+    <trans-unit id="a9aa86fde9bd999c07d7412738bc5e28" resname="Send this file">
+      <source>Send this file</source>
+      <target>Send this file</target>
+    </trans-unit>
+    <!-- File received -->
+    <trans-unit id="d4d6037495c0c704a102d9e56763fd5b" resname="File received">
+      <source>File received</source>
+      <target>File received</target>
+    </trans-unit>
+    <!-- The file has been received. Go back to your assistant and let it carry on. -->
+    <trans-unit id="47a0248667b14e6b7a1a49a400e02579" resname="The file has been received. Go back to your assistant and let it carry on.">
+      <source>The file has been received. Go back to your assistant and let it carry on.</source>
+      <target>The file has been received. Go back to your assistant and let it carry on.</target>
+    </trans-unit>
+    <!-- Nothing was sent -->
+    <trans-unit id="163162e951c867b77b14e02563e09c4e" resname="Nothing was sent">
+      <source>Nothing was sent</source>
+      <target>Nothing was sent</target>
+    </trans-unit>
+    <!-- No file was sent. Go back to your assistant and tell it you would rather not. -->
+    <trans-unit id="13d99a357b811adcdb83567f2f314115" resname="No file was sent. Go back to your assistant and tell it you would rather not.">
+      <source>No file was sent. Go back to your assistant and tell it you would rather not.</source>
+      <target>No file was sent. Go back to your assistant and tell it you would rather not.</target>
+    </trans-unit>
+    <!-- Nothing to send -->
+    <trans-unit id="b901691b8f1b5c9a4392cbd0a7f3ccac" resname="Nothing to send">
+      <source>Nothing to send</source>
+      <target>Nothing to send</target>
+    </trans-unit>
+    <!-- This request has expired, has already been answered, or was not meant for your account. Ask your assistant again. -->
+    <trans-unit id="a4da50629ced136867a190990b3db4a8" resname="This request has expired, has already been answered, or was not meant for your account. Ask your assistant again.">
+      <source>This request has expired, has already been answered, or was not meant for your account. Ask your assistant again.</source>
+      <target>This request has expired, has already been answered, or was not meant for your account. Ask your assistant again.</target>
+    </trans-unit>
+    <!-- No file arrived. Choose one and send it again. -->
+    <trans-unit id="e55e74e06c620c04b8926242547f7316" resname="No file arrived. Choose one and send it again.">
+      <source>No file arrived. Choose one and send it again.</source>
+      <target>No file arrived. Choose one and send it again.</target>
+    </trans-unit>
+    <!-- That file is too large. -->
+    <trans-unit id="711257f213e6cab6a8b1b9c999abdbc2" resname="That file is too large.">
+      <source>That file is too large.</source>
+      <target>That file is too large.</target>
+    </trans-unit>
+    <!-- That file is not one of the accepted kinds. -->
+    <trans-unit id="5f776023ec0ae1b0b1033c3641459923" resname="That file is not one of the accepted kinds.">
+      <source>That file is not one of the accepted kinds.</source>
+      <target>That file is not one of the accepted kinds.</target>
+    </trans-unit>
+    <!-- The file could not be stored. Check that the shop can write inside its modules folder. -->
+    <trans-unit id="001b5ce52c2089287cb3d1b38eac2d8f" resname="The file could not be stored. Check that the shop can write inside its modules folder.">
+      <source>The file could not be stored. Check that the shop can write inside its modules folder.</source>
+      <target>The file could not be stored. Check that the shop can write inside its modules folder.</target>
+    </trans-unit>
+    <!-- Your account is not attached to this shop, so it cannot connect an assistant to it. Ask an administrator to give you access to that shop. -->
+    <trans-unit id="8cfb8d7443fa3604825dc8b0309ddc49" resname="Your account is not attached to this shop, so it cannot connect an assistant to it. Ask an administrator to give you access to that shop.">
+      <source>Your account is not attached to this shop, so it cannot connect an assistant to it. Ask an administrator to give you access to that shop.</source>
+      <target>Your account is not attached to this shop, so it cannot connect an assistant to it. Ask an administrator to give you access to that shop.</target>
+    </trans-unit>
+    <!-- Send files to your assistant -->
+    <trans-unit id="37e86bd2ba14b2401bcab0413f5eaf85" resname="Send files to your assistant">
+      <source>Send files to your assistant</source>
+      <target>Send files to your assistant</target>
+    </trans-unit>
+    <!-- up to %count% files -->
+    <trans-unit id="695188a06c67fc96db9cc8c9f31ccf38" resname="up to %count% files">
+      <source>up to %count% files</source>
+      <target>up to %count% files</target>
+    </trans-unit>
+    <!-- %size% each -->
+    <trans-unit id="3079b4a2221ee92b48bb1d791b627528" resname="%size% each">
+      <source>%size% each</source>
+      <target>%size% each</target>
+    </trans-unit>
+    <!-- Already sent -->
+    <trans-unit id="074f5b334cdcf7ba70486116147866b8" resname="Already sent">
+      <source>Already sent</source>
+      <target>Already sent</target>
+    </trans-unit>
+    <!-- Remove -->
+    <trans-unit id="1063e38cb53d94d386f21227fcd84717" resname="Remove">
+      <source>Remove</source>
+      <target>Remove</target>
+    </trans-unit>
+    <!-- Add this file -->
+    <trans-unit id="e216ef94caffb6eea12cbaf5af0ab502" resname="Add this file">
+      <source>Add this file</source>
+      <target>Add this file</target>
+    </trans-unit>
+    <!-- You have sent everything that was asked for. -->
+    <trans-unit id="86e590c927a2842caa811becdb792f2c" resname="You have sent everything that was asked for.">
+      <source>You have sent everything that was asked for.</source>
+      <target>You have sent everything that was asked for.</target>
+    </trans-unit>
+    <!-- The request is dropped after fifteen minutes, and each file can only be collected once. -->
+    <trans-unit id="d94475c7d43a51043548b332e0a35ed7" resname="The request is dropped after fifteen minutes, and each file can only be collected once.">
+      <source>The request is dropped after fifteen minutes, and each file can only be collected once.</source>
+      <target>The request is dropped after fifteen minutes, and each file can only be collected once.</target>
+    </trans-unit>
+    <!-- You have already sent as many files as were asked for. -->
+    <trans-unit id="1942c0001bd5fd5cd40c1ce9287ebfed" resname="You have already sent as many files as were asked for.">
+      <source>You have already sent as many files as were asked for.</source>
+      <target>You have already sent as many files as were asked for.</target>
+    </trans-unit>
+    <!-- Drop your files here, or click to choose them -->
+    <trans-unit id="c8d5d338f573dbec0d10aa981d97717c" resname="Drop your files here, or click to choose them">
+      <source>Drop your files here, or click to choose them</source>
+      <target>Drop your files here, or click to choose them</target>
+    </trans-unit>
+    <!-- Drop your file here, or click to choose it -->
+    <trans-unit id="dd8db7abacf307f5283ec5bebc0339bb" resname="Drop your file here, or click to choose it">
+      <source>Drop your file here, or click to choose it</source>
+      <target>Drop your file here, or click to choose it</target>
+    </trans-unit>
+    <!-- %count% more can still be sent -->
+    <trans-unit id="561cebd10fd49a22bea045e6ee23f007" resname="%count% more can still be sent">
+      <source>%count% more can still be sent</source>
+      <target>%count% more can still be sent</target>
+    </trans-unit>
+    <!-- Send -->
+    <trans-unit id="94966d90747b97d1f0f206c98a8b1ac3" resname="Send">
+      <source>Send</source>
+      <target>Send</target>
+    </trans-unit>
+    <!-- %count% files were not accepted. -->
+    <trans-unit id="2b3ae8f231fc8661ae72a0091d64826f" resname="%count% files were not accepted.">
+      <source>%count% files were not accepted.</source>
+      <target>%count% files were not accepted.</target>
+    </trans-unit>
+    <!-- Everything together was too large to send at once. Send fewer files at a time. -->
+    <trans-unit id="066960c42bfdc80c8a74383a6a504750" resname="Everything together was too large to send at once. Send fewer files at a time.">
+      <source>Everything together was too large to send at once. Send fewer files at a time.</source>
+      <target>Everything together was too large to send at once. Send fewer files at a time.</target>
+    </trans-unit>
+    </body>
+  </file>
+</xliff>

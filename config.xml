@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>somcp</name>
+    <displayName><![CDATA[O'So MCP Server]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Lets AI assistants such as Claude, ChatGPT or Cursor connect to this shop, with each employee approving what they may do.]]></description>
+    <author><![CDATA[Novalo]]></author>
+    <tab><![CDATA[administration]]></tab>
+    <confirmUninstall><![CDATA[Uninstalling deletes every connected assistant, approval and token. Assistants connected right now lose their access immediately. Continue?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+    <limited_countries></limited_countries>
+    <need_range>0</need_range>
+</module>
