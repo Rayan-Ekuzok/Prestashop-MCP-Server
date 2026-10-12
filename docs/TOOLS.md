@@ -1213,17 +1213,17 @@ pull request that adds a tool adds it to the prompt of its section, in both
 | `somcp-connection-check` | Diagnostics | written |
 | `somcp-order-lookup` | Orders | written |
 | `somcp-order-status-change` | Orders | written |
-| `somcp-catalogue-manage` | Catalogue | to write |
-| `somcp-stock-check` | Stock | to write |
-| `somcp-customer-lookup` | Customers | to write |
-| `somcp-sales-report` | Statistics | to write |
-| `somcp-content-pages` | Content | to write |
-| `somcp-modules-review` | Modules | to write |
-| `somcp-storefront-menu` | Appearance | to write |
-| `somcp-cache-maintenance` | System | to write |
+| `somcp-catalogue-manage` | Catalogue | to write · [issue #36](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/36) |
+| `somcp-stock-check` | Stock | to write · [issue #37](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/37) |
+| `somcp-customer-lookup` | Customers | to write · [issue #38](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/38) |
+| `somcp-sales-report` | Statistics | to write · [issue #39](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/39) |
+| `somcp-content-pages` | Content | to write · [issue #40](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/40) |
+| `somcp-modules-review` | Modules | to write · [issue #41](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/41) |
+| `somcp-storefront-menu` | Appearance | to write · [issue #42](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/42) |
+| `somcp-cache-maintenance` | System | to write · [issue #43](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/43) |
 
 #### `somcp-catalogue-manage`
-**State**: to write
+**State**: to write · [issue #36](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/36)
 **Section**: Catalogue · **Scope**: `mcp.catalog.read` · **Permission**: `view` on `AdminProducts`
 
 **Title** - Manage products
@@ -1237,7 +1237,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
 
 #### `somcp-stock-check`
-**State**: to write
+**State**: to write · [issue #37](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/37)
 **Section**: Stock · **Scope**: `mcp.stock.read` · **Permission**: `view` on `AdminStockManagement`
 
 **Title** - Check and adjust stock
@@ -1251,7 +1251,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - start from `somcp_list_low_stock` or a named product; a quantity is per combination when the product has some; a `delta` moves stock and is never retried: on a lost answer, read `somcp_get_stock` first.
 
 #### `somcp-customer-lookup`
-**State**: to write
+**State**: to write · [issue #38](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/38)
 **Section**: Customers · **Scope**: `mcp.customers.read` · **Permission**: `view` on `AdminCustomers`
 
 **Title** - Find a customer
@@ -1265,7 +1265,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - search, then read the one customer the merchant means; the email is more reliable than the name; personal data stays in the answer it was asked for; no password ever goes through the conversation.
 
 #### `somcp-sales-report`
-**State**: to write
+**State**: to write · [issue #39](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/39)
 **Section**: Statistics · **Scope**: `mcp.stats.read` · **Permission**: `view` on `AdminStats`
 
 **Title** - Sales report
@@ -1279,7 +1279,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - turn the period into two dates in the shop's time zone and say which; figures count valid orders only; compare with the previous period when it helps; amounts always with their currency and tax said.
 
 #### `somcp-content-pages`
-**State**: to write
+**State**: to write · [issue #40](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/40)
 **Section**: Content · **Scope**: `mcp.content.read` · **Permission**: `view` on `AdminCmsContent`
 
 **Title** - Read content pages
@@ -1293,7 +1293,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - list, then read the page the merchant means; quote the content rather than paraphrasing it when asked what a page says.
 
 #### `somcp-modules-review`
-**State**: to write
+**State**: to write · [issue #41](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/41)
 **Section**: Modules · **Scope**: `mcp.modules.read` · **Permission**: `view` on `AdminModules`
 
 **Title** - Review modules
@@ -1307,7 +1307,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - read before acting; name the module and what it does before installing or switching it; one module per call; a payment or carrier module switched off stops orders or deliveries, say so before doing it.
 
 #### `somcp-storefront-menu`
-**State**: to write
+**State**: to write · [issue #42](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/42)
 **Section**: Appearance · **Scope**: `mcp.appearance.read` · **Permission**: `view` on `AdminThemes`
 
 **Title** - Storefront menu and layout
@@ -1321,7 +1321,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - read the menu or the theme first; take category and page identifiers from their list tools; one change per call.
 
 #### `somcp-cache-maintenance`
-**State**: to write
+**State**: to write · [issue #43](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/43)
 **Section**: System · **Scope**: `mcp.system.read` · **Permission**: `view` on `AdminPerformance`
 
 **Title** - Cache maintenance
