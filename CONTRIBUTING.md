@@ -11,6 +11,13 @@ on the shape before you spend an evening on it. For a new tool, use the
 
 By taking part you agree to the [code of conduct](CODE_OF_CONDUCT.md).
 
+Before your first pull request is merged, you sign the
+[Contributor License Agreement](CLA.md). You keep the copyright on what you
+write; the agreement lets the maintainer distribute it under the project's
+license, and under another license, commercial included, if the project needs
+it later. The CLA Assistant bot posts the link on your pull request: you sign
+once, in a few seconds, with your GitHub account.
+
 ---
 
 ## Set up
