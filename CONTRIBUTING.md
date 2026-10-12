@@ -56,6 +56,9 @@ _PS_ROOT_DIR_=/path/to/prestashop dev/tools/vendor/bin/phpstan analyse -c phpsta
 
 # Every visible string in the four languages
 php .github/scripts/check-translations.php .
+
+# Every tool in the README, its entry, its scope, the CHANGELOG and a prompt
+php .github/scripts/check-tools.php .
 ```
 
 CI also lints every file on PHP 8.1 to 8.4 and compiles `config/services.yml`
@@ -83,20 +86,65 @@ PrestaShop 9 class once took the whole PrestaShop 8 back office down.
 - **The shop comes from the token**, never from an argument. The employee's
   rights are checked on every call.
 
-## Tools
+## Writing a tool, from A to Z
 
-A tool is described in [docs/TOOLS.md](docs/TOOLS.md) before it is written:
-open a pull request with the entry alone if you want feedback first. It follows
-the [shared conventions](docs/TOOLS.md#shared-conventions), is tied to the back
-office page where a merchant does the same thing by hand, and is one file in
-`tools/`.
+Every tool to write has an entry in [docs/TOOLS.md](docs/TOOLS.md) and an
+issue labelled `new tool`, which repeats these steps with that tool's own
+names. The entry is the specification: follow it, and if it turns out wrong,
+say so in the issue before writing something else.
 
-Reads first. A write changes one object per call, refuses a call that would
-change nothing (that is what stops a repeated call from mailing a customer
-twice), and goes through PrestaShop's own objects so every hook fires.
+1. **Take the issue.** Comment on it so nobody else starts the same tool. Read
+   the [shared conventions](docs/TOOLS.md#shared-conventions) and the entry.
+2. **Branch.** Fork the repository and create a branch named after the tool,
+   for example `tool/somcp_get_stock`.
+3. **Write the tool**, one file in `tools/`: `somcp_get_stock` is
+   `tools/SomcpToolGetStock.php`, a class of that name with a static
+   `define()` returning a `SomcpTool`, and a `handle()` doing the work. Copy
+   the shape of `tools/SomcpToolListOrderStatuses.php`. The permission is the
+   one in the entry, through `SomcpTool::acts()`. Reads first; a write changes
+   one object per call, refuses a call that would change nothing, says in its
+   description that it is not to be retried and which tool to read instead,
+   and goes through PrestaShop's own objects so every hook fires.
+4. **Add the scope** if the entry names one `SomcpScope` does not declare yet
+   (the first tool of a section does): a constant, its place in `core()`, and
+   its label in `describe()`, which the merchant reads on the consent screen.
+5. **Translate** every text a merchant sees - the tool's title, the scope
+   label, any message - in `dev/translations.py`, in the four languages, then
+   run `python3 dev/translations.py`. The tool's description and its schema stay
+   in English: the model reads them, not the merchant.
+6. **Document the tool** in the same pull request:
+   - its entry in `docs/TOOLS.md` says **written**, and is corrected wherever
+     the code had to differ;
+   - a row in the **Tools** table of `README.md`;
+   - a line in `CHANGELOG.md`, under 1.0.0;
+   - its name in the **prompt of its section** (see below), in `prompt.json`
+     and in the guide `prompt.md`.
+7. **Test** on PrestaShop 8 and 9, multistore included if you can, with a real
+   MCP client: the call that should work, the account without the permission,
+   and for a write, the call that changes nothing.
+8. **Run the checks** listed above, then open the pull request with
+   `Closes #<issue>` in its description. Sign the CLA when the bot asks.
+9. **Review.** CI must be green. The maintainer reviews, may build a test zip
+   of your pull request, tries it on a test shop, and merges.
+
+CI checks step 6 for you: a tool missing from the README, still marked "to
+write", without its scope, its CHANGELOG line or a prompt fails the build.
 
 Tools for your own module do not belong here: publish them from your module,
 see [docs/EXTENDING.md](docs/EXTENDING.md).
+
+## Writing a prompt
+
+There is one prompt per section, specified at the end of
+[docs/TOOLS.md](docs/TOOLS.md#prompts) with an issue labelled `new prompt`. A
+prompt is a folder in `prompts/` named after it, holding `prompt.json` (title,
+description, arguments, scopes, permission, tools) and `prompt.md`, the guide
+the assistant reads. Copy `prompts/somcp-order-lookup/`.
+
+A prompt can only list tools that exist, so it is written in the pull request
+of the first tool of its section, and each later tool of that section adds
+itself to it. Its title, description and argument descriptions are translated
+like any other text.
 
 ## Translations
 

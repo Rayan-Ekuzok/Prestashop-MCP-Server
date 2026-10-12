@@ -162,6 +162,18 @@ jobs:
           fi
           echo "| Translations | $(tail -1 /tmp/tr.txt) |" >> "$GITHUB_STEP_SUMMARY"
 
+      # A tool missing from the README, its entry, its scope, the CHANGELOG or
+      # every prompt would ship undocumented.
+      - name: Tools and prompts
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          if ! php .github/scripts/check-tools.php . > /tmp/tools.txt 2>&1; then
+            echo "| Tools and prompts | **$(tail -1 /tmp/tools.txt)** |" >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/tools.txt
+            exit 1
+          fi
+          echo "| Tools and prompts | $(tail -1 /tmp/tools.txt) |" >> "$GITHUB_STEP_SUMMARY"
+
       # --prefix is what makes the archive installable: PrestaShop takes the
       # module's technical name from the folder inside the zip.
       # export-ignore in .gitattributes keeps the repository plumbing out.

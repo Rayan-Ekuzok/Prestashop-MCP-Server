@@ -95,6 +95,19 @@ jobs:
           python3 dev/translations.py > /dev/null
           git diff --exit-code -- translations
 
+  tools:
+    name: Tools and prompts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: none
+      - name: Every tool documented, scoped and in a prompt
+        run: php .github/scripts/check-tools.php .
+
   container:
     name: Symfony container on Symfony ${{ matrix.symfony }}
     runs-on: ubuntu-latest

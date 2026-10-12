@@ -1193,3 +1193,143 @@ How the shop runs: caching.
 **Returns** - `cleared`.
 
 **Notes** - the storefront is slower for a while as the cache rebuilds; the description says so.
+
+---
+
+## Prompts
+
+A prompt is the guide an assistant reads before using the tools of one part of the
+shop. There is one per section, so a merchant starts from the menu of their
+assistant with the right instructions loaded. How a prompt is built - `prompt.md`
+plus `prompt.json`, filtering, arguments - is in the shared conventions above and in
+[EXTENDING.md](EXTENDING.md).
+
+Every tool the module ships belongs to at least one prompt, and CI checks it: a
+pull request that adds a tool adds it to the prompt of its section, in both
+`prompt.json` and the guide.
+
+| Prompt | Section | State |
+|---|---|---|
+| `somcp-connection-check` | Diagnostics | written |
+| `somcp-order-lookup` | Orders | written |
+| `somcp-order-status-change` | Orders | written |
+| `somcp-catalogue-manage` | Catalogue | to write |
+| `somcp-stock-check` | Stock | to write |
+| `somcp-customer-lookup` | Customers | to write |
+| `somcp-sales-report` | Statistics | to write |
+| `somcp-content-pages` | Content | to write |
+| `somcp-modules-review` | Modules | to write |
+| `somcp-storefront-menu` | Appearance | to write |
+| `somcp-cache-maintenance` | System | to write |
+
+#### `somcp-catalogue-manage`
+**State**: to write
+**Section**: Catalogue · **Scope**: `mcp.catalog.read` · **Permission**: `view` on `AdminProducts`
+
+**Title** - Manage products
+
+**Description** - Find, read and change products and categories in the PrestaShop shop, one at a time, without guessing an identifier.
+
+**Arguments** - `product` (name, reference or ean13 of a product).
+
+**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_price`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_create_category`, `somcp_update_category`, `somcp_delete_category`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+
+**The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
+
+#### `somcp-stock-check`
+**State**: to write
+**Section**: Stock · **Scope**: `mcp.stock.read` · **Permission**: `view` on `AdminStockManagement`
+
+**Title** - Check and adjust stock
+
+**Description** - See what runs low in the PrestaShop shop and set quantities, one product or combination at a time.
+
+**Arguments** - `threshold` (quantity at or under which a product counts as low).
+
+**Tools** - `somcp_ping`, `somcp_list_low_stock`, `somcp_get_stock`, `somcp_search_products`, `somcp_set_stock_quantity`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+
+**The guide must say** - start from `somcp_list_low_stock` or a named product; a quantity is per combination when the product has some; a `delta` moves stock and is never retried: on a lost answer, read `somcp_get_stock` first.
+
+#### `somcp-customer-lookup`
+**State**: to write
+**Section**: Customers · **Scope**: `mcp.customers.read` · **Permission**: `view` on `AdminCustomers`
+
+**Title** - Find a customer
+
+**Description** - Find a customer of the PrestaShop shop, read their account and orders, and update it when asked.
+
+**Arguments** - `customer` (name, email or company).
+
+**Tools** - `somcp_ping`, `somcp_search_customers`, `somcp_get_customer`, `somcp_search_orders`, `somcp_create_customer`, `somcp_update_customer`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+
+**The guide must say** - search, then read the one customer the merchant means; the email is more reliable than the name; personal data stays in the answer it was asked for; no password ever goes through the conversation.
+
+#### `somcp-sales-report`
+**State**: to write
+**Section**: Statistics · **Scope**: `mcp.stats.read` · **Permission**: `view` on `AdminStats`
+
+**Title** - Sales report
+
+**Description** - Report the PrestaShop shop's sales over a period: revenue, orders, average basket, best sellers.
+
+**Arguments** - `period` (period to report on, for example last month).
+
+**Tools** - `somcp_ping`, `somcp_get_sales_summary`, `somcp_list_best_sellers`, `somcp_search_orders`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+
+**The guide must say** - turn the period into two dates in the shop's time zone and say which; figures count valid orders only; compare with the previous period when it helps; amounts always with their currency and tax said.
+
+#### `somcp-content-pages`
+**State**: to write
+**Section**: Content · **Scope**: `mcp.content.read` · **Permission**: `view` on `AdminCmsContent`
+
+**Title** - Read content pages
+
+**Description** - List and read the CMS pages of the PrestaShop shop.
+
+**Arguments** - `page` (title of a page).
+
+**Tools** - `somcp_ping`, `somcp_list_cms_pages`, `somcp_get_cms_page`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+
+**The guide must say** - list, then read the page the merchant means; quote the content rather than paraphrasing it when asked what a page says.
+
+#### `somcp-modules-review`
+**State**: to write
+**Section**: Modules · **Scope**: `mcp.modules.read` · **Permission**: `view` on `AdminModules`
+
+**Title** - Review modules
+
+**Description** - See which modules the PrestaShop shop runs, their version and state, and install or switch one when asked.
+
+**Arguments** - `module` (name of a module).
+
+**Tools** - `somcp_ping`, `somcp_list_modules`, `somcp_get_module`, `somcp_install_module`, `somcp_set_module_active`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+
+**The guide must say** - read before acting; name the module and what it does before installing or switching it; one module per call; a payment or carrier module switched off stops orders or deliveries, say so before doing it.
+
+#### `somcp-storefront-menu`
+**State**: to write
+**Section**: Appearance · **Scope**: `mcp.appearance.read` · **Permission**: `view` on `AdminThemes`
+
+**Title** - Storefront menu and layout
+
+**Description** - Read and change the main menu of the PrestaShop storefront and the page layouts of its theme.
+
+**Arguments** - none.
+
+**Tools** - `somcp_ping`, `somcp_list_menu_links`, `somcp_add_menu_link`, `somcp_update_menu_link`, `somcp_get_theme`, `somcp_update_theme_setting`, `somcp_list_categories`, `somcp_list_cms_pages`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+
+**The guide must say** - read the menu or the theme first; take category and page identifiers from their list tools; one change per call.
+
+#### `somcp-cache-maintenance`
+**State**: to write
+**Section**: System · **Scope**: `mcp.system.read` · **Permission**: `view` on `AdminPerformance`
+
+**Title** - Cache maintenance
+
+**Description** - Check how the PrestaShop shop caches and clear the cache when changes do not show.
+
+**Arguments** - none.
+
+**Tools** - `somcp_ping`, `somcp_get_cache_status`, `somcp_clear_cache`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+
+**The guide must say** - read the status first; clearing the cache slows the storefront while it rebuilds, so say so and clear it once, not as a reflex.
