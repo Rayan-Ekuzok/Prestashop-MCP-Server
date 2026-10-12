@@ -51,4 +51,5 @@ Include what you can of:
 
 ## Supported versions
 
-The module is in development at version 1.0.0. Fixes go to the main branch.
+Only the latest release is supported. Fixes go to the main branch and ship in
+the next release.

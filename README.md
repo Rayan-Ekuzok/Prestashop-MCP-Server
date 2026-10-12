@@ -100,8 +100,10 @@ and changing an order status. Details of every tool are in
 A local shop needs a public HTTPS address for an MCP client to reach it: use a
 tunnel such as `cloudflared` or `ngrok` and set the shop's domain to it.
 
-The module is versioned 1.0.0 while it is being built. A change to the database
-schema means uninstalling and reinstalling; there are no upgrade scripts yet.
+Versions are the releases published on GitHub. Between two releases, `main` may
+change the database schema; the upgrade for existing shops is written when the
+next release is published, so on a development shop, reinstall the module when a
+pull request says its schema changed.
 
 ## Connect a client
 
@@ -151,7 +153,8 @@ Found a vulnerability? Please do not open an issue: see [SECURITY.md](SECURITY.m
   own module, with a complete [example module](docs/example/mymodule).
 - [docs/TOOLS.md](docs/TOOLS.md): the conventions every tool follows, and each
   tool in detail.
-- [CHANGELOG.md](CHANGELOG.md): what is in 1.0.0.
+- [CHANGELOG.md](CHANGELOG.md): what each release changed, and what waits
+  under Unreleased for the next one.
 
 ## Where to help
 

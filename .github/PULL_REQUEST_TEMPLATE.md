@@ -15,6 +15,7 @@
 - [ ] CI passes.
 - [ ] A new or changed tool: its entry in `docs/TOOLS.md` says written, it has a row in the Tools table of `README.md`, a line in `CHANGELOG.md`, and its name in the prompt of its section ([from A to Z](https://github.com/novalo-dev/Prestashop-MCP-Server/blob/main/CONTRIBUTING.md#writing-a-tool-from-a-to-z)).
 - [ ] Every string a merchant can see goes through the translation system and is in `dev/translations.py`, in all four languages, with the catalogues regenerated.
-- [ ] `CHANGELOG.md` is updated, under 1.0.0.
+- [ ] `CHANGELOG.md` is updated, under `## Unreleased`. The version number is left alone.
+- [ ] If the database schema changes, it is said in the description above.
 - [ ] No token, code or secret is written to the log or to an error message.
 - [ ] Comments say why, not what, and are in English.

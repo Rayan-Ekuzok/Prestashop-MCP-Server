@@ -3,15 +3,18 @@
 All notable changes to the O'So MCP Server module are documented in this file.
 The format is based on Keep a Changelog.
 
-The module is under development and has one release. Everything written while it
-is being built goes there, grouped by what it touches rather than by the day it
-was written. Sections are:
+What is merged but not released yet waits under **Unreleased**, and becomes the
+next version's section when it is published. Within a version, entries are
+grouped by what they touch rather than by the day they were written. Sections
+are:
 
 - **Added** - new features or capabilities.
 - **Changed** - changes to how an existing feature behaves.
 - **Fixed** - bug fixes.
 - **Security** - changes that affect the security of the shop or of the OAuth flow.
 - **Removed** - features or options that were taken out.
+
+## Unreleased
 
 ## 1.0.0 - Initial version
 

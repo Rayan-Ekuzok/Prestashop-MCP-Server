@@ -116,7 +116,7 @@ say so in the issue before writing something else.
    - its entry in `docs/TOOLS.md` says **written**, and is corrected wherever
      the code had to differ;
    - a row in the **Tools** table of `README.md`;
-   - a line in `CHANGELOG.md`, under 1.0.0;
+   - a line in `CHANGELOG.md`, under `## Unreleased`;
    - its name in the **prompt of its section** (see below), in `prompt.json`
      and in the guide `prompt.md`.
 7. **Test** on PrestaShop 8 and 9, multistore included if you can, with a real
@@ -165,16 +165,18 @@ the pull request.
 
 A new language is a new column in the table and a new entry in `LANGS`.
 
-## Version 1.0.0
+## Versions and the CHANGELOG
 
-The module stays at 1.0.0 until its first release on the Addons marketplace.
-So, for now:
-
-- no version bump and no file in `upgrade/`;
-- a change to the database schema goes in `sql/install.sql` and
-  `sql/uninstall.sql` only (testers reinstall);
-- `CHANGELOG.md` has one entry, `1.0.0 - Initial version`: add your change in
-  the section it belongs to.
+- Every change a merchant or a developer would notice gets a line in
+  `CHANGELOG.md`, under `## Unreleased`, in the part it belongs to: Added,
+  Changed, Fixed, Security or Removed.
+- Never change the version number in `config.xml` or `somcp.php`, and never add
+  a file in `upgrade/`. The maintainer picks the number and writes the upgrade
+  when a release is published.
+- A change to the database schema goes in `sql/install.sql` and
+  `sql/uninstall.sql`, and the pull request says so in its description, so the
+  upgrade for shops already running the module is not forgotten at release
+  time. On your test shop, reinstall the module.
 
 ---
 
