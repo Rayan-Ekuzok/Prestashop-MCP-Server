@@ -65,7 +65,7 @@ jobs:
           SHA=$(git rev-parse --short HEAD)
           # The commit is in the name: every build says 1.0.0 until the next
           # version is prepared, so the number alone would not say what is inside.
-          LABEL=$(echo "${{ steps.ref.outputs.label }}" | tr -c 'A-Za-z0-9._-' '-')
+          LABEL=$(printf %s "${{ steps.ref.outputs.label }}" | tr -c 'A-Za-z0-9._-' '-')
           echo "version=$V" >> "$GITHUB_OUTPUT"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "artifact=OSo-MCP-Server-$V-$LABEL-$SHA" >> "$GITHUB_OUTPUT"
