@@ -1,0 +1,150 @@
+name: Build for Testing
+
+# Manual only. Hands back an installable zip of the module, to try it on a test
+# shop: main as it stands, any branch, or a pull request by its number - which
+# is how a contribution is tried before it is merged.
+#
+# It publishes nothing, tags nothing and touches no release. The checks are
+# reported, never enforced: the CI workflow is the one that blocks a merge, and
+# a test build must not stand between the maintainer and a shop.
+on:
+  workflow_dispatch:
+    inputs:
+      pull_request:
+        description: 'Pull request number to build (leave empty for the branch picked above)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pick the code to build
+        id: ref
+        env:
+          PR: ${{ inputs.pull_request }}
+        run: |
+          # Validated as a number before it reaches a ref: it is typed by hand.
+          if [ -n "$PR" ]; then
+            if ! [[ "$PR" =~ ^[0-9]+$ ]]; then
+              echo "::error::'$PR' is not a pull request number"; exit 1
+            fi
+            echo "ref=refs/pull/$PR/head" >> "$GITHUB_OUTPUT"
+            echo "label=pr$PR" >> "$GITHUB_OUTPUT"
+            echo "what=pull request #$PR" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${{ github.ref }}" >> "$GITHUB_OUTPUT"
+            echo "label=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+            echo "what=\`${{ github.ref_name }}\`" >> "$GITHUB_OUTPUT"
+          fi
+
+      # The pull request's code is only archived and linted here, never run:
+      # php -l parses without executing, and the token can read and nothing more.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.ref.outputs.ref }}
+          persist-credentials: false
+
+      # The check script is taken from main, not from the code under test: a
+      # pull request could otherwise rewrite the script that judges it, and
+      # that script is PHP the runner executes.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: .trusted
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+
+      - name: Name the build
+        id: name
+        run: |
+          V=$(sed -n 's:.*<version><!\[CDATA\[\(.*\)\]\]></version>.*:\1:p' config.xml)
+          SHA=$(git rev-parse --short HEAD)
+          # The commit is in the name: every build says 1.0.0 until the next
+          # version is prepared, so the number alone would not say what is inside.
+          LABEL=$(echo "${{ steps.ref.outputs.label }}" | tr -c 'A-Za-z0-9._-' '-')
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "artifact=OSo-MCP-Server-$V-$LABEL-$SHA" >> "$GITHUB_OUTPUT"
+
+      # Laid out under build/ so the artifact carries the somcp folder itself:
+      # GitHub takes the common parent of what it is given as the root of the
+      # zip, and PrestaShop reads the module's technical name from that folder.
+      - name: Lay out the module
+        run: |
+          mkdir -p build
+          git archive --format=tar --prefix=somcp/ HEAD | tar -x -C build
+          echo "$(find build -type f | wc -l) files laid out"
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: none
+
+      - name: Check, without blocking
+        continue-on-error: true
+        run: |
+          {
+            echo "## Test build ${{ steps.name.outputs.version }}"
+            echo ""
+            echo "Commit \`${{ steps.name.outputs.sha }}\` of ${{ steps.ref.outputs.what }}."
+            echo ""
+            echo "| Check | Result |"
+            echo "|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          NP=$(find build -name '*.php' | wc -l)
+          if find build -name '*.php' -print0 | xargs -0 -n1 -P4 php -d display_errors=stderr -l > /dev/null 2> /tmp/lint.txt; then
+            echo "| PHP syntax | $NP files, no error |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "| PHP syntax | **errors, see the step log** |" >> "$GITHUB_STEP_SUMMARY"
+            head -20 /tmp/lint.txt
+          fi
+
+          # The same script as the CI, so both say the same thing.
+          if php .trusted/.github/scripts/check-translations.php . > /tmp/tr.txt 2>&1; then
+            echo "| Translations | $(tail -1 /tmp/tr.txt) |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "| Translations | **$(tail -1 /tmp/tr.txt)** |" >> "$GITHUB_STEP_SUMMARY"
+            head -20 /tmp/tr.txt
+          fi
+
+          PHPV=$(sed -n "s/.*\$this->version *= *'\([^']*\)'.*/\1/p" somcp.php | head -1)
+          if [ "$PHPV" = "${{ steps.name.outputs.version }}" ]; then
+            echo "| Version numbers | config.xml and somcp.php both say $PHPV |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "| Version numbers | **config.xml ${{ steps.name.outputs.version }}, somcp.php $PHPV** |" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          MISSING=$(find build/somcp -type d ! -exec test -e '{}/index.php' ';' -print | wc -l)
+          if [ "$MISSING" -eq 0 ]; then
+            echo "| index.php | present in every folder |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "| index.php | **missing in $MISSING folder(s), the Addons validator refuses that** |" >> "$GITHUB_STEP_SUMMARY"
+            find build/somcp -type d ! -exec test -e '{}/index.php' ';' -print
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.name.outputs.artifact }}
+          path: build/
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: How to use it
+        run: |
+          {
+            echo ""
+            echo "### Download"
+            echo ""
+            echo "**${{ steps.name.outputs.artifact }}** sits under **Artifacts** at the bottom"
+            echo "of this page. It holds the \`somcp\` folder, so it installs as it is from"
+            echo "**Modules > Upload a module**. Install it on a test shop, never on a shop in"
+            echo "production."
+            echo ""
+            echo "Nothing was published: no tag, no release. Kept for 14 days."
+          } >> "$GITHUB_STEP_SUMMARY"

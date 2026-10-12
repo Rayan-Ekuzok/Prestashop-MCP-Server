@@ -1,0 +1,252 @@
+name: Build for Release
+
+# Manual only, never triggered by a push or a merge: a release is a decision,
+# and a merge that happens to touch config.xml must not publish one by
+# accident. Only someone with write access to the repository can start it.
+#
+# The version has to be typed when starting the run and must match config.xml,
+# so a click on the wrong button stops at the first step.
+#
+# The tag is created here rather than pushed by hand, with the repository
+# token, so the tag and the release always come together.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish, exactly as in config.xml (for example 1.0.0)'
+        required: true
+
+permissions:
+  contents: write        # create the tag, the release and upload the asset
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # Releases come from main and nothing else: a branch picked by mistake in
+      # the Run workflow menu would otherwise publish unmerged code.
+      - name: Only from main
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            {
+              echo "## Release stopped"
+              echo ""
+              echo "Started on \`${{ github.ref_name }}\`. Releases are built from \`main\` only."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::releases are built from main only"; exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Read the version
+        id: version
+        env:
+          TYPED: ${{ inputs.version }}
+        run: |
+          V=$(sed -n 's:.*<version><!\[CDATA\[\(.*\)\]\]></version>.*:\1:p' config.xml)
+          if [ -z "$V" ]; then
+            echo "## Release stopped" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "No version could be read from \`config.xml\`." >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::no version found in config.xml"; exit 1
+          fi
+          if [ "$TYPED" != "$V" ]; then
+            {
+              echo "## Release stopped"
+              echo ""
+              echo "You typed **$TYPED**, \`config.xml\` says **$V**. Nothing was published."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::typed version $TYPED does not match config.xml $V"; exit 1
+          fi
+          echo "number=$V" >> "$GITHUB_OUTPUT"
+          echo "tag=v$V" >> "$GITHUB_OUTPUT"
+
+      # Publishing again on the same number would mean two different builds
+      # under one version, so the run stops. Not a failure: the summary says so.
+      - name: Stop if this version is already released
+        id: guard
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          V="${{ steps.version.outputs.number }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            {
+              echo "## Nothing to publish"
+              echo ""
+              echo "\`config.xml\` says **$V**, and **$TAG** already exists: that version is out."
+              echo ""
+              echo "To publish a new version, raise the number in \`config.xml\` and"
+              echo "\`somcp.php\`, add its section to the CHANGELOG, then run this again."
+              echo ""
+              echo "| | |"
+              echo "|---|---|"
+              echo "| Released on | $(git log -1 --format=%ad --date=short "$TAG") |"
+              echo "| Commit | \`$(git rev-parse --short "$TAG")\` |"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "## Releasing $V"
+              echo ""
+              echo "| Check | Result |"
+              echo "|---|---|"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # A version that disagrees with itself ships an archive whose number says
+      # one thing and whose module reports another; PrestaShop decides on
+      # upgrades from the latter.
+      - name: config.xml and somcp.php must agree
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          V="${{ steps.version.outputs.number }}"
+          PHP=$(sed -n "s/.*\$this->version *= *'\([^']*\)'.*/\1/p" somcp.php | head -1)
+          if [ "$V" != "$PHP" ]; then
+            echo "| Version numbers | **config.xml $V, somcp.php $PHP: they must match** |" >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::somcp.php says $PHP, config.xml says $V"; exit 1
+          fi
+          echo "| Version numbers | config.xml and somcp.php both say $V |" >> "$GITHUB_STEP_SUMMARY"
+
+      # Publishing while entries still sit under Unreleased would ship changes
+      # that no version number accounts for.
+      - name: The CHANGELOG must carry this version, with nothing left unreleased
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          V="${{ steps.version.outputs.number }}"
+          if ! grep -q "^## $V " CHANGELOG.md; then
+            echo "| CHANGELOG | **no \`## $V ...\` section** |" >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::CHANGELOG.md has no '## $V ...' section"; exit 1
+          fi
+          LEFT=$(awk '/^## Unreleased/{f=1;next} /^## /{f=0} f&&NF' CHANGELOG.md | grep -c . || true)
+          if [ "$LEFT" -gt 0 ]; then
+            echo "| CHANGELOG | **$LEFT line(s) still under Unreleased** |" >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::CHANGELOG.md still has entries under Unreleased"; exit 1
+          fi
+          echo "| CHANGELOG | section $V found, nothing left unreleased |" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: shivammathur/setup-php@v2
+        if: steps.guard.outputs.skip == 'false'
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: none
+
+      - name: PHP syntax
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          N=$(find . -name '*.php' -not -path './.git/*' | wc -l)
+          if ! find . -name '*.php' -not -path './.git/*' -print0 \
+               | xargs -0 -n1 -P4 php -d display_errors=stderr -l > /dev/null 2> /tmp/lint.txt; then
+            echo "| PHP syntax | **errors, see the step log** |" >> "$GITHUB_STEP_SUMMARY"
+            head -20 /tmp/lint.txt
+            exit 1
+          fi
+          echo "| PHP syntax | $N files, no error |" >> "$GITHUB_STEP_SUMMARY"
+
+      # The same script as the CI: every visible string in the four catalogues,
+      # well-formed XML, no duplicate id.
+      - name: Translation catalogues
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          if ! php .github/scripts/check-translations.php . > /tmp/tr.txt 2>&1; then
+            echo "| Translations | **$(tail -1 /tmp/tr.txt)** |" >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/tr.txt
+            exit 1
+          fi
+          echo "| Translations | $(tail -1 /tmp/tr.txt) |" >> "$GITHUB_STEP_SUMMARY"
+
+      # --prefix is what makes the archive installable: PrestaShop takes the
+      # module's technical name from the folder inside the zip.
+      # export-ignore in .gitattributes keeps the repository plumbing out.
+      - name: Build the module archive
+        id: build
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          NAME="OSo-MCP-Server-${{ steps.version.outputs.number }}.zip"
+          git archive --format=zip --prefix=somcp/ -o "$NAME" HEAD
+          N=$(unzip -l "$NAME" | tail -1 | awk '{print $2}')
+          SIZE=$(du -h "$NAME" | cut -f1)
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "| Archive | \`$NAME\`, $N files, $SIZE |" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: The archive must carry the module, not the plumbing
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          NAME="${{ steps.build.outputs.name }}"
+          for f in somcp/somcp.php somcp/config.xml somcp/CHANGELOG.md somcp/LICENSE.txt; do
+            if ! unzip -l "$NAME" "$f" > /dev/null 2>&1; then
+              echo "| Archive contents | **$f is missing** |" >> "$GITHUB_STEP_SUMMARY"
+              echo "::error::$f missing from the archive"; exit 1
+            fi
+          done
+          if unzip -l "$NAME" | grep -qE 'somcp/(\.github/|dev/|docs/|\.git|README\.md|CONTRIBUTING\.md|CLA\.md)'; then
+            echo "| Archive contents | **repository plumbing leaked in** |" >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::repository plumbing leaked into the archive"; exit 1
+          fi
+          # The Addons validator refuses a module folder without index.php.
+          mkdir -p /tmp/zip && unzip -q "$NAME" -d /tmp/zip
+          MISSING=$(find /tmp/zip/somcp -type d ! -exec test -e '{}/index.php' ';' -print)
+          if [ -n "$MISSING" ]; then
+            echo "| Archive contents | **index.php missing in some folders** |" >> "$GITHUB_STEP_SUMMARY"
+            echo "$MISSING"
+            echo "::error::index.php missing in some folders"; exit 1
+          fi
+          echo "| Archive contents | root folder \`somcp/\`, module present, no plumbing, index.php everywhere |" >> "$GITHUB_STEP_SUMMARY"
+
+      # The notes come from the CHANGELOG section for this version, so the
+      # release page and the file in the module can never drift apart.
+      - name: Release notes from the CHANGELOG
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          awk -v v="${{ steps.version.outputs.number }}" \
+            '$0 ~ "^## " v " " {f=1; next} /^## /{f=0} f' CHANGELOG.md > NOTES.md
+          {
+            echo ""
+            echo "---"
+            echo ""
+            echo "**Install:** download \`${{ steps.build.outputs.name }}\` and install it from Modules > Upload a module."
+          } >> NOTES.md
+
+      # --target creates the tag on this commit as part of publishing, so the
+      # tag and the release can never exist without one another.
+      - name: Tag and publish
+        if: steps.guard.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          URL=$(gh release create "${{ steps.version.outputs.tag }}" \
+            --target "$GITHUB_SHA" \
+            --title "O'So MCP Server ${{ steps.version.outputs.number }}" \
+            --notes-file NOTES.md \
+            "${{ steps.build.outputs.name }}")
+          {
+            echo "| Published | ${{ steps.version.outputs.tag }} on \`$(git rev-parse --short HEAD)\` |"
+            echo ""
+            echo "### Released"
+            echo ""
+            echo "**[${{ steps.version.outputs.tag }} - O'So MCP Server ${{ steps.version.outputs.number }}]($URL)**"
+            echo ""
+            echo "Download: \`${{ steps.build.outputs.name }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Runs whatever happened above, so a failed run explains itself on the
+      # summary instead of only in a step log nobody opens.
+      - name: Say what went wrong
+        if: failure()
+        run: |
+          {
+            echo ""
+            echo "---"
+            echo ""
+            echo "### Nothing was published"
+            echo ""
+            echo "A check failed: the row above in **bold** is the one. Fix the cause, push"
+            echo "to \`main\`, then run this workflow again from **Run workflow**."
+          } >> "$GITHUB_STEP_SUMMARY"
