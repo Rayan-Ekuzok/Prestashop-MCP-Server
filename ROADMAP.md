@@ -10,17 +10,24 @@ before starting something large, so two people do not build the same thing.
 
 ## More of PrestaShop as tools
 
-Today the module covers orders and order statuses. The next areas, in the order
-they are planned in [docs/TOOLS.md](docs/TOOLS.md):
+Today the module covers orders and order statuses. Thirty-five more tools are
+specified in [docs/TOOLS.md](docs/TOOLS.md), each with its own issue labelled
+[`new tool`](https://github.com/novalo-dev/Prestashop-MCP-Server/issues?q=is%3Aissue+is%3Aopen+label%3A%22new+tool%22):
 
-- **Catalogue**: search products, read one product with its combinations and
-  prices.
-- **Customers**: search customers, read one customer with their addresses and
-  order history.
-- **Stock**: read quantities per product and combination, change a quantity.
-- **Shipping**: carriers, tracking numbers on an order.
-- **Content**: CMS pages.
+- **Catalogue**: search, read, create, edit, price, switch on and off, delete
+  products; list, create, edit, delete categories.
+- **Stock**: read quantities, list what runs low, set a quantity.
+- **Customers**: search, read, create, edit customers.
+- **Orders and configuration**: tracking numbers, carriers.
 - **Statistics**: sales over a period, best sellers.
+- **Content**: CMS pages.
+- **Modules**: list, read, install, enable and disable.
+- **Appearance**: main menu links, theme page layouts.
+- **System**: cache status, clearing the cache.
+
+The simplest ones, mostly reads, are also labelled
+[`good first issue`](https://github.com/novalo-dev/Prestashop-MCP-Server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+Comment on an issue to take it, so two people do not write the same tool.
 
 Every tool is described in `docs/TOOLS.md` before it is written, follows the
 conventions at the top of that file, and is tied to the back office page where

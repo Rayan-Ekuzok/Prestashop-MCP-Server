@@ -265,6 +265,14 @@ tool, named.
 
 ## Sections
 
+An entry marked **to write** is the specification: pick its issue, write the
+tool to match, and change the state in the same pull request. If something in
+the entry turns out wrong while writing it, say so in the issue first.
+
+The scopes of entries marked to write do not exist yet. The first tool of a
+section adds its scopes to `SomcpScope`, with the label the merchant reads on
+the consent screen, in the four languages.
+
 ### Orders
 
 The order and what belongs to it: its lines, its history, its messages, its
@@ -374,6 +382,26 @@ happened.
 Advanced stock management is synchronised on PrestaShop 8 only, guarded by
 `method_exists`: `StockAvailable::dependsOnStock()` no longer exists in 9.
 
+#### `somcp_set_order_tracking`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminOrders')` · **Scope**: `mcp.orders.write`
+
+**Does** - sets the tracking number of one order's shipment.
+
+**Do not use for** - changing the order status to shipped (→ `somcp_set_order_status`), which is a separate decision.
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_order` | integer | one of the two |  |
+| `reference` | string | one of the two |  |
+| `tracking_number` | string | yes | checked against the carrier's format when it has one |
+
+**Returns** - `changed`, `previous_tracking_number`, `tracking_number`, `tracking_url`, `customer_notified`.
+
+**Notes** - written where the back office writes it, on the order's `OrderCarrier`, with `actionAdminOrdersTrackingNumberUpdate` fired so carrier modules follow. Whether the customer is emailed follows the shop's own setting.
+
 ### Billing
 
 The accounting records an order produces: invoices, credit slips, delivery
@@ -442,6 +470,25 @@ exists in `somcp_search_orders`, where the permission is the right one.
 `deleted` was returned and always false: `OrderState::getOrderStates()` filters
 them out before we see them. Removed rather than left lying.
 
+#### `somcp_list_carriers`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminCarriers')` · **Scope**: `mcp.orders.read`
+
+**Does** - lists the carriers of this shop with their identifiers, delays and tracking URL.
+
+**Do not use for** - reading the carrier of one order (→ `somcp_get_order`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `active` | boolean | no | true by default |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - per carrier: `id_carrier`, `id_reference`, `name`, `delay`, `active`, `is_free`, `tracking_url`, `external_module`.
+
+**Notes** - `id_carrier` changes each time a carrier is edited in PrestaShop; `id_reference` does not. Both are returned, and the description says which to keep.
+
 ### Diagnostics
 
 Tools that describe the connection itself and touch no shop data.
@@ -465,11 +512,684 @@ connection cannot reach.
 **Notes** - outside the permission system by design: it is how an assistant with
 no rights anywhere can still say which account it is connected as.
 
----
+### Catalogue
 
-## Sections to open later
+The products and the categories they are sorted into: texts, prices, combinations, images, the category tree.
 
-Catalogue · Customers · Stock · Shipping · Content · Statistics.
+**Not here**: stock quantities (→ Stock), what sold (→ Statistics).
 
-Each follows the same shape: what the data is, what is not in it, then the
-entries.
+#### `somcp_search_products`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminProducts')` · **Scope**: `mcp.catalog.read`
+
+**Does** - finds products by name, reference, EAN13, category or status, and returns one short line each.
+
+**Do not use for** - reading a product already identified (→ `somcp_get_product`), or stock levels across the catalogue (→ `somcp_list_low_stock`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `query` | string | no | part of the name, reference or EAN13 |
+| `id_category` | integer | no | from `somcp_list_categories` |
+| `active` | boolean | no | active or inactive products only |
+| `sort` | enum | no | `date_add_desc` (default), `name_asc`, `price_asc`, `price_desc` |
+| `language` | string | no | ISO code, shop default otherwise |
+| `limit` / `offset` | integer | no | 20 by default, 100 at most |
+
+**Returns** - per product: `id_product`, `reference`, `name`, `price_tax_excl`, `currency`, `quantity`, `active`, `id_category_default`. Plus `returned`, `total_count` and `offset`.
+
+**Notes** - read through a query, not through Product objects. The quantity is the product's total from `StockAvailable`, combinations included.
+
+#### `somcp_get_product`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminProducts')` · **Scope**: `mcp.catalog.read`
+
+**Does** - returns everything about one product: texts, prices, combinations with their own price impact and stock, categories, images, features.
+
+**Do not use for** - looking for products (→ `somcp_search_products`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_product` | integer | one of the two | identifier |
+| `reference` | string | one of the two | exact reference |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - `product` (names, descriptions, SEO fields, prices tax excluded and included, tax rule, active, visibility, condition), `combinations` (attributes, reference, EAN13, price impact, quantity), `categories`, `images` (URLs), `features`, `quantity`.
+
+**Notes** - a reference can be shared by several products in PrestaShop: when it is, the tool returns the candidates and asks for an `id_product` rather than picking one.
+
+#### `somcp_create_product`
+**State**: to write
+**Nature**: `acts(ADD, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
+
+**Does** - creates one product, inactive by default, with its name, reference, price, tax rule, default category and quantity.
+
+**Do not use for** - changing an existing product (→ `somcp_update_product`), or creating several at once, which it refuses by design.
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `name` | string | yes | in the shop's default language |
+| `price_tax_excl` | number | yes | base price |
+| `id_tax_rules_group` | integer | no | from the shop, never guessed |
+| `id_category_default` | integer | no | from `somcp_list_categories`, Home otherwise |
+| `reference` | string | no |  |
+| `description_short` | string | no | HTML allowed, cleaned |
+| `quantity` | integer | no | initial stock, 0 by default |
+| `active` | boolean | no | false by default |
+
+**Returns** - `created`, `id_product`, and the product as `somcp_get_product` would return it.
+
+**Notes** - inactive unless asked otherwise, so a product half described never appears on the storefront. Written through `Product::add()` so hooks fire. Not replayable: the read tool to check is `somcp_search_products` with the reference.
+
+#### `somcp_update_product`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
+
+**Does** - changes the texts of one product: name, short and long description, meta title, meta description, friendly URL, in one language.
+
+**Do not use for** - prices (→ `somcp_set_product_price`), stock (→ `somcp_set_stock_quantity`), switching a product on or off (→ `somcp_set_product_active`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_product` | integer | yes |  |
+| `language` | string | yes | the language being written |
+| `name` | string | no |  |
+| `description_short` | string | no | HTML allowed, cleaned |
+| `description` | string | no | HTML allowed, cleaned |
+| `meta_title` | string | no |  |
+| `meta_description` | string | no |  |
+| `link_rewrite` | string | no | checked for format |
+
+**Returns** - `changed`, the fields written with their old and new values.
+
+**Notes** - only the fields given are touched; a field left out keeps its value. HTML goes through the core's own cleaning, as in the back office.
+
+#### `somcp_set_product_price`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
+
+**Does** - sets the price of one product, or the price impact of one of its combinations.
+
+**Do not use for** - discounts and specific prices, which are not covered yet.
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_product` | integer | yes |  |
+| `id_product_attribute` | integer | no | a combination, from `somcp_get_product` |
+| `price_tax_excl` | number | one of the two | the new price |
+| `price_tax_incl` | number | one of the two | converted with the product's tax rule |
+
+**Returns** - `changed`, `previous_price_tax_excl`, `price_tax_excl`, `price_tax_incl`, `currency`.
+
+**Notes** - a price given tax included is converted with the product's own tax rule for the shop's country, and both values are returned so the merchant sees what was stored.
+
+#### `somcp_set_product_active`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
+
+**Does** - switches one product on or off on the storefront.
+
+**Do not use for** - deleting a product (→ `somcp_delete_product`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_product` | integer | yes |  |
+| `active` | boolean | yes |  |
+
+**Returns** - `changed`, `active`. When the product is already in that state: `changed: false` and nothing happens.
+
+#### `somcp_delete_product`
+**State**: to write
+**Nature**: `acts(DELETE, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
+
+**Does** - deletes one product, with its combinations, images and stock.
+
+**Do not use for** - hiding a product from the storefront, which is reversible (→ `somcp_set_product_active`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_product` | integer | yes |  |
+
+**Returns** - `deleted`, `id_product`, `name`.
+
+**Notes** - irreversible, and said so in the description so the client asks the merchant. Through `Product::delete()`, so hooks fire. Orders that contain the product keep their lines.
+
+#### `somcp_list_categories`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminCategories')` · **Scope**: `mcp.catalog.read`
+
+**Does** - lists the categories as a tree, with their identifiers.
+
+**Do not use for** - listing the products of a category (→ `somcp_search_products` with `id_category`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_parent` | integer | no | a branch only, the whole tree otherwise |
+| `active` | boolean | no |  |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - per category: `id_category`, `name`, `id_parent`, `level`, `active`, `products_count`.
+
+**Notes** - called before any write that takes a category, which must never guess an identifier.
+
+#### `somcp_create_category`
+**State**: to write
+**Nature**: `acts(ADD, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
+
+**Does** - creates one category under a given parent.
+
+**Do not use for** - renaming or moving a category (→ `somcp_update_category`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `name` | string | yes |  |
+| `id_parent` | integer | yes | from `somcp_list_categories` |
+| `description` | string | no |  |
+| `active` | boolean | no | true by default |
+
+**Returns** - `created`, `id_category`.
+
+**Notes** - not replayable: the read tool to check is `somcp_list_categories`.
+
+#### `somcp_update_category`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
+
+**Does** - changes one category: name, description, SEO fields, parent, active.
+
+**Do not use for** - creating one (→ `somcp_create_category`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_category` | integer | yes |  |
+| `language` | string | no | for the texts |
+| `name` | string | no |  |
+| `description` | string | no |  |
+| `id_parent` | integer | no | moving it |
+| `active` | boolean | no |  |
+
+**Returns** - `changed`, the fields written with their old and new values.
+
+**Notes** - the root and Home categories are refused, as in the back office.
+
+#### `somcp_delete_category`
+**State**: to write
+**Nature**: `acts(DELETE, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
+
+**Does** - deletes one category.
+
+**Do not use for** - hiding it (→ `somcp_update_category` with `active: false`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_category` | integer | yes |  |
+
+**Returns** - `deleted`, `id_category`, `name`, `products_moved`.
+
+**Notes** - irreversible. Products whose default category it was are moved to its parent, which is what the back office does by default. Root and Home are refused.
+
+### Stock
+
+The quantities the storefront sells against, per product and combination.
+
+**Not here**: prices and texts (→ Catalogue).
+
+#### `somcp_get_stock`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminStockManagement')` · **Scope**: `mcp.stock.read`
+
+**Does** - returns the quantities of one product, per combination.
+
+**Do not use for** - finding what runs low across the catalogue (→ `somcp_list_low_stock`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_product` | integer | yes |  |
+
+**Returns** - `quantity` (total), and per combination: `id_product_attribute`, `attributes`, `quantity`, `physical_quantity`, `reserved_quantity`, `low_stock_threshold`.
+
+**Notes** - read from `StockAvailable`, the quantities the storefront sells against.
+
+#### `somcp_list_low_stock`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminStockManagement')` · **Scope**: `mcp.stock.read`
+
+**Does** - lists the products and combinations at or under a quantity.
+
+**Do not use for** - the stock of one known product (→ `somcp_get_stock`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `threshold` | integer | no | each product's own low stock threshold when absent, 0 when it has none |
+| `active` | boolean | no | active products only, true by default |
+| `limit` / `offset` | integer | no | 20 by default, 100 at most |
+
+**Returns** - per line: `id_product`, `id_product_attribute`, `reference`, `name`, `quantity`, `threshold`. Plus `total_count`.
+
+#### `somcp_set_stock_quantity`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminStockManagement')` · **Scope**: `mcp.stock.write`
+
+**Does** - sets the available quantity of one product or one combination.
+
+**Do not use for** - reading stock (→ `somcp_get_stock`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_product` | integer | yes |  |
+| `id_product_attribute` | integer | no | a combination |
+| `quantity` | integer | one of the two | the new quantity |
+| `delta` | integer | one of the two | a movement, positive or negative |
+
+**Returns** - `changed`, `previous_quantity`, `quantity`.
+
+**Notes** - through `StockAvailable::setQuantity()` / `updateQuantity()`, so stock movements and hooks follow. A delta is not replayable: a lost answer retried would move the stock twice, which the description says, naming `somcp_get_stock` to check.
+
+### Customers
+
+Customer accounts and what belongs to them: groups, addresses, a summary of their orders.
+
+**Not here**: the orders themselves (→ Orders).
+
+#### `somcp_search_customers`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminCustomers')` · **Scope**: `mcp.customers.read`
+
+**Does** - finds customers by name, email, company or registration date, and returns one short line each.
+
+**Do not use for** - reading a customer already identified (→ `somcp_get_customer`), or their orders (→ `somcp_search_orders` with `customer_email`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `query` | string | no | name, email or company, whole or partial |
+| `date_from` / `date_to` | string | no | registration date |
+| `active` | boolean | no |  |
+| `newsletter` | boolean | no |  |
+| `limit` / `offset` | integer | no | 20 by default, 100 at most |
+
+**Returns** - per customer: `id_customer`, `name`, `email`, `company`, `date_add`, `active`, `orders_count`. Plus `total_count`.
+
+**Notes** - the list stays plain: no address, no phone. Those come with one named customer.
+
+#### `somcp_get_customer`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminCustomers')` · **Scope**: `mcp.customers.read`
+
+**Does** - returns everything about one customer: account, groups, addresses, and a summary of their orders.
+
+**Do not use for** - looking for customers (→ `somcp_search_customers`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_customer` | integer | one of the two |  |
+| `email` | string | one of the two | exact |
+
+**Returns** - `customer` (name, email, birthday, company, groups, newsletter, optin, active, dates), `addresses`, `orders` (count, total spent, last order), `messages_count`.
+
+**Notes** - never the password hash, the secure key or the reset token.
+
+#### `somcp_create_customer`
+**State**: to write
+**Nature**: `acts(ADD, 'AdminCustomers')` · **Scope**: `mcp.customers.write`
+
+**Does** - creates one customer account.
+
+**Do not use for** - creating a guest checkout, or an address alone.
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `firstname` | string | yes |  |
+| `lastname` | string | yes |  |
+| `email` | string | yes | refused if it already exists |
+| `id_default_group` | integer | no | Customer by default |
+| `newsletter` | boolean | no | false by default |
+| `send_welcome_email` | boolean | no | false by default |
+
+**Returns** - `created`, `id_customer`.
+
+**Notes** - no password goes through the assistant: the account is created with a random one, and the customer sets theirs through the usual reset link. Not replayable: the read tool to check is `somcp_search_customers` with the email.
+
+#### `somcp_update_customer`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminCustomers')` · **Scope**: `mcp.customers.write`
+
+**Does** - changes one customer's account: name, email, company, birthday, groups, newsletter, active.
+
+**Do not use for** - addresses, which are not covered yet.
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_customer` | integer | yes |  |
+| `firstname` / `lastname` | string | no |  |
+| `email` | string | no | refused if another account uses it |
+| `company` | string | no |  |
+| `birthday` | string | no | `YYYY-MM-DD` |
+| `newsletter` | boolean | no |  |
+| `active` | boolean | no |  |
+
+**Returns** - `changed`, the fields written with their old and new values.
+
+**Notes** - never the password.
+
+### Statistics
+
+Figures over a period, computed from valid orders.
+
+**Not here**: the orders behind them (→ Orders).
+
+#### `somcp_get_sales_summary`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminStats')` · **Scope**: `mcp.stats.read`
+
+**Does** - returns sales over a period: revenue, number of orders, average basket, new customers.
+
+**Do not use for** - the list of orders behind the figures (→ `somcp_search_orders`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `date_from` / `date_to` | string | yes | `YYYY-MM-DD`, both days included |
+| `compare_previous` | boolean | no | adds the same figures for the previous period of the same length |
+
+**Returns** - `revenue_tax_excl`, `revenue_tax_incl`, `currency`, `orders_count`, `average_basket_tax_incl`, `new_customers`, and `previous` when asked.
+
+**Notes** - counts valid orders only (`Order::valid`), converted to the shop's default currency, as the dashboard does.
+
+#### `somcp_list_best_sellers`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminStats')` · **Scope**: `mcp.stats.read`
+
+**Does** - lists the products that sold most over a period.
+
+**Do not use for** - sales totals (→ `somcp_get_sales_summary`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `date_from` / `date_to` | string | yes |  |
+| `sort` | enum | no | `quantity` (default) or `revenue` |
+| `limit` / `offset` | integer | no | 20 by default, 100 at most |
+
+**Returns** - per product: `id_product`, `name`, `quantity_sold`, `revenue_tax_excl`, `currency`. Plus `total_count`.
+
+**Notes** - valid orders only.
+
+### Content
+
+The CMS pages of the storefront.
+
+**Not here**: product texts (→ Catalogue).
+
+#### `somcp_list_cms_pages`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminCmsContent')` · **Scope**: `mcp.content.read`
+
+**Does** - lists the CMS pages with their category and status.
+
+**Do not use for** - reading one page (→ `somcp_get_cms_page`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_cms_category` | integer | no |  |
+| `active` | boolean | no |  |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - per page: `id_cms`, `meta_title`, `id_cms_category`, `active`, `link`.
+
+#### `somcp_get_cms_page`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminCmsContent')` · **Scope**: `mcp.content.read`
+
+**Does** - returns one CMS page with its content.
+
+**Do not use for** - listing pages (→ `somcp_list_cms_pages`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_cms` | integer | yes |  |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - `id_cms`, `meta_title`, `meta_description`, `content` (HTML), `link_rewrite`, `active`, `link`.
+
+### Modules
+
+The modules present on the shop, their state and version.
+
+**Not here**: tools published by other modules, which they declare themselves (see EXTENDING.md).
+
+#### `somcp_list_modules`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminModules')` · **Scope**: `mcp.modules.read`
+
+**Does** - lists the modules present on the shop with their version and state.
+
+**Do not use for** - details of one module (→ `somcp_get_module`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `installed` | boolean | no |  |
+| `active` | boolean | no |  |
+| `query` | string | no | part of the name or display name |
+| `limit` / `offset` | integer | no | 20 by default, 100 at most |
+
+**Returns** - per module: `name`, `display_name`, `version`, `installed`, `active`, `author`.
+
+#### `somcp_get_module`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminModules')` · **Scope**: `mcp.modules.read`
+
+**Does** - returns one module's details: version on disk and in the database, state, author, hooks it is attached to.
+
+**Do not use for** - listing modules (→ `somcp_list_modules`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `name` | string | yes | technical name, the folder |
+
+**Returns** - `name`, `display_name`, `description`, `version_on_disk`, `version_installed`, `installed`, `active`, `author`, `hooks`, `needs_upgrade`.
+
+#### `somcp_install_module`
+**State**: to write
+**Nature**: `acts(ADD, 'AdminModules')` · **Scope**: `mcp.modules.write`
+
+**Does** - installs one module already present in the shop's `modules` folder.
+
+**Do not use for** - uploading or downloading a module, which this tool does not do: the files must already be on the shop.
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `name` | string | yes | technical name, the folder |
+
+**Returns** - `installed`, `name`, `version`, `errors`.
+
+**Notes** - through the core's `ModuleManager`, exactly as the back office does it, so the module's own install checks run. Not replayable: the read tool to check is `somcp_get_module`.
+
+#### `somcp_set_module_active`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminModules')` · **Scope**: `mcp.modules.write`
+
+**Does** - enables or disables one installed module.
+
+**Do not use for** - installing or uninstalling it.
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `name` | string | yes |  |
+| `active` | boolean | yes |  |
+
+**Returns** - `changed`, `name`, `active`. When the module is already in that state: `changed: false`.
+
+**Notes** - somcp refuses to disable itself: the answer would never reach the assistant.
+
+### Appearance
+
+What the storefront looks like: the main menu of `ps_mainmenu`, the active theme and its page layouts.
+
+**Not here**: content of the pages (→ Content).
+
+#### `somcp_list_menu_links`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminModules')` · **Scope**: `mcp.appearance.read`
+
+**Does** - lists the entries of the storefront's main menu, from the `ps_mainmenu` module.
+
+**Do not use for** - the shop's categories (→ `somcp_list_categories`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - per entry, in menu order: `type` (category, CMS page, custom link, ...), `id`, `label`, `link`, `new_window`.
+
+**Notes** - only listed when `ps_mainmenu` is installed and active; absent otherwise, never failing.
+
+#### `somcp_add_menu_link`
+**State**: to write
+**Nature**: `acts(ADD, 'AdminModules')` · **Scope**: `mcp.appearance.write`
+
+**Does** - adds one custom link, a category or a CMS page to the main menu.
+
+**Do not use for** - changing an existing custom link (→ `somcp_update_menu_link`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `type` | enum | yes | `category`, `cms`, `link` |
+| `id` | integer | for category and cms |  |
+| `label` | string | for link |  |
+| `url` | string | for link |  |
+| `new_window` | boolean | no |  |
+| `position` | integer | no | at the end by default |
+
+**Returns** - `added`, the menu as `somcp_list_menu_links` returns it.
+
+**Notes** - written through `ps_mainmenu`'s own storage so its cache is cleared like the back office does. Not replayable.
+
+#### `somcp_update_menu_link`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminModules')` · **Scope**: `mcp.appearance.write`
+
+**Does** - changes the label, URL or target of one custom link in the main menu.
+
+**Do not use for** - adding an entry (→ `somcp_add_menu_link`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id` | integer | yes | custom link, from `somcp_list_menu_links` |
+| `label` | string | no |  |
+| `url` | string | no |  |
+| `new_window` | boolean | no |  |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - `changed`, the fields written with their old and new values.
+
+#### `somcp_get_theme`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminThemes')` · **Scope**: `mcp.appearance.read`
+
+**Does** - returns the active theme: name, version, parent theme, logos and the layout used by each page.
+
+**Parameters** - none.
+
+**Returns** - `name`, `version`, `parent`, `logos`, `layouts` (page → layout), `available_layouts`.
+
+#### `somcp_update_theme_setting`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminThemes')` · **Scope**: `mcp.appearance.write`
+
+**Does** - sets the layout of one page of the active theme, as Appearance > Theme & Logo > Choose layouts does.
+
+**Do not use for** - installing or switching themes.
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `page` | string | yes | page name, from `somcp_get_theme` |
+| `layout` | string | yes | one of `available_layouts` |
+
+**Returns** - `changed`, `page`, `previous_layout`, `layout`.
+
+**Notes** - the scope is the page layouts on purpose: other theme settings depend on each theme. Wider settings can be proposed in the issue.
+
+### System
+
+How the shop runs: caching.
+
+**Not here**: the connection itself (→ Diagnostics).
+
+#### `somcp_get_cache_status`
+**State**: to write
+**Nature**: `acts(VIEW, 'AdminPerformance')` · **Scope**: `mcp.system.read`
+
+**Does** - returns how caching is configured: template compilation and cache, CCC for CSS and JavaScript, the caching system, debug mode.
+
+**Parameters** - none.
+
+**Returns** - `smarty_compile`, `smarty_cache`, `ccc_css`, `ccc_js`, `cache_enabled`, `cache_system`, `debug_mode`.
+
+#### `somcp_clear_cache`
+**State**: to write
+**Nature**: `acts(EDIT, 'AdminPerformance')` · **Scope**: `mcp.system.write`
+
+**Does** - clears the shop's caches, as the Clear cache button in Advanced parameters > Performance does.
+
+**Parameters** - none.
+
+**Returns** - `cleared`.
+
+**Notes** - the storefront is slower for a while as the cache rebuilds; the description says so.
