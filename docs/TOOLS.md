@@ -586,7 +586,7 @@ The products and the categories they are sorted into: texts, prices, combination
 | `references` | `reference`, `mpn`, `upc`, `ean13` (EAN-13 or JAN), `isbn` | `product` |
 | `features` | per feature: `id_feature`, `name`, `value`, `custom` | `Product::getFrontFeatures()` |
 | `attachments` | per document: `id_attachment`, `name`, `description`, `file_name`, `mime` | `Product::getAttachments()` |
-| `condition` | `condition` (new, used, refurbished), `show_condition` | `product` |
+| `condition` | `condition` (new, used, refurbished; PrestaShop 9 adds open_box, damaged, new_with_defects), `show_condition` | `product` |
 | `customization` | `customizable`, `uploadable_files`, `text_fields`, and each field: `id_customization_field`, `type` (file or text), `name`, `required` | `customization_field`, `customization_field_lang` |
 | `stock` | `quantity` (total, combinations included), `location` (stock location), `out_of_stock` (deny, allow, shop default), `available_now` (label when in stock), `available_later` (label when out of stock and backorders allowed), `available_date` | `stock_available`, `product`, `product_lang` |
 | `shipping` | `width`, `height`, `depth`, `weight`, `additional_delivery_times` (none, shop default, this product's), `delivery_in_stock`, `delivery_out_stock`, `additional_shipping_cost`, `carriers` (every carrier of the shop with `id_carrier`, `name` and `available` true or false for this product) | `product`, `product_lang`, `Product::getCarriers()` |
@@ -610,26 +610,52 @@ The products and the categories they are sorted into: texts, prices, combination
 **State**: draft · [issue #3](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/3)
 **Nature**: `acts(ADD, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
-**Does** - creates one product, inactive by default, with its name, reference, price, tax rule, default category and quantity.
+**Does** - creates one complete product: everything `somcp_get_product` reads can be given at creation, combinations and images included. Inactive by default. SEO gets particular care: every language filled in, friendly URL generated and checked, warnings returned.
 
 **Do not use for** - changing an existing product (→ `somcp_update_product`), or creating several at once, which it refuses by design.
 
-**Parameters**
+**Parameters** - the groups and field names of `somcp_get_product`, so what one tool reads the other writes. Only `basics.name` (in the shop's default language) and `pricing.price_tax_excl` are required. Fields that are computed or read elsewhere are not accepted: `id_product`, `url`, `manufacturer_name`, `supplier_name`, `tax_rules_group_name`, `tax_rate`, `price_tax_incl`, `unit_price_tax_incl`, `quantity` totals.
 
-| Name | Type | Required | Role |
-|---|---|---|---|
-| `name` | string | yes | in the shop's default language |
-| `price_tax_excl` | number | yes | base price |
-| `id_tax_rules_group` | integer | no | from the shop, never guessed |
-| `id_category_default` | integer | no | from `somcp_list_categories`, Home otherwise |
-| `reference` | string | no |  |
-| `description_short` | string | no | HTML allowed, cleaned |
-| `quantity` | integer | no | initial stock, 0 by default |
-| `active` | boolean | no | false by default |
+| Group | What is written | Rules |
+|---|---|---|
+| translatable texts | `name`, `description_short`, `description`, `available_now`, `available_later`, `delivery_in_stock`, `delivery_out_stock`, the SEO texts, feature custom values, customization field names, image legends | an object keyed by ISO code, `{"fr": "...", "en": "..."}`; a language left out takes the default language's text, as the back office does; HTML cleaned in the descriptions |
+| `basics` | `product_type` (standard by default) | `combinations` given means `product_type` combinations |
+| `categories` | `id_category_default`, `categories` (ids) | Home when none; the default category is added to `categories` if missing |
+| `brand` | `id_manufacturer` | must exist |
+| `related_products` | ids | must exist |
+| `references` | `reference`, `mpn`, `upc`, `ean13`, `isbn` | each checked with its `Validate` rule; a `reference` already used by another product or combination is refused |
+| `features` | `id_feature` with either `id_feature_value` or a custom value | must exist |
+| `attachments` | `id_attachment` of documents already in the shop | files do not travel through the call |
+| `condition` | `condition`, `show_condition` | values of the running PrestaShop version |
+| `customization` | the fields: `type`, `name`, `required` | `customizable`, `uploadable_files`, `text_fields` follow from them |
+| `stock` | `quantity`, `location`, `out_of_stock`, `available_date` | through `StockAvailable`, never a direct write |
+| `shipping` | `width`, `height`, `depth`, `weight`, `additional_delivery_times`, `additional_shipping_cost`, `carriers` (ids from `somcp_list_carriers`) | no carrier given means every carrier, as in the back office |
+| `pricing` | `price_tax_excl`, `id_tax_rules_group`, `wholesale_price`, `unit_price_tax_excl`, `unity`, `on_sale` | the tax rule must exist in the shop, never guessed |
+| `specific_prices` | as read by `somcp_get_product`, plus `priorities` | each written through `SpecificPrice::add()` |
+| `seo` | see **SEO** below | |
+| `options` | `visibility`, `available_for_order`, `show_price`, `online_only`, `active` | `active` false by default |
+| `suppliers` | `id_supplier_default`, and per supplier and combination `product_supplier_reference`, `product_supplier_price_te`, `id_currency` | supplier and currency must exist |
+| `images` | per image: `url`, `legend`, `cover`, `position`, combinations it illustrates | see **Images** below |
+| `combinations` | per combination: `attributes` (ids of attribute values), `default_on`, `reference`, `mpn`, `upc`, `ean13`, `isbn`, `quantity`, `location`, `available_date`, `available_now`, `available_later`, `price_impact_tax_excl`, `unit_price_impact_tax_excl`, `weight_impact`, `wholesale_price`, `minimal_quantity` | two combinations with the same attributes are refused; one is the default |
 
-**Returns** - `created`, `id_product`, and the product as `somcp_get_product` would return it.
+**SEO**
+- Fields: `meta_title`, `meta_description`, `link_rewrite`, `redirect_type`, `id_type_redirected`, and `meta_keywords` where the column exists (PrestaShop 8; on 9 the field is refused with a clear message, not dropped silently).
+- `link_rewrite` left out: generated from the name in each language with `Tools::str2url()`. Given: passed through `Tools::str2url()`, then refused if `Validate::isLinkRewrite()` fails. Never empty in any language.
+- `meta_title` up to 255 characters and `meta_description` up to 512, the limits of `Product::$definition`: longer is refused, never cut.
+- `redirect_type` is what an inactive product does: the values of `RedirectType` in the running version (PrestaShop 9 adds `default`, `200-displayed`, `404-displayed`, `410-displayed`). A `301-product` or `302-product` needs an existing `id_type_redirected` product, a category redirect an existing category. Left out: the shop default.
+- The answer carries `seo_warnings`, per language: no `meta_title` or no `meta_description` (the storefront then falls back on the name), `meta_title` over 60 characters or `meta_description` over 160 (cut in search results), a `link_rewrite` or a `meta_title` already used by another product in that language. Warnings never block the creation.
 
-**Notes** - inactive unless asked otherwise, so a product half described never appears on the storefront. Written through `Product::add()` so hooks fire. Not replayable: the read tool to check is `somcp_search_products` with the reference.
+**Images**
+- Files do not travel through the conversation: an image is given by a public `https` URL and the shop downloads it.
+- That download is a new network request from the shop, so it is guarded: `https` only, the host must resolve to a public address (no localhost, no private or link-local range, checked after resolution), redirects not followed, 10 MB at most, and the content must be a JPEG, PNG, GIF or WebP that `ImageManager` accepts. A refused image is reported in the answer and does not stop the creation.
+- Thumbnails generated through `ImageManager` for every image type, as the back office does.
+
+**Returns** - `created`, `id_product`, `seo_warnings`, `images` (per URL: `id_image` or the reason it was refused), and the product as `somcp_get_product` returns it.
+
+**Notes**
+- Written through the core classes (`Product::add()`, `Combination`, `StockAvailable`, `SpecificPrice`, `Image`) so hooks fire and other modules see a normal product creation.
+- Everything or nothing for the product itself: if the product or a combination cannot be written, what was created is deleted and the call fails. Only images and SEO warnings are reported without failing.
+- Not replayable: the read tool to check is `somcp_search_products` with the reference.
 
 #### `somcp_update_product`
 **State**: draft · [issue #4](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/4)
