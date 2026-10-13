@@ -1198,12 +1198,12 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - a disabled supplier stays attached to its products; only its page on the storefront goes.
 
 #### `somcp_list_attributes`
-**State**: draft · [issue #47](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/47)
+**State**: to write · [issue #47](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/47)
 **Nature**: `acts(VIEW, 'AdminAttributesGroups')` · **Scope**: `mcp.catalog.read`
 
-**Does** - lists the attribute groups (Size, Colour...) and their values, with the identifiers a combination is built from.
+**Does** - lists the attribute groups (Size, Colour...) and, under each, its values: identifier and name, nothing else. A cascade, like the categories.
 
-**Do not use for** - the combinations of one product (→ `somcp_get_product`).
+**Do not use for** - everything about one group or one value (→ `somcp_get_attribute_group`, `somcp_get_attribute_value`), or the combinations of a product (→ `somcp_get_product`).
 
 **Parameters**
 
@@ -1212,9 +1212,125 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 | `id_attribute_group` | integer | no | one group only |
 | `language` | string | no | ISO code, shop default otherwise |
 
-**Returns** - per group: `id_attribute_group`, `name`, `public_name`, `group_type` (select, radio, color), and its `values`: `id_attribute`, `name`, `color` for a colour group.
+**Returns** - per group: `id_attribute_group`, `name`, and its `values`: `id_attribute`, `name`. Plus `count`.
 
 **Notes** - a combination is a set of `id_attribute`, never of names: names are translated and two groups can hold the same value name.
+
+#### `somcp_get_attribute_group`
+**State**: to write · [issue #67](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/67)
+**Nature**: `acts(VIEW, 'AdminAttributesGroups')` · **Scope**: `mcp.catalog.read`
+
+**Does** - returns every field of the back office attribute form for one group.
+
+**Do not use for** - the list (→ `somcp_list_attributes`), or one value (→ `somcp_get_attribute_value`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_attribute_group` | integer | yes | from `somcp_list_attributes` |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - `id_attribute_group`, `name`, `public_name`, `group_type` (select, radio, color), `position`, `values_count`, and when `ps_facetedsearch` is installed: `url_name`, `meta_title`, `indexable`.
+
+**Notes** - columns of `attribute_group` and `attribute_group_lang`; the faceted search fields are `null` without the module.
+
+#### `somcp_create_attribute_group`
+**State**: to write · [issue #68](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/68)
+**Nature**: `acts(ADD, 'AdminAttributesGroups')` · **Scope**: `mcp.catalog.write`
+
+**Does** - creates one attribute group with every field of the back office attribute form, in every language of the shop or the ones the merchant picks.
+
+**Do not use for** - adding a value to a group (→ `somcp_create_attribute_value`).
+
+**Parameters** - the rules of `somcp_create_product` apply: `languages`, translatable texts as an object keyed by ISO code, who fills each field.
+
+| Field | Who fills it | Rule |
+|---|---|---|
+| `name` | merchant | required; 128 characters at most; `Validate::isGenericName()` |
+| `public_name` | merchant | required; the name shown to customers; 64 characters at most |
+| `group_type` | merchant | required; a type PrestaShop offers: `select`, `radio`, `color` |
+| `url_name` (URL) | assistant | faceted search; the word used in filtered URLs, the name otherwise; `Tools::str2url()` |
+| `meta_title` (title tag) | assistant | faceted search |
+| `indexable` | merchant | faceted search; false when left out, as in the form |
+
+**Faceted search fields.** `url_name`, `meta_title` and `indexable` are not PrestaShop's: they belong to the module `ps_facetedsearch`, which adds them to the back office form and stores them in its own tables. The module saves them from the form's POST data in its `actionAttributeGroupSave` / `actionAttributeSave` hooks, so a call that goes through the core class alone would silently drop them. The tool writes the same rows the module writes, in `layered_indexable_attribute_group`, `layered_indexable_attribute_group_lang_value` and `layered_indexable_attribute_lang_value`. When the module is not installed and enabled, these fields are refused with a clear message and the rest is written.
+
+**Returns** - `created`, `id_attribute_group`, and the group as `somcp_get_attribute_group` returns it.
+
+**Notes** - written through `AttributeGroup::add()`, so hooks fire. Not replayable: the read tool to check is `somcp_list_attributes`.
+
+#### `somcp_update_attribute_group`
+**State**: to write · [issue #69](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/69)
+**Nature**: `acts(EDIT, 'AdminAttributesGroups')` · **Scope**: `mcp.catalog.write`
+
+**Does** - changes one attribute group with everything `somcp_create_attribute_group` can write, under the same rules. Only what is given changes.
+
+**Do not use for** - creating one (→ `somcp_create_attribute_group`).
+
+**Parameters** - `id_attribute_group` (required), `languages`, then the fields of `somcp_create_attribute_group`, all optional. A text given replaces the languages given and keeps the others.
+
+**Returns** - `changed`, per field its old and new value, and the group as `somcp_get_attribute_group` returns it.
+
+**Notes** - changing `group_type` away from `color` leaves the values' colours and textures in place but unused, as in the back office; the answer says so. Replayable: the same values again say `changed: false`.
+
+#### `somcp_get_attribute_value`
+**State**: to write · [issue #70](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/70)
+**Nature**: `acts(VIEW, 'AdminAttributesGroups')` · **Scope**: `mcp.catalog.read`
+
+**Does** - returns every field of the back office value form for one attribute value.
+
+**Do not use for** - the list (→ `somcp_list_attributes`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_attribute` | integer | yes | from `somcp_list_attributes` |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - `id_attribute`, `id_attribute_group` and `group_name`, `name`, `position`, and for a group of type `color`: `color` (hex code) and `texture` (URL of the current texture, `null` when there is none); when `ps_facetedsearch` is installed: `url_name`, `meta_title`.
+
+**Notes** - columns of `attribute` and `attribute_lang`; the texture is the file PrestaShop keeps in `img/co/` (`_PS_COL_IMG_DIR_`).
+
+#### `somcp_create_attribute_value`
+**State**: to write · [issue #71](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/71)
+**Nature**: `acts(ADD, 'AdminAttributesGroups')` · **Scope**: `mcp.catalog.write`
+
+**Does** - adds one value to an attribute group, with every field of the back office value form.
+
+**Do not use for** - creating a group (→ `somcp_create_attribute_group`).
+
+**Parameters** - same rules as `somcp_create_attribute_group`.
+
+| Field | Who fills it | Rule |
+|---|---|---|
+| `id_attribute_group` | merchant, from the shop | required; from `somcp_list_attributes` |
+| `name` (value) | merchant | required; 128 characters at most; `Validate::isGenericName()` |
+| `url_name` (URL) | assistant | faceted search, as for the group |
+| `meta_title` (title tag) | assistant | faceted search, as for the group |
+| `color` | merchant | groups of type `color` only, refused otherwise; a hex code, `Validate::isColor()` |
+| `texture` | merchant | groups of type `color` only; a public `https` URL, downloaded with the guards of `somcp_create_product` |
+
+The faceted search fields follow the rule given under `somcp_create_attribute_group`.
+
+**Returns** - `created`, `id_attribute`, `texture` (stored or the reason it was refused), and the value as `somcp_get_attribute_value` returns it.
+
+**Notes** - written through `ProductAttribute::add()`, so hooks fire. Two values with the same name in one group are refused. Not replayable: the read tool to check is `somcp_list_attributes`.
+
+#### `somcp_update_attribute_value`
+**State**: to write · [issue #72](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/72)
+**Nature**: `acts(EDIT, 'AdminAttributesGroups')` · **Scope**: `mcp.catalog.write`
+
+**Does** - changes one attribute value with everything `somcp_create_attribute_value` can write, under the same rules. Only what is given changes.
+
+**Do not use for** - adding one (→ `somcp_create_attribute_value`).
+
+**Parameters** - `id_attribute` (required), `languages`, then the fields of `somcp_create_attribute_value`, all optional; `id_attribute_group` moves the value to another group; `remove_texture` removes the texture explicitly.
+
+**Returns** - `changed`, per field its old and new value, and the value as `somcp_get_attribute_value` returns it.
+
+**Notes** - the value stays on the combinations that use it: renaming it renames it there too, which the assistant tells the merchant before the call. Replayable: the same values again say `changed: false`.
 
 #### `somcp_list_features`
 **State**: draft · [issue #48](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/48)
@@ -1738,7 +1854,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 
 **Arguments** - `product` (name, reference or ean13 of a product).
 
-**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_list_manufacturers`, `somcp_get_manufacturer`, `somcp_create_manufacturer`, `somcp_update_manufacturer`, `somcp_set_manufacturer_active`, `somcp_list_manufacturer_addresses`, `somcp_get_manufacturer_address`, `somcp_create_manufacturer_address`, `somcp_update_manufacturer_address`, `somcp_delete_manufacturer_address`, `somcp_list_suppliers`, `somcp_get_supplier`, `somcp_create_supplier`, `somcp_update_supplier`, `somcp_set_supplier_active`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_list_manufacturers`, `somcp_get_manufacturer`, `somcp_create_manufacturer`, `somcp_update_manufacturer`, `somcp_set_manufacturer_active`, `somcp_list_manufacturer_addresses`, `somcp_get_manufacturer_address`, `somcp_create_manufacturer_address`, `somcp_update_manufacturer_address`, `somcp_delete_manufacturer_address`, `somcp_list_suppliers`, `somcp_get_supplier`, `somcp_create_supplier`, `somcp_update_supplier`, `somcp_set_supplier_active`, `somcp_list_attributes`, `somcp_get_attribute_group`, `somcp_create_attribute_group`, `somcp_update_attribute_group`, `somcp_get_attribute_value`, `somcp_create_attribute_value`, `somcp_update_attribute_value`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
 
 **The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
 
