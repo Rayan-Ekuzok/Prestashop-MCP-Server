@@ -7,6 +7,9 @@
 [![License](.github/badges/license.svg)](LICENSE.txt)
 ![Version](.github/badges/version.svg)
 [![PRs welcome](.github/badges/prs.svg)](CONTRIBUTING.md)
+[![Stars](https://img.shields.io/github/stars/novalo-dev/Prestashop-MCP-Server?style=flat&logo=github&label=Stars)](https://github.com/novalo-dev/Prestashop-MCP-Server/stargazers)
+[![Forks](https://img.shields.io/github/forks/novalo-dev/Prestashop-MCP-Server?style=flat&logo=github&label=Forks)](https://github.com/novalo-dev/Prestashop-MCP-Server/forks)
+[![Contributors](https://img.shields.io/github/contributors/novalo-dev/Prestashop-MCP-Server?style=flat&logo=github&label=Contributors)](https://github.com/novalo-dev/Prestashop-MCP-Server/graphs/contributors)
 
 A PrestaShop module that turns a shop into an [MCP](https://modelcontextprotocol.io)
 server. Claude, ChatGPT or any MCP client can then work with the shop's orders,
