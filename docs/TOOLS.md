@@ -428,7 +428,8 @@ _No tool described yet._
 ### Configuration
 
 What a tool needs so it does not have to guess an identifier: statuses,
-carriers, currencies, languages, countries, payment methods.
+carriers, tax rules, customer groups. Currencies, languages and countries go
+by their ISO code, which the merchant already knows.
 
 These are called **before** a write, never for their own sake. Identifiers differ
 from one shop to the next, and an assistant that guesses gets the most dangerous
@@ -495,7 +496,7 @@ them out before we see them. Removed rather than left lying.
 **Notes** - `id_carrier` changes each time a carrier is edited in PrestaShop; `id_reference` does not. Both are returned, and the description says which to keep.
 
 #### `somcp_list_tax_rules`
-**State**: draft
+**State**: draft · [issue #50](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/50)
 **Nature**: `acts(VIEW, 'AdminTaxRulesGroup')` · **Scope**: `mcp.catalog.read`
 
 **Does** - lists the tax rules a product can take, with the rate each one applies in the shop's default country.
@@ -513,7 +514,7 @@ them out before we see them. Removed rather than left lying.
 **Notes** - scope `mcp.catalog.read`, not a configuration one: it is read to price a product. The rate depends on the country; the one returned is the one the back office product page shows.
 
 #### `somcp_list_customer_groups`
-**State**: draft
+**State**: draft · [issue #51](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/51)
 **Nature**: `acts(VIEW, 'AdminGroups')` · **Scope**: `mcp.customers.read`
 
 **Does** - lists the customer groups (Visitor, Guest, Customer and the shop's own) with their identifiers.
@@ -882,7 +883,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - irreversible. Products whose default category it was are moved to its parent, which is what the back office does by default. Root and Home are refused.
 
 #### `somcp_list_manufacturers`
-**State**: draft
+**State**: draft · [issue #45](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/45)
 **Nature**: `acts(VIEW, 'AdminManufacturers')` · **Scope**: `mcp.catalog.read`
 
 **Does** - lists the brands of this shop with their identifiers.
@@ -902,7 +903,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - called before a write that takes a brand, which must never guess an identifier.
 
 #### `somcp_list_suppliers`
-**State**: draft
+**State**: draft · [issue #46](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/46)
 **Nature**: `acts(VIEW, 'AdminSuppliers')` · **Scope**: `mcp.catalog.read`
 
 **Does** - lists the suppliers of this shop with their identifiers.
@@ -922,7 +923,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - called before a write that takes a supplier.
 
 #### `somcp_list_attributes`
-**State**: draft
+**State**: draft · [issue #47](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/47)
 **Nature**: `acts(VIEW, 'AdminAttributesGroups')` · **Scope**: `mcp.catalog.read`
 
 **Does** - lists the attribute groups (Size, Colour...) and their values, with the identifiers a combination is built from.
@@ -941,7 +942,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - a combination is a set of `id_attribute`, never of names: names are translated and two groups can hold the same value name.
 
 #### `somcp_list_features`
-**State**: draft
+**State**: draft · [issue #48](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/48)
 **Nature**: `acts(VIEW, 'AdminFeatures')` · **Scope**: `mcp.catalog.read`
 
 **Does** - lists the features (Material, Composition...) and their predefined values, with their identifiers.
@@ -960,7 +961,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - a product takes either a predefined value or a custom one; the list lets the assistant offer the predefined ones first.
 
 #### `somcp_list_attachments`
-**State**: draft
+**State**: draft · [issue #49](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/49)
 **Nature**: `acts(VIEW, 'AdminAttachments')` · **Scope**: `mcp.catalog.read`
 
 **Does** - lists the documents already uploaded to the shop (manuals, data sheets) that a product can carry.
