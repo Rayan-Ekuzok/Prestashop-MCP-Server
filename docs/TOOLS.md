@@ -923,7 +923,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - same shape as `somcp_list_categories`: the list an assistant reads before a write that takes a brand, which must never guess an identifier. Inactive ones are listed too, since a product can still point to them.
 
 #### `somcp_get_manufacturer`
-**State**: to write · [issue #54](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/54)
+**State**: draft · [issue #54](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/54)
 **Nature**: `acts(VIEW, 'AdminManufacturers')` · **Scope**: `mcp.catalog.read`
 
 **Does** - returns everything the back office brand form shows for one brand.
@@ -942,7 +942,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - columns of `manufacturer` and `manufacturer_lang`, checked against PrestaShop 8.0.3 and 9.2; `meta_keywords` exists on PrestaShop 8 only and is `null` on 9. A brand's postal addresses are a separate back office list and are not part of the brand form.
 
 #### `somcp_create_manufacturer`
-**State**: to write · [issue #55](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/55)
+**State**: draft · [issue #55](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/55)
 **Nature**: `acts(ADD, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
 
 **Does** - creates one brand with every field of the back office brand form, in every language of the shop or the ones the merchant picks.
@@ -967,7 +967,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - written through `Manufacturer::add()`; the logo through the core's image uploader for brands, so thumbnails are generated as in the back office. Not replayable: the read tool to check is `somcp_list_manufacturers`.
 
 #### `somcp_update_manufacturer`
-**State**: to write · [issue #56](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/56)
+**State**: draft · [issue #56](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/56)
 **Nature**: `acts(EDIT, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
 
 **Does** - changes one brand with everything `somcp_create_manufacturer` can write, under the same rules. Only what is given changes.
@@ -981,7 +981,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - an `id_manufacturer` that does not exist is refused. Replayable: the same values again change nothing and say `changed: false`.
 
 #### `somcp_set_manufacturer_active`
-**State**: to write · [issue #57](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/57)
+**State**: draft · [issue #57](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/57)
 **Nature**: `acts(EDIT, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
 
 **Does** - switches one brand on or off: the **Enabled** toggle of the back office brand list, and nothing else.
