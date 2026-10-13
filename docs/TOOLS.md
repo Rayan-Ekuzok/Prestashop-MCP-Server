@@ -891,7 +891,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 
 **Does** - shows or hides one category on the storefront: the **Displayed** toggle of the back office category list, and nothing else.
 
-**Do not use for** - deleting a category (→ `somcp_delete_category`), or any other change (→ `somcp_update_category`).
+**Do not use for** - any other change (→ `somcp_update_category`). Deleting a category is not offered: it is done in the back office.
 
 **Parameters**
 
@@ -903,24 +903,6 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Returns** - `changed`, `active`. When the category is already in that state: `changed: false` and nothing happens.
 
 **Notes** - hiding a category does not switch its products off: they stay reachable through search and their other categories. The description says so, so the merchant is not surprised. Root and Home are refused.
-
-#### `somcp_delete_category`
-**State**: draft · [issue #11](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/11)
-**Nature**: `acts(DELETE, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
-
-**Does** - deletes one category.
-
-**Do not use for** - hiding it (→ `somcp_set_category_active`).
-
-**Parameters**
-
-| Name | Type | Required | Role |
-|---|---|---|---|
-| `id_category` | integer | yes |  |
-
-**Returns** - `deleted`, `id_category`, `name`, `products_moved`.
-
-**Notes** - irreversible. Products whose default category it was are moved to its parent, which is what the back office does by default. Root and Home are refused.
 
 #### `somcp_list_manufacturers`
 **State**: draft · [issue #45](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/45)
@@ -1503,7 +1485,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 
 **Arguments** - `product` (name, reference or ean13 of a product).
 
-**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_delete_category`, `somcp_list_manufacturers`, `somcp_list_suppliers`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_list_manufacturers`, `somcp_list_suppliers`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
 
 **The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
 
