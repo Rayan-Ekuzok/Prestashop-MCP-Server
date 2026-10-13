@@ -838,7 +838,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 - Read in the shop of the token.
 
 #### `somcp_create_category`
-**State**: draft · [issue #9](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/9)
+**State**: to write · [issue #9](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/9)
 **Nature**: `acts(ADD, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
 
 **Does** - creates one category with every field of the back office category form, in every language of the shop or the ones the merchant picks.
@@ -852,8 +852,8 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 | `name` | merchant | required; 128 characters at most; forbidden characters `<>;=#{}` (`Validate::isCatalogName`) |
 | `id_parent` | merchant, from the shop | from `somcp_list_categories`; Home when left out; never the root |
 | `active` (Displayed) | merchant | true by default |
-| `description` | assistant | to be settled, see below |
-| `additional_description` (additional information) | assistant | to be settled, see below |
+| `description` | assistant | rich text, cleaned by `Validate::isCleanHtml()` as in the back office |
+| `additional_description` (additional information) | assistant | rich text, cleaned by `Validate::isCleanHtml()` as in the back office |
 | `groups` (group access) | merchant, from the shop | ids from `somcp_list_customer_groups`; every group when left out, as in the back office |
 | `link_rewrite` | assistant | generated from the name when left out; `Tools::str2url()` then `Validate::isLinkRewrite()`; 128 characters at most |
 | `meta_title` | assistant | 70 characters at most |
@@ -867,10 +867,10 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes**
 - Written through `Category::add()` and the core's category image uploaders (`src/Adapter/Image/Uploader/Category*`, whose names differ between PrestaShop 8 and 9), so hooks fire and thumbnails are generated as in the back office.
 - Not replayable: the read tool to check is `somcp_list_categories`.
-- **To settle before this entry opens**: the maintainer listed `<>;=#{}` as forbidden in the description and the additional information. In PrestaShop both are rich text (`isCleanHtml`), so forbidding `<` and `>` means no formatting at all (no paragraphs, no bold, no lists). Either the rule holds and both are plain text, or HTML is allowed and cleaned as in the back office.
+- The forbidden characters `<>;=#{}` are PrestaShop's own rule for the name and the meta fields (`isCatalogName`, `isGenericName`); the descriptions are rich text and follow `isCleanHtml`, as the back office form does.
 
 #### `somcp_update_category`
-**State**: draft · [issue #10](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/10)
+**State**: to write · [issue #10](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/10)
 **Nature**: `acts(EDIT, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
 
 **Does** - changes one category with everything `somcp_create_category` can write, under the same rules. Only what is given changes.
@@ -884,7 +884,6 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes**
 - The root and Home categories are refused, as in the back office. A category cannot be moved under itself or one of its children.
 - `link_rewrite` changed on a displayed category: the old URL stops working, said in `seo_warnings`.
-- Opens together with `somcp_create_category`, once the description rule is settled.
 
 #### `somcp_set_category_active`
 **State**: to write · [issue #53](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/53)
