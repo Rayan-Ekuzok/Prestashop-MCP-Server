@@ -923,7 +923,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - same shape as `somcp_list_categories`: the list an assistant reads before a write that takes a brand, which must never guess an identifier. Inactive ones are listed too, since a product can still point to them.
 
 #### `somcp_get_manufacturer`
-**State**: draft · [issue #54](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/54)
+**State**: to write · [issue #54](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/54)
 **Nature**: `acts(VIEW, 'AdminManufacturers')` · **Scope**: `mcp.catalog.read`
 
 **Does** - returns everything the back office brand form shows for one brand.
@@ -942,7 +942,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - columns of `manufacturer` and `manufacturer_lang`, checked against PrestaShop 8.0.3 and 9.2; `meta_keywords` exists on PrestaShop 8 only and is `null` on 9. A brand's postal addresses are a separate back office list and are not part of the brand form.
 
 #### `somcp_create_manufacturer`
-**State**: draft · [issue #55](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/55)
+**State**: to write · [issue #55](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/55)
 **Nature**: `acts(ADD, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
 
 **Does** - creates one brand with every field of the back office brand form, in every language of the shop or the ones the merchant picks.
@@ -967,7 +967,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - written through `Manufacturer::add()`; the logo through the core's image uploader for brands, so thumbnails are generated as in the back office. Not replayable: the read tool to check is `somcp_list_manufacturers`.
 
 #### `somcp_update_manufacturer`
-**State**: draft · [issue #56](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/56)
+**State**: to write · [issue #56](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/56)
 **Nature**: `acts(EDIT, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
 
 **Does** - changes one brand with everything `somcp_create_manufacturer` can write, under the same rules. Only what is given changes.
@@ -981,7 +981,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - an `id_manufacturer` that does not exist is refused. Replayable: the same values again change nothing and say `changed: false`.
 
 #### `somcp_set_manufacturer_active`
-**State**: draft · [issue #57](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/57)
+**State**: to write · [issue #57](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/57)
 **Nature**: `acts(EDIT, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
 
 **Does** - switches one brand on or off: the **Enabled** toggle of the back office brand list, and nothing else.
@@ -998,6 +998,102 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Returns** - `changed`, `active`. When it is already in that state: `changed: false` and nothing happens.
 
 **Notes** - switching a brand off hides its page on the storefront; its products stay on sale.
+
+#### `somcp_list_manufacturer_addresses`
+**State**: to write · [issue #62](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/62)
+**Nature**: `acts(VIEW, 'AdminManufacturers')` · **Scope**: `mcp.catalog.read`
+
+**Does** - lists the postal addresses of the brands: the **Brand addresses** list of the back office.
+
+**Do not use for** - the brands themselves (→ `somcp_list_manufacturers`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_manufacturer` | integer | no | the addresses of one brand only |
+
+**Returns** - per address: `id_address`, `id_manufacturer`, `manufacturer_name`, `lastname`, `firstname`, `postcode`, `city`, `country` (ISO code). Plus `count`.
+
+**Notes** - rows of `address` with `id_manufacturer` set and not deleted. Brand addresses are managed under the brands page, so the permission is the one on `AdminManufacturers`, as in the back office.
+
+#### `somcp_get_manufacturer_address`
+**State**: to write · [issue #63](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/63)
+**Nature**: `acts(VIEW, 'AdminManufacturers')` · **Scope**: `mcp.catalog.read`
+
+**Does** - returns every field of one brand address.
+
+**Do not use for** - the list (→ `somcp_list_manufacturer_addresses`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_address` | integer | yes | from `somcp_list_manufacturer_addresses` |
+
+**Returns** - `id_address`, `id_manufacturer`, `manufacturer_name`, `lastname`, `firstname`, `address1`, `address2`, `postcode`, `city`, `country` (ISO code), `state` (ISO code), `dni`, `phone`, `phone_mobile`, `other`.
+
+**Notes** - an `id_address` that belongs to a customer, a supplier or nobody is refused: this tool reads brand addresses only.
+
+#### `somcp_create_manufacturer_address`
+**State**: to write · [issue #64](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/64)
+**Nature**: `acts(EDIT, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
+
+**Does** - adds one postal address to a brand, with every field of the back office brand address form.
+
+**Do not use for** - changing one (→ `somcp_update_manufacturer_address`).
+
+**Parameters**
+
+| Field | Who fills it | Rule |
+|---|---|---|
+| `id_manufacturer` (Brand) | merchant, from the shop | required on creation, from `somcp_list_manufacturers` |
+| `lastname`, `firstname` | merchant | required; `Validate::isName()`; 255 characters at most |
+| `address1` | merchant | required; `Validate::isAddress()`; 128 characters at most |
+| `address2` | merchant | `Validate::isAddress()`; 128 characters at most |
+| `postcode` | merchant | checked against the country's format (`Country::checkZipCode()`) |
+| `city` | merchant | required; 64 characters at most |
+| `country` | merchant | ISO code, required, among the shop's countries |
+| `state` | merchant | ISO code, required when the country uses states |
+| `dni` | merchant | national ID number, required when the country asks for one (`Country::isNeedDni()`) |
+| `phone`, `phone_mobile` | merchant | `Validate::isPhoneNumber()`; 32 characters at most |
+| `other` | merchant | forbidden characters `<>{}` (`Validate::isMessage()`) |
+
+**Returns** - `created`, `id_address`, and the address as `somcp_get_manufacturer_address` returns it.
+
+**Notes** - permission `edit` on `AdminManufacturers`: adding an address edits the brand, which is the right the back office checks. Written through `Address::add()` with `id_manufacturer` set. Not replayable: the read tool to check is `somcp_list_manufacturer_addresses`.
+
+#### `somcp_update_manufacturer_address`
+**State**: to write · [issue #65](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/65)
+**Nature**: `acts(EDIT, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
+
+**Does** - changes one brand address with everything `somcp_create_manufacturer_address` can write, under the same rules. Only what is given changes.
+
+**Do not use for** - adding one (→ `somcp_create_manufacturer_address`).
+
+**Parameters** - `id_address` (required), then the fields of `somcp_create_manufacturer_address`, all optional; `id_manufacturer` moves the address to another brand.
+
+**Returns** - `changed`, per field its old and new value, and the address as `somcp_get_manufacturer_address` returns it.
+
+**Notes** - only brand addresses are accepted, as in `somcp_get_manufacturer_address`. Replayable: the same values again change nothing and say `changed: false`.
+
+#### `somcp_delete_manufacturer_address`
+**State**: to write · [issue #66](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/66)
+**Nature**: `acts(DELETE, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
+
+**Does** - deletes one brand address.
+
+**Do not use for** - anything else than a brand address: customer and supplier addresses are refused.
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_address` | integer | yes | from `somcp_list_manufacturer_addresses` |
+
+**Returns** - `deleted`, `id_address`, `manufacturer_name`, `city`.
+
+**Notes** - irreversible: the assistant names the brand and the city to the merchant before the call. Through `Address::delete()`, so hooks fire.
 
 #### `somcp_list_suppliers`
 **State**: to write · [issue #46](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/46)
@@ -1642,7 +1738,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 
 **Arguments** - `product` (name, reference or ean13 of a product).
 
-**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_list_manufacturers`, `somcp_get_manufacturer`, `somcp_create_manufacturer`, `somcp_update_manufacturer`, `somcp_set_manufacturer_active`, `somcp_list_suppliers`, `somcp_get_supplier`, `somcp_create_supplier`, `somcp_update_supplier`, `somcp_set_supplier_active`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_list_manufacturers`, `somcp_get_manufacturer`, `somcp_create_manufacturer`, `somcp_update_manufacturer`, `somcp_set_manufacturer_active`, `somcp_list_manufacturer_addresses`, `somcp_get_manufacturer_address`, `somcp_create_manufacturer_address`, `somcp_update_manufacturer_address`, `somcp_delete_manufacturer_address`, `somcp_list_suppliers`, `somcp_get_supplier`, `somcp_create_supplier`, `somcp_update_supplier`, `somcp_set_supplier_active`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
 
 **The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
 
