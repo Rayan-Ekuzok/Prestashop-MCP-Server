@@ -560,10 +560,10 @@ The products and the categories they are sorted into: texts, prices, combination
 - At least one filter is not required: without any, the tool lists the catalogue page by page.
 
 #### `somcp_get_product`
-**State**: draft · [issue #2](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/2)
+**State**: to write · [issue #2](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/2)
 **Nature**: `acts(VIEW, 'AdminProducts')` · **Scope**: `mcp.catalog.read`
 
-**Does** - returns everything about one product: texts, prices, combinations with their own price impact and stock, categories, images, features.
+**Does** - returns everything the back office product page shows for one product, tab by tab, combinations included.
 
 **Do not use for** - looking for products (→ `somcp_search_products`).
 
@@ -575,9 +575,35 @@ The products and the categories they are sorted into: texts, prices, combination
 | `reference` | string | one of the two | exact reference |
 | `language` | string | no | ISO code, shop default otherwise |
 
-**Returns** - `product` (names, descriptions, SEO fields, prices tax excluded and included, tax rule, active, visibility, condition), `combinations` (attributes, reference, EAN13, price impact, quantity), `categories`, `images` (URLs), `features`, `quantity`.
+**Returns** - one object, grouped like the tabs of the product page. Texts are in `language`; every amount comes with `currency`.
 
-**Notes** - a reference can be shared by several products in PrestaShop: when it is, the tool returns the candidates and asks for an `id_product` rather than picking one.
+| Group | Fields | Where it is read |
+|---|---|---|
+| `basics` | `id_product`, `product_type` (standard, combinations, pack, virtual), `name`, `description_short` (summary), `description` | `product`, `product_lang` |
+| `categories` | `id_category_default`, `categories` (id and name of each associated category) | `category_product` |
+| `brand` | `id_manufacturer`, `manufacturer_name` | `manufacturer` |
+| `related_products` | id, reference and name of each related product | `Product::getAccessories()` |
+| `references` | `reference`, `mpn`, `upc`, `ean13` (EAN-13 or JAN), `isbn` | `product` |
+| `features` | per feature: `id_feature`, `name`, `value`, `custom` | `Product::getFrontFeatures()` |
+| `attachments` | per document: `id_attachment`, `name`, `description`, `file_name`, `mime` | `Product::getAttachments()` |
+| `condition` | `condition` (new, used, refurbished), `show_condition` | `product` |
+| `customization` | `customizable`, `uploadable_files`, `text_fields`, and each field: `id_customization_field`, `type` (file or text), `name`, `required` | `customization_field`, `customization_field_lang` |
+| `stock` | `quantity` (total, combinations included), `location` (stock location), `out_of_stock` (deny, allow, shop default), `available_now` (label when in stock), `available_later` (label when out of stock and backorders allowed), `available_date` | `stock_available`, `product`, `product_lang` |
+| `shipping` | `width`, `height`, `depth`, `weight`, `additional_delivery_times` (none, shop default, this product's), `delivery_in_stock`, `delivery_out_stock`, `additional_shipping_cost`, `carriers` (every carrier of the shop with `id_carrier`, `name` and `available` true or false for this product) | `product`, `product_lang`, `Product::getCarriers()` |
+| `pricing` | `price_tax_excl`, `id_tax_rules_group`, `tax_rules_group_name`, `tax_rate`, `price_tax_incl`, `wholesale_price` (purchase price, tax excluded), `unit_price_tax_excl`, `unit_price_tax_incl`, `unity` (the unit), `on_sale` | `product`, `TaxRulesGroup`, `Product::getTaxesRate()` |
+| `specific_prices` | each one: `id_specific_price`, `id_product_attribute`, shop, currency, country, group, customer, `from_quantity`, `price` (fixed or -1), `reduction`, `reduction_type`, `reduction_tax`, `from`, `to`; plus `priorities`, the order used to pick between them | `SpecificPrice::getByProductId()`, `SpecificPrice::getPriority()` |
+| `seo` | `meta_title`, `meta_description`, `link_rewrite` (friendly URL), `url` (full product URL), `redirect_type`, `id_type_redirected` (redirection page), `meta_keywords` | `product_lang`, `Link::getProductLink()` |
+| `options` | `visibility` (everywhere, catalog only, search only, nowhere), `available_for_order`, `show_price`, `online_only` (web exclusive, not sold in store), `active` | `product_shop` |
+| `suppliers` | `id_supplier_default`, and per supplier and combination: `id_supplier`, `supplier_name`, `id_product_attribute`, `product_supplier_reference` (supplier SKU), `product_supplier_price_te` (supplier purchase price), `currency` (supplier currency) | `product_supplier`, `supplier` |
+| `images` | per image: `id_image`, `position`, `cover` (the default image), `legend`, `url` (large size) | `Image::getImages()`, `image_lang`, `Link::getImageLink()` |
+| `combinations` | per combination: `id_product_attribute`, `attributes` (group and value, for example Size: M), `default_on`, `reference`, `mpn`, `upc`, `ean13`, `isbn`, `quantity`, `location`, `available_date`, `available_now`, `available_later`, `price_impact_tax_excl`, `price_impact_tax_incl`, `unit_price_impact_tax_excl`, `unit_price_impact_tax_incl`, `weight_impact`, `wholesale_price`, `minimal_quantity`, `images` (ids) | `product_attribute`, `product_attribute_lang`, `product_attribute_combination`, `stock_available`, `product_attribute_image` |
+
+**Notes**
+- A reference can be shared by several products in PrestaShop: when it is, the tool returns the candidates and asks for an `id_product` rather than picking one.
+- The values are the product's own, before specific prices and cart rules; `specific_prices` lists the rules apart, so the assistant does not mistake a promotion for the price.
+- PrestaShop 8.0 has no `product_attribute_lang`: the `available_now` and `available_later` of a combination exist from 8.1 and are `null` before. PrestaShop 9 dropped `meta_keywords`: the field is `null` there. Check with the column, not the version number.
+- `tax_rate` is the rate of the tax rule in the shop's default country, the one the back office shows.
+- Read the product in the shop of the token (`product_shop`), never the default shop.
 
 #### `somcp_create_product`
 **State**: draft · [issue #3](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/3)
