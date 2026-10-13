@@ -777,7 +777,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **State**: to write · [issue #7](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/7)
 **Nature**: `acts(DELETE, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
-**Does** - deletes one product, with its combinations, images and stock.
+**Does** - deletes one product from the shop of the token, with its combinations, images and stock there, as the back office does.
 
 **Do not use for** - hiding a product from the storefront, which is reversible (→ `somcp_set_product_active`).
 
@@ -787,9 +787,13 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 |---|---|---|---|
 | `id_product` | integer | yes |  |
 
-**Returns** - `deleted`, `id_product`, `name`.
+**Returns** - `deleted`, `id_product`, `name`, `reference`, and `still_in_shops`: how many other shops still carry the product (0 when it is gone for good).
 
-**Notes** - kept simple on purpose: it deletes the way the back office does, through `Product::delete()`, so hooks fire and PrestaShop's own rules apply, multistore included. No extra refusal on top. Irreversible, and said so in the description so the client asks the merchant first. Orders that contain the product keep their lines.
+**Notes**
+- Irreversible. The description tells the assistant to ask the merchant first, naming the product by its **name and reference** (read with `somcp_get_product`), and to offer switching it off instead.
+- A product that has been ordered is deleted like any other: PrestaShop handles it, and orders keep their lines with the product's name, reference and price as sold.
+- Multistore: the shop comes from the token, never from an argument, so the tool deletes in that shop only (`id_shop_list` set to it before `Product::delete()`). PrestaShop removes the product completely only when no shop carries it any more. When `still_in_shops` is above 0, the assistant tells the merchant, who removes it elsewhere from a connection to each of those shops.
+- Through `Product::delete()`, so hooks fire and other modules clean up after it.
 
 #### `somcp_list_categories`
 **State**: draft · [issue #8](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/8)
