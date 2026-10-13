@@ -1485,6 +1485,12 @@ The faceted search fields follow the rule given under `somcp_create_feature`.
 - Columns of `attachment` and `attachment_lang`; `products_count` from `product_attachment`.
 - Lists only, never uploads: files do not travel through the conversation.
 
+### Stock
+
+The quantities the storefront sells against, per product and combination.
+
+**Not here**: prices and texts (→ Catalogue).
+
 #### `somcp_get_stock`
 **State**: draft · [issue #12](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/12)
 **Nature**: `acts(VIEW, 'AdminStockManagement')` · **Scope**: `mcp.stock.read`
