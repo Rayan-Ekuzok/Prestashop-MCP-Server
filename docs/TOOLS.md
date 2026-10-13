@@ -1464,30 +1464,26 @@ The faceted search fields follow the rule given under `somcp_create_feature`.
 **Notes** - the value stays on the products that use it: changing it changes it there too, which the assistant tells the merchant before the call. Custom values are refused. Replayable: the same values again say `changed: false`.
 
 #### `somcp_list_attachments`
-**State**: draft · [issue #49](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/49)
+**State**: to write · [issue #49](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/49)
 **Nature**: `acts(VIEW, 'AdminAttachments')` · **Scope**: `mcp.catalog.read`
 
-**Does** - lists the documents already uploaded to the shop (manuals, data sheets) that a product can carry.
+**Does** - lists the files of the shop (Catalogue > Files: manuals, data sheets) that a product can carry, with the columns of the back office list and a download link.
 
-**Do not use for** - the documents of one product (→ `somcp_get_product`).
+**Do not use for** - the files of one product (→ `somcp_get_product`).
 
 **Parameters**
 
 | Name | Type | Required | Role |
 |---|---|---|---|
-| `name` | string | no | part of the name |
 | `language` | string | no | ISO code, shop default otherwise |
-| `limit` / `offset` | integer | no | 20 by default, 100 at most |
 
-**Returns** - per document: `id_attachment`, `name`, `description`, `file_name`, `mime`, `file_size`, `products_count`. Plus `returned`, `total_count` and `offset`.
+**Returns** - per file: `id_attachment` (ID), `name` (Name), `file_name` (File), `file_size` (Size, in bytes), `products_count` (Products), `mime`, `download_url`. Plus `count`.
 
-**Notes** - lists only, never uploads: files do not travel through the conversation.
-
-### Stock
-
-The quantities the storefront sells against, per product and combination.
-
-**Not here**: prices and texts (→ Catalogue).
+**Notes**
+- The file itself never travels through the conversation. `download_url` is the storefront link PrestaShop already gives customers on a product page, built with `Link::getPageLink('attachment', true, null, 'id_attachment=N')`; the `attachment` front controller sends the file. The merchant opens it in a browser to download or preview it.
+- That link works without being signed in, as on the storefront: anyone holding it can download the file. The description says so, so the assistant does not paste it somewhere public by mistake.
+- Columns of `attachment` and `attachment_lang`; `products_count` from `product_attachment`.
+- Lists only, never uploads: files do not travel through the conversation.
 
 #### `somcp_get_stock`
 **State**: draft · [issue #12](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/12)
