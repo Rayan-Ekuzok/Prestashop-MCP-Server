@@ -1333,12 +1333,12 @@ The faceted search fields follow the rule given under `somcp_create_attribute_gr
 **Notes** - the value stays on the combinations that use it: renaming it renames it there too, which the assistant tells the merchant before the call. Replayable: the same values again say `changed: false`.
 
 #### `somcp_list_features`
-**State**: draft · [issue #48](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/48)
+**State**: to write · [issue #48](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/48)
 **Nature**: `acts(VIEW, 'AdminFeatures')` · **Scope**: `mcp.catalog.read`
 
-**Does** - lists the features (Material, Composition...) and their predefined values, with their identifiers.
+**Does** - lists the features (Material, Composition...) and, under each, its predefined values: identifier and name, nothing else. A cascade, like the attributes.
 
-**Do not use for** - the features of one product (→ `somcp_get_product`).
+**Do not use for** - everything about one feature or one value (→ `somcp_get_feature`, `somcp_get_feature_value`), or the features of a product (→ `somcp_get_product`).
 
 **Parameters**
 
@@ -1347,9 +1347,121 @@ The faceted search fields follow the rule given under `somcp_create_attribute_gr
 | `id_feature` | integer | no | one feature only |
 | `language` | string | no | ISO code, shop default otherwise |
 
-**Returns** - per feature: `id_feature`, `name`, and its predefined `values`: `id_feature_value`, `value`. Custom values typed on a single product are not listed.
+**Returns** - per feature: `id_feature`, `name`, and its `values`: `id_feature_value`, `value`. Plus `count`.
 
-**Notes** - a product takes either a predefined value or a custom one; the list lets the assistant offer the predefined ones first.
+**Notes** - predefined values only (`custom` = 0). A custom value typed on one product belongs to that product and is read with `somcp_get_product`.
+
+#### `somcp_get_feature`
+**State**: to write · [issue #73](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/73)
+**Nature**: `acts(VIEW, 'AdminFeatures')` · **Scope**: `mcp.catalog.read`
+
+**Does** - returns every field of the back office feature form for one feature.
+
+**Do not use for** - the list (→ `somcp_list_features`), or one value (→ `somcp_get_feature_value`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_feature` | integer | yes | from `somcp_list_features` |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - `id_feature`, `name`, `position`, `values_count`, and when `ps_facetedsearch` is installed: `url_name`, `meta_title`, `indexable`.
+
+**Notes** - columns of `feature` and `feature_lang`; the faceted search fields are `null` without the module.
+
+#### `somcp_create_feature`
+**State**: to write · [issue #74](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/74)
+**Nature**: `acts(ADD, 'AdminFeatures')` · **Scope**: `mcp.catalog.write`
+
+**Does** - creates one feature with every field of the back office feature form, in every language of the shop or the ones the merchant picks.
+
+**Do not use for** - adding a value to a feature (→ `somcp_create_feature_value`).
+
+**Parameters** - the rules of `somcp_create_product` apply: `languages`, translatable texts as an object keyed by ISO code, who fills each field.
+
+| Field | Who fills it | Rule |
+|---|---|---|
+| `name` | merchant | required; 128 characters at most; `Validate::isGenericName()` |
+| `url_name` (URL) | assistant | faceted search; the word used in filtered URLs, the name otherwise; `Tools::str2url()` |
+| `meta_title` (title tag) | assistant | faceted search |
+| `indexable` | merchant | faceted search; false when left out, as in the form |
+
+**Faceted search fields.** `url_name`, `meta_title` and `indexable` belong to `ps_facetedsearch`, exactly as for attributes: the module saves them from the back office form only, so the tool writes its rows itself, in `layered_indexable_feature`, `layered_indexable_feature_lang_value` and `layered_indexable_feature_value_lang_value`, and refuses these fields with a clear message when the module is not installed and enabled.
+
+**Returns** - `created`, `id_feature`, and the feature as `somcp_get_feature` returns it.
+
+**Notes** - written through `Feature::add()`, so hooks fire. Not replayable: the read tool to check is `somcp_list_features`.
+
+#### `somcp_update_feature`
+**State**: to write · [issue #75](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/75)
+**Nature**: `acts(EDIT, 'AdminFeatures')` · **Scope**: `mcp.catalog.write`
+
+**Does** - changes one feature with everything `somcp_create_feature` can write, under the same rules. Only what is given changes.
+
+**Do not use for** - creating one (→ `somcp_create_feature`).
+
+**Parameters** - `id_feature` (required), `languages`, then the fields of `somcp_create_feature`, all optional. A text given replaces the languages given and keeps the others.
+
+**Returns** - `changed`, per field its old and new value, and the feature as `somcp_get_feature` returns it.
+
+**Notes** - renaming a feature renames it on every product that carries it, which the assistant tells the merchant before the call. Replayable: the same values again say `changed: false`.
+
+#### `somcp_get_feature_value`
+**State**: to write · [issue #76](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/76)
+**Nature**: `acts(VIEW, 'AdminFeatures')` · **Scope**: `mcp.catalog.read`
+
+**Does** - returns every field of the back office value form for one predefined feature value.
+
+**Do not use for** - the list (→ `somcp_list_features`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_feature_value` | integer | yes | from `somcp_list_features` |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - `id_feature_value`, `id_feature` and `feature_name`, `value`, and when `ps_facetedsearch` is installed: `url_name`, `meta_title`.
+
+**Notes** - a custom value (`custom` = 1) is refused: it belongs to one product.
+
+#### `somcp_create_feature_value`
+**State**: to write · [issue #77](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/77)
+**Nature**: `acts(ADD, 'AdminFeatures')` · **Scope**: `mcp.catalog.write`
+
+**Does** - adds one predefined value to a feature, with every field of the back office value form.
+
+**Do not use for** - creating a feature (→ `somcp_create_feature`), or giving one product its own value (→ `somcp_update_product`, `features` with a custom value).
+
+**Parameters** - same rules as `somcp_create_feature`.
+
+| Field | Who fills it | Rule |
+|---|---|---|
+| `id_feature` (Feature) | merchant, from the shop | required; from `somcp_list_features` |
+| `value` | merchant | required; 255 characters at most; `Validate::isGenericName()` |
+| `url_name` (URL) | assistant | faceted search, as for the feature |
+| `meta_title` (title tag) | assistant | faceted search, as for the feature |
+
+The faceted search fields follow the rule given under `somcp_create_feature`.
+
+**Returns** - `created`, `id_feature_value`, and the value as `somcp_get_feature_value` returns it.
+
+**Notes** - written through `FeatureValue::add()` with `custom` = 0, so hooks fire. Two values with the same text in one feature are refused. Not replayable: the read tool to check is `somcp_list_features`.
+
+#### `somcp_update_feature_value`
+**State**: to write · [issue #78](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/78)
+**Nature**: `acts(EDIT, 'AdminFeatures')` · **Scope**: `mcp.catalog.write`
+
+**Does** - changes one predefined feature value with everything `somcp_create_feature_value` can write, under the same rules. Only what is given changes.
+
+**Do not use for** - adding one (→ `somcp_create_feature_value`).
+
+**Parameters** - `id_feature_value` (required), `languages`, then the fields of `somcp_create_feature_value`, all optional; `id_feature` moves the value to another feature.
+
+**Returns** - `changed`, per field its old and new value, and the value as `somcp_get_feature_value` returns it.
+
+**Notes** - the value stays on the products that use it: changing it changes it there too, which the assistant tells the merchant before the call. Custom values are refused. Replayable: the same values again say `changed: false`.
 
 #### `somcp_list_attachments`
 **State**: draft · [issue #49](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/49)
@@ -1854,7 +1966,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 
 **Arguments** - `product` (name, reference or ean13 of a product).
 
-**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_list_manufacturers`, `somcp_get_manufacturer`, `somcp_create_manufacturer`, `somcp_update_manufacturer`, `somcp_set_manufacturer_active`, `somcp_list_manufacturer_addresses`, `somcp_get_manufacturer_address`, `somcp_create_manufacturer_address`, `somcp_update_manufacturer_address`, `somcp_delete_manufacturer_address`, `somcp_list_suppliers`, `somcp_get_supplier`, `somcp_create_supplier`, `somcp_update_supplier`, `somcp_set_supplier_active`, `somcp_list_attributes`, `somcp_get_attribute_group`, `somcp_create_attribute_group`, `somcp_update_attribute_group`, `somcp_get_attribute_value`, `somcp_create_attribute_value`, `somcp_update_attribute_value`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_list_manufacturers`, `somcp_get_manufacturer`, `somcp_create_manufacturer`, `somcp_update_manufacturer`, `somcp_set_manufacturer_active`, `somcp_list_manufacturer_addresses`, `somcp_get_manufacturer_address`, `somcp_create_manufacturer_address`, `somcp_update_manufacturer_address`, `somcp_delete_manufacturer_address`, `somcp_list_suppliers`, `somcp_get_supplier`, `somcp_create_supplier`, `somcp_update_supplier`, `somcp_set_supplier_active`, `somcp_list_attributes`, `somcp_get_attribute_group`, `somcp_create_attribute_group`, `somcp_update_attribute_group`, `somcp_get_attribute_value`, `somcp_create_attribute_value`, `somcp_update_attribute_value`, `somcp_list_features`, `somcp_get_feature`, `somcp_create_feature`, `somcp_update_feature`, `somcp_get_feature_value`, `somcp_create_feature_value`, `somcp_update_feature_value`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
 
 **The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
 

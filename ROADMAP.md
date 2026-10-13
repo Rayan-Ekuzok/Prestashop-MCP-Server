@@ -10,15 +10,15 @@ before starting something large, so two people do not build the same thing.
 
 ## More of PrestaShop as tools
 
-Today the module covers orders and order statuses. Sixty-one more tools are
+Today the module covers orders and order statuses. Sixty-seven more tools are
 specified in [docs/TOOLS.md](docs/TOOLS.md), each with its own issue labelled
 [`new tool`](https://github.com/novalo-dev/Prestashop-MCP-Server/issues?q=is%3Aissue+is%3Aopen+label%3A%22new+tool%22):
 
 - **Catalogue**: search, read, create, edit, switch on and off, delete
   products; list, read, create, edit, switch on and off categories, brands
   and suppliers; manage brand addresses; list, read, create and edit
-  attribute groups and their values; list features and documents, so a
-  product is never built on a guessed identifier.
+  attribute groups, features and their values; list documents, so a product
+  is never built on a guessed identifier.
 - **Stock**: read quantities, list what runs low, set a quantity.
 - **Customers**: search, read, create, edit customers.
 - **Orders and configuration**: tracking numbers, carriers, tax rules,
