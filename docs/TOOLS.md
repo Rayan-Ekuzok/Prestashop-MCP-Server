@@ -524,27 +524,40 @@ The products and the categories they are sorted into: texts, prices, combination
 **Not here**: stock quantities (→ Stock), what sold (→ Statistics).
 
 #### `somcp_search_products`
-**State**: draft · [issue #1](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/1)
+**State**: to write · [issue #1](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/1)
 **Nature**: `acts(VIEW, 'AdminProducts')` · **Scope**: `mcp.catalog.read`
 
-**Does** - finds products by name, reference, EAN13, category or status, and returns one short line each.
+**Does** - finds products with the filters of the back office product list (ID, name, reference, category, price without and with tax, quantity, status, EAN13, MPN, UPC, ISBN), and returns one short line each.
 
 **Do not use for** - reading a product already identified (→ `somcp_get_product`), or stock levels across the catalogue (→ `somcp_list_low_stock`).
 
-**Parameters**
+**Parameters** - every filter is optional and they combine (AND). Text filters match a part of the value, case-insensitive.
 
 | Name | Type | Required | Role |
 |---|---|---|---|
-| `query` | string | no | part of the name, reference or EAN13 |
-| `id_category` | integer | no | from `somcp_list_categories` |
+| `id_product` | integer | no | one product by its ID |
+| `name` | string | no | part of the name, in `language` |
+| `reference` | string | no | part of the reference of the product **or of one of its combinations** |
+| `id_category` | integer | no | products associated with this category, from `somcp_list_categories` |
+| `price_tax_excl_min` / `price_tax_excl_max` | number | no | price without tax, bounds included |
+| `price_tax_incl_min` / `price_tax_incl_max` | number | no | price with tax, bounds included |
+| `quantity_min` / `quantity_max` | integer | no | total quantity, combinations included, bounds included |
 | `active` | boolean | no | active or inactive products only |
-| `sort` | enum | no | `date_add_desc` (default), `name_asc`, `price_asc`, `price_desc` |
+| `ean13` | string | no | part of the EAN13 of the product **or of one of its combinations** |
+| `mpn` | string | no | part of the product's MPN |
+| `upc` | string | no | part of the product's UPC barcode |
+| `isbn` | string | no | part of the product's ISBN |
+| `sort` | enum | no | `date_add_desc` (default), `name_asc`, `price_asc`, `price_desc`, `quantity_asc`, `quantity_desc` |
 | `language` | string | no | ISO code, shop default otherwise |
 | `limit` / `offset` | integer | no | 20 by default, 100 at most |
 
-**Returns** - per product: `id_product`, `reference`, `name`, `price_tax_excl`, `currency`, `quantity`, `active`, `id_category_default`. Plus `returned`, `total_count` and `offset`.
+**Returns** - per product: `id_product`, `reference`, `name`, `price_tax_excl`, `price_tax_incl`, `currency`, `quantity`, `active`, `id_category_default`, `ean13`. When the product was found through a combination's reference or EAN13: `matched_combinations`, a list of `id_product_attribute`, `reference`, `ean13` for the combinations that matched. Plus `returned`, `total_count` and `offset`.
 
-**Notes** - read through a query, not through Product objects. The quantity is the product's total from `StockAvailable`, combinations included.
+**Notes**
+- Read through a query (`DbQuery`), not through Product objects. Same columns as the back office product list: `product_shop` for price and status, `product_lang` for the name, `category_product` for the category, `stock_available` with `id_product_attribute = 0` for the quantity.
+- Reference and EAN13 also look in `product_attribute`; MPN, UPC and ISBN only on the product. A product found through several combinations comes back once.
+- Prices are the product's base price, before specific prices and combination impacts. The price with tax uses the product's tax rule in the shop's default country, as the back office list does.
+- At least one filter is not required: without any, the tool lists the catalogue page by page.
 
 #### `somcp_get_product`
 **State**: draft · [issue #2](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/2)
