@@ -774,7 +774,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - kept apart from `somcp_update_product` on purpose: "switch this product off" must touch the status and nothing else, the way the toggle does. Written in the shop of the token (`product_shop`), so on a multistore installation the product stays as it was in the other shops.
 
 #### `somcp_delete_product`
-**State**: draft · [issue #7](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/7)
+**State**: to write · [issue #7](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/7)
 **Nature**: `acts(DELETE, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
 **Does** - deletes one product, with its combinations, images and stock.
@@ -789,7 +789,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 
 **Returns** - `deleted`, `id_product`, `name`.
 
-**Notes** - irreversible, and said so in the description so the client asks the merchant. Through `Product::delete()`, so hooks fire. Orders that contain the product keep their lines.
+**Notes** - kept simple on purpose: it deletes the way the back office does, through `Product::delete()`, so hooks fire and PrestaShop's own rules apply, multistore included. No extra refusal on top. Irreversible, and said so in the description so the client asks the merchant first. Orders that contain the product keep their lines.
 
 #### `somcp_list_categories`
 **State**: draft · [issue #8](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/8)
