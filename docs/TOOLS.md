@@ -720,29 +720,39 @@ The products and the categories they are sorted into: texts, prices, combination
 - Not replayable: the read tool to check is `somcp_search_products` with the reference.
 
 #### `somcp_update_product`
-**State**: draft · [issue #4](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/4)
+**State**: to write · [issue #4](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/4)
 **Nature**: `acts(EDIT, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
-**Does** - changes the texts of one product: name, short and long description, meta title, meta description, friendly URL, in one language.
+**Does** - changes one existing product with everything `somcp_create_product` can write: the same groups, the same fields, the same rules, combinations and images included. Only what is given changes.
 
-**Do not use for** - prices (→ `somcp_set_product_price`), stock (→ `somcp_set_stock_quantity`), switching a product on or off (→ `somcp_set_product_active`).
+**Do not use for** - creating a product (→ `somcp_create_product`), or deleting one (→ `somcp_delete_product`).
 
-**Parameters**
+**Parameters** - `id_product` (required), `languages`, then the groups and fields of `somcp_create_product`, all optional. Every rule of that entry applies unchanged: who fills each field (merchant, merchant from the shop, assistant, both), the lengths (name 128, summary 100 to 200, reference 50, SEO title 55, meta description 512, counted on the visible text with spaces), the identifiers taken from the `somcp_list_*` tools, the SEO section and the image download guards.
 
-| Name | Type | Required | Role |
-|---|---|---|---|
-| `id_product` | integer | yes |  |
-| `language` | string | yes | the language being written |
-| `name` | string | no |  |
-| `description_short` | string | no | HTML allowed, cleaned |
-| `description` | string | no | HTML allowed, cleaned |
-| `meta_title` | string | no |  |
-| `meta_description` | string | no |  |
-| `link_rewrite` | string | no | checked for format |
+**What "only what is given" means**
 
-**Returns** - `changed`, the fields written with their old and new values.
+| Kind of field | Given | Left out |
+|---|---|---|
+| a single value (`price_tax_excl`, `weight`, `active`...) | replaced | kept |
+| a translatable text | replaced in the languages given, the others kept | kept in every language |
+| a set chosen as a whole in the back office: `categories`, `related_products`, `features`, `attachments`, `carriers`, `customization` fields | the set given replaces the old one entirely | kept |
+| `combinations` | an item with `id_product_attribute` changes that combination, field by field; an item without one creates a combination | kept |
+| `images` | an item with `id_image` changes its legend, cover, position or combinations; an item with `url` adds an image | kept |
+| `specific_prices` | an item with `id_specific_price` changes it, an item without one adds it | kept |
+| `suppliers` | per supplier and combination, the values given replace the old ones | kept |
 
-**Notes** - only the fields given are touched; a field left out keeps its value. HTML goes through the core's own cleaning, as in the back office.
+Removing is always explicit, never inferred from a missing item: `remove_combinations`, `remove_images`, `remove_specific_prices`, `remove_suppliers` (lists of identifiers). A removed combination takes its stock with it, so the assistant names each one to the merchant before the call.
+
+**Returns** - `changed`, then per field written its old and new value, `seo_warnings` for the languages touched, `images` (per URL: `id_image` or the reason it was refused), and the product as `somcp_get_product` returns it.
+
+**Notes**
+- `id_product` that does not exist, or an `id_product_attribute`, `id_image`, `id_specific_price` that does not belong to it: refused, nothing written.
+- A `reference` changed to one another product or combination uses: refused, as at creation.
+- `product_type` can change as in the back office, except away from `combinations` while the product still has some: they would be lost silently. Remove them first, explicitly.
+- `link_rewrite` changed on an active product: the old URL stops working. The answer says so in `seo_warnings`; the assistant tells the merchant before the call.
+- Everything or nothing, as at creation: if one part cannot be written, nothing is. Only images and SEO warnings are reported without failing.
+- Written through the core classes (`Product::update()`, `Combination`, `StockAvailable`, `SpecificPrice`, `Image`) so hooks fire.
+- Replayable: calling it again with the same values changes nothing and says `changed: false`, except for an image added by `url`, which would be added twice. The read tool to check first is `somcp_get_product`.
 
 #### `somcp_set_product_price`
 **State**: draft · [issue #5](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/5)
