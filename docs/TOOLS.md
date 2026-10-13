@@ -571,8 +571,8 @@ The products and the categories they are sorted into: texts, prices, combination
 
 | Name | Type | Required | Role |
 |---|---|---|---|
-| `id_product` | integer | one of the two | identifier |
-| `reference` | string | one of the two | exact reference |
+| `id_product` | integer | yes | from `somcp_search_products` |
+| `id_product_attribute` | integer | no | one combination of that product: `combinations` then holds that one only |
 | `language` | string | no | ISO code, shop default otherwise |
 
 **Returns** - one object, grouped like the tabs of the product page. Texts are in `language`; every amount comes with `currency`.
@@ -599,7 +599,8 @@ The products and the categories they are sorted into: texts, prices, combination
 | `combinations` | per combination: `id_product_attribute`, `attributes` (group and value, for example Size: M), `default_on`, `reference`, `mpn`, `upc`, `ean13`, `isbn`, `quantity`, `location`, `available_date`, `available_now`, `available_later`, `price_impact_tax_excl`, `price_impact_tax_incl`, `unit_price_impact_tax_excl`, `unit_price_impact_tax_incl`, `weight_impact`, `wholesale_price`, `minimal_quantity`, `images` (ids) | `product_attribute`, `product_attribute_lang`, `product_attribute_combination`, `stock_available`, `product_attribute_image` |
 
 **Notes**
-- A reference can be shared by several products in PrestaShop: when it is, the tool returns the candidates and asks for an `id_product` rather than picking one.
+- Called by identifiers only, never by a reference, an EAN13 or a name: finding the product is the job of `somcp_search_products`, which also returns the `id_product_attribute` of a matching combination.
+- An `id_product_attribute` that does not belong to `id_product` is refused, never silently ignored.
 - The values are the product's own, before specific prices and cart rules; `specific_prices` lists the rules apart, so the assistant does not mistake a promotion for the price.
 - PrestaShop 8.0 has no `product_attribute_lang`: the `available_now` and `available_later` of a combination exist from 8.1 and are `null` before. PrestaShop 9 dropped `meta_keywords`: the field is `null` there. Check with the column, not the version number.
 - `tax_rate` is the rate of the tax rule in the shop's default country, the one the back office shows.
