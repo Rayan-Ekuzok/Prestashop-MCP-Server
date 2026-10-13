@@ -754,34 +754,13 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 - Written through the core classes (`Product::update()`, `Combination`, `StockAvailable`, `SpecificPrice`, `Image`) so hooks fire.
 - Replayable: calling it again with the same values changes nothing and says `changed: false`, except for an image added by `url`, which would be added twice. The read tool to check first is `somcp_get_product`.
 
-#### `somcp_set_product_price`
-**State**: draft · [issue #5](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/5)
-**Nature**: `acts(EDIT, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
-
-**Does** - sets the price of one product, or the price impact of one of its combinations.
-
-**Do not use for** - discounts and specific prices, which are not covered yet.
-
-**Parameters**
-
-| Name | Type | Required | Role |
-|---|---|---|---|
-| `id_product` | integer | yes |  |
-| `id_product_attribute` | integer | no | a combination, from `somcp_get_product` |
-| `price_tax_excl` | number | one of the two | the new price |
-| `price_tax_incl` | number | one of the two | converted with the product's tax rule |
-
-**Returns** - `changed`, `previous_price_tax_excl`, `price_tax_excl`, `price_tax_incl`, `currency`.
-
-**Notes** - a price given tax included is converted with the product's own tax rule for the shop's country, and both values are returned so the merchant sees what was stored.
-
 #### `somcp_set_product_active`
-**State**: draft · [issue #6](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/6)
+**State**: to write · [issue #6](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/6)
 **Nature**: `acts(EDIT, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
-**Does** - switches one product on or off on the storefront.
+**Does** - switches one product on or off on the storefront: the **Status** toggle of the back office product list (Catalogue > Products).
 
-**Do not use for** - deleting a product (→ `somcp_delete_product`).
+**Do not use for** - deleting a product (→ `somcp_delete_product`), or any other change (→ `somcp_update_product`, which can also set `active` along with other fields).
 
 **Parameters**
 
@@ -791,6 +770,8 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 | `active` | boolean | yes |  |
 
 **Returns** - `changed`, `active`. When the product is already in that state: `changed: false` and nothing happens.
+
+**Notes** - kept apart from `somcp_update_product` on purpose: "switch this product off" must touch the status and nothing else, the way the toggle does. Written in the shop of the token (`product_shop`), so on a multistore installation the product stays as it was in the other shops.
 
 #### `somcp_delete_product`
 **State**: draft · [issue #7](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/7)
@@ -1473,7 +1454,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 
 **Arguments** - `product` (name, reference or ean13 of a product).
 
-**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_price`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_create_category`, `somcp_update_category`, `somcp_delete_category`, `somcp_list_manufacturers`, `somcp_list_suppliers`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_create_category`, `somcp_update_category`, `somcp_delete_category`, `somcp_list_manufacturers`, `somcp_list_suppliers`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
 
 **The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
 
