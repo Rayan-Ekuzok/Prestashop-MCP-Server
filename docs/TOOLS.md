@@ -243,7 +243,7 @@ outright already deny that one.
 Copy this for every tool.
 
 ### `tool_name`
-**State**: to write · written · tested
+**State**: draft · to write · written · tested
 **Nature**: `acts(VIEW, 'AdminXxx')` · **Scope**: `mcp.xxx.read`
 
 **Does** - one sentence.
@@ -265,11 +265,16 @@ tool, named.
 
 ## Sections
 
-An entry marked **to write** is the specification: pick its issue, write the
-tool to match, and change the state in the same pull request. If something in
-the entry turns out wrong while writing it, say so in the issue first.
+An entry marked **draft** is not open yet: the maintainer still has to approve
+its design, and its issue carries the `spec pending` label. Do not start it;
+comment on the issue if you have something to say about the design.
 
-The scopes of entries marked to write do not exist yet. The first tool of a
+An entry marked **to write** is approved and is the specification: pick its
+issue, write the tool to match, and change the state in the same pull request.
+If something in the entry turns out wrong while writing it, say so in the issue
+first.
+
+The scopes of entries marked draft or to write do not exist yet. The first tool of a
 section adds its scopes to `SomcpScope`, with the label the merchant reads on
 the consent screen, in the four languages.
 
@@ -383,7 +388,7 @@ Advanced stock management is synchronised on PrestaShop 8 only, guarded by
 `method_exists`: `StockAvailable::dependsOnStock()` no longer exists in 9.
 
 #### `somcp_set_order_tracking`
-**State**: to write · [issue #19](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/19)
+**State**: draft · [issue #19](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/19)
 **Nature**: `acts(EDIT, 'AdminOrders')` · **Scope**: `mcp.orders.write`
 
 **Does** - sets the tracking number of one order's shipment.
@@ -471,7 +476,7 @@ exists in `somcp_search_orders`, where the permission is the right one.
 them out before we see them. Removed rather than left lying.
 
 #### `somcp_list_carriers`
-**State**: to write · [issue #20](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/20)
+**State**: draft · [issue #20](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/20)
 **Nature**: `acts(VIEW, 'AdminCarriers')` · **Scope**: `mcp.orders.read`
 
 **Does** - lists the carriers of this shop with their identifiers, delays and tracking URL.
@@ -519,7 +524,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Not here**: stock quantities (→ Stock), what sold (→ Statistics).
 
 #### `somcp_search_products`
-**State**: to write · [issue #1](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/1)
+**State**: draft · [issue #1](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/1)
 **Nature**: `acts(VIEW, 'AdminProducts')` · **Scope**: `mcp.catalog.read`
 
 **Does** - finds products by name, reference, EAN13, category or status, and returns one short line each.
@@ -542,7 +547,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - read through a query, not through Product objects. The quantity is the product's total from `StockAvailable`, combinations included.
 
 #### `somcp_get_product`
-**State**: to write · [issue #2](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/2)
+**State**: draft · [issue #2](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/2)
 **Nature**: `acts(VIEW, 'AdminProducts')` · **Scope**: `mcp.catalog.read`
 
 **Does** - returns everything about one product: texts, prices, combinations with their own price impact and stock, categories, images, features.
@@ -562,7 +567,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - a reference can be shared by several products in PrestaShop: when it is, the tool returns the candidates and asks for an `id_product` rather than picking one.
 
 #### `somcp_create_product`
-**State**: to write · [issue #3](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/3)
+**State**: draft · [issue #3](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/3)
 **Nature**: `acts(ADD, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
 **Does** - creates one product, inactive by default, with its name, reference, price, tax rule, default category and quantity.
@@ -587,7 +592,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - inactive unless asked otherwise, so a product half described never appears on the storefront. Written through `Product::add()` so hooks fire. Not replayable: the read tool to check is `somcp_search_products` with the reference.
 
 #### `somcp_update_product`
-**State**: to write · [issue #4](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/4)
+**State**: draft · [issue #4](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/4)
 **Nature**: `acts(EDIT, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
 **Does** - changes the texts of one product: name, short and long description, meta title, meta description, friendly URL, in one language.
@@ -612,7 +617,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - only the fields given are touched; a field left out keeps its value. HTML goes through the core's own cleaning, as in the back office.
 
 #### `somcp_set_product_price`
-**State**: to write · [issue #5](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/5)
+**State**: draft · [issue #5](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/5)
 **Nature**: `acts(EDIT, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
 **Does** - sets the price of one product, or the price impact of one of its combinations.
@@ -633,7 +638,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - a price given tax included is converted with the product's own tax rule for the shop's country, and both values are returned so the merchant sees what was stored.
 
 #### `somcp_set_product_active`
-**State**: to write · [issue #6](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/6)
+**State**: draft · [issue #6](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/6)
 **Nature**: `acts(EDIT, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
 **Does** - switches one product on or off on the storefront.
@@ -650,7 +655,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Returns** - `changed`, `active`. When the product is already in that state: `changed: false` and nothing happens.
 
 #### `somcp_delete_product`
-**State**: to write · [issue #7](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/7)
+**State**: draft · [issue #7](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/7)
 **Nature**: `acts(DELETE, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
 **Does** - deletes one product, with its combinations, images and stock.
@@ -668,7 +673,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - irreversible, and said so in the description so the client asks the merchant. Through `Product::delete()`, so hooks fire. Orders that contain the product keep their lines.
 
 #### `somcp_list_categories`
-**State**: to write · [issue #8](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/8)
+**State**: draft · [issue #8](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/8)
 **Nature**: `acts(VIEW, 'AdminCategories')` · **Scope**: `mcp.catalog.read`
 
 **Does** - lists the categories as a tree, with their identifiers.
@@ -688,7 +693,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - called before any write that takes a category, which must never guess an identifier.
 
 #### `somcp_create_category`
-**State**: to write · [issue #9](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/9)
+**State**: draft · [issue #9](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/9)
 **Nature**: `acts(ADD, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
 
 **Does** - creates one category under a given parent.
@@ -709,7 +714,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - not replayable: the read tool to check is `somcp_list_categories`.
 
 #### `somcp_update_category`
-**State**: to write · [issue #10](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/10)
+**State**: draft · [issue #10](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/10)
 **Nature**: `acts(EDIT, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
 
 **Does** - changes one category: name, description, SEO fields, parent, active.
@@ -732,7 +737,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes** - the root and Home categories are refused, as in the back office.
 
 #### `somcp_delete_category`
-**State**: to write · [issue #11](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/11)
+**State**: draft · [issue #11](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/11)
 **Nature**: `acts(DELETE, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
 
 **Does** - deletes one category.
@@ -756,7 +761,7 @@ The quantities the storefront sells against, per product and combination.
 **Not here**: prices and texts (→ Catalogue).
 
 #### `somcp_get_stock`
-**State**: to write · [issue #12](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/12)
+**State**: draft · [issue #12](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/12)
 **Nature**: `acts(VIEW, 'AdminStockManagement')` · **Scope**: `mcp.stock.read`
 
 **Does** - returns the quantities of one product, per combination.
@@ -774,7 +779,7 @@ The quantities the storefront sells against, per product and combination.
 **Notes** - read from `StockAvailable`, the quantities the storefront sells against.
 
 #### `somcp_list_low_stock`
-**State**: to write · [issue #13](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/13)
+**State**: draft · [issue #13](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/13)
 **Nature**: `acts(VIEW, 'AdminStockManagement')` · **Scope**: `mcp.stock.read`
 
 **Does** - lists the products and combinations at or under a quantity.
@@ -792,7 +797,7 @@ The quantities the storefront sells against, per product and combination.
 **Returns** - per line: `id_product`, `id_product_attribute`, `reference`, `name`, `quantity`, `threshold`. Plus `total_count`.
 
 #### `somcp_set_stock_quantity`
-**State**: to write · [issue #14](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/14)
+**State**: draft · [issue #14](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/14)
 **Nature**: `acts(EDIT, 'AdminStockManagement')` · **Scope**: `mcp.stock.write`
 
 **Does** - sets the available quantity of one product or one combination.
@@ -819,7 +824,7 @@ Customer accounts and what belongs to them: groups, addresses, a summary of thei
 **Not here**: the orders themselves (→ Orders).
 
 #### `somcp_search_customers`
-**State**: to write · [issue #15](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/15)
+**State**: draft · [issue #15](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/15)
 **Nature**: `acts(VIEW, 'AdminCustomers')` · **Scope**: `mcp.customers.read`
 
 **Does** - finds customers by name, email, company or registration date, and returns one short line each.
@@ -841,7 +846,7 @@ Customer accounts and what belongs to them: groups, addresses, a summary of thei
 **Notes** - the list stays plain: no address, no phone. Those come with one named customer.
 
 #### `somcp_get_customer`
-**State**: to write · [issue #16](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/16)
+**State**: draft · [issue #16](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/16)
 **Nature**: `acts(VIEW, 'AdminCustomers')` · **Scope**: `mcp.customers.read`
 
 **Does** - returns everything about one customer: account, groups, addresses, and a summary of their orders.
@@ -860,7 +865,7 @@ Customer accounts and what belongs to them: groups, addresses, a summary of thei
 **Notes** - never the password hash, the secure key or the reset token.
 
 #### `somcp_create_customer`
-**State**: to write · [issue #17](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/17)
+**State**: draft · [issue #17](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/17)
 **Nature**: `acts(ADD, 'AdminCustomers')` · **Scope**: `mcp.customers.write`
 
 **Does** - creates one customer account.
@@ -883,7 +888,7 @@ Customer accounts and what belongs to them: groups, addresses, a summary of thei
 **Notes** - no password goes through the assistant: the account is created with a random one, and the customer sets theirs through the usual reset link. Not replayable: the read tool to check is `somcp_search_customers` with the email.
 
 #### `somcp_update_customer`
-**State**: to write · [issue #18](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/18)
+**State**: draft · [issue #18](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/18)
 **Nature**: `acts(EDIT, 'AdminCustomers')` · **Scope**: `mcp.customers.write`
 
 **Does** - changes one customer's account: name, email, company, birthday, groups, newsletter, active.
@@ -913,7 +918,7 @@ Figures over a period, computed from valid orders.
 **Not here**: the orders behind them (→ Orders).
 
 #### `somcp_get_sales_summary`
-**State**: to write · [issue #21](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/21)
+**State**: draft · [issue #21](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/21)
 **Nature**: `acts(VIEW, 'AdminStats')` · **Scope**: `mcp.stats.read`
 
 **Does** - returns sales over a period: revenue, number of orders, average basket, new customers.
@@ -932,7 +937,7 @@ Figures over a period, computed from valid orders.
 **Notes** - counts valid orders only (`Order::valid`), converted to the shop's default currency, as the dashboard does.
 
 #### `somcp_list_best_sellers`
-**State**: to write · [issue #22](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/22)
+**State**: draft · [issue #22](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/22)
 **Nature**: `acts(VIEW, 'AdminStats')` · **Scope**: `mcp.stats.read`
 
 **Does** - lists the products that sold most over a period.
@@ -958,7 +963,7 @@ The CMS pages of the storefront.
 **Not here**: product texts (→ Catalogue).
 
 #### `somcp_list_cms_pages`
-**State**: to write · [issue #23](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/23)
+**State**: draft · [issue #23](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/23)
 **Nature**: `acts(VIEW, 'AdminCmsContent')` · **Scope**: `mcp.content.read`
 
 **Does** - lists the CMS pages with their category and status.
@@ -976,7 +981,7 @@ The CMS pages of the storefront.
 **Returns** - per page: `id_cms`, `meta_title`, `id_cms_category`, `active`, `link`.
 
 #### `somcp_get_cms_page`
-**State**: to write · [issue #24](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/24)
+**State**: draft · [issue #24](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/24)
 **Nature**: `acts(VIEW, 'AdminCmsContent')` · **Scope**: `mcp.content.read`
 
 **Does** - returns one CMS page with its content.
@@ -999,7 +1004,7 @@ The modules present on the shop, their state and version.
 **Not here**: tools published by other modules, which they declare themselves (see EXTENDING.md).
 
 #### `somcp_list_modules`
-**State**: to write · [issue #25](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/25)
+**State**: draft · [issue #25](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/25)
 **Nature**: `acts(VIEW, 'AdminModules')` · **Scope**: `mcp.modules.read`
 
 **Does** - lists the modules present on the shop with their version and state.
@@ -1018,7 +1023,7 @@ The modules present on the shop, their state and version.
 **Returns** - per module: `name`, `display_name`, `version`, `installed`, `active`, `author`.
 
 #### `somcp_get_module`
-**State**: to write · [issue #26](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/26)
+**State**: draft · [issue #26](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/26)
 **Nature**: `acts(VIEW, 'AdminModules')` · **Scope**: `mcp.modules.read`
 
 **Does** - returns one module's details: version on disk and in the database, state, author, hooks it is attached to.
@@ -1034,7 +1039,7 @@ The modules present on the shop, their state and version.
 **Returns** - `name`, `display_name`, `description`, `version_on_disk`, `version_installed`, `installed`, `active`, `author`, `hooks`, `needs_upgrade`.
 
 #### `somcp_install_module`
-**State**: to write · [issue #27](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/27)
+**State**: draft · [issue #27](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/27)
 **Nature**: `acts(ADD, 'AdminModules')` · **Scope**: `mcp.modules.write`
 
 **Does** - installs one module already present in the shop's `modules` folder.
@@ -1052,7 +1057,7 @@ The modules present on the shop, their state and version.
 **Notes** - through the core's `ModuleManager`, exactly as the back office does it, so the module's own install checks run. Not replayable: the read tool to check is `somcp_get_module`.
 
 #### `somcp_set_module_active`
-**State**: to write · [issue #28](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/28)
+**State**: draft · [issue #28](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/28)
 **Nature**: `acts(EDIT, 'AdminModules')` · **Scope**: `mcp.modules.write`
 
 **Does** - enables or disables one installed module.
@@ -1077,7 +1082,7 @@ What the storefront looks like: the main menu of `ps_mainmenu`, the active theme
 **Not here**: content of the pages (→ Content).
 
 #### `somcp_list_menu_links`
-**State**: to write · [issue #29](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/29)
+**State**: draft · [issue #29](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/29)
 **Nature**: `acts(VIEW, 'AdminModules')` · **Scope**: `mcp.appearance.read`
 
 **Does** - lists the entries of the storefront's main menu, from the `ps_mainmenu` module.
@@ -1095,7 +1100,7 @@ What the storefront looks like: the main menu of `ps_mainmenu`, the active theme
 **Notes** - only listed when `ps_mainmenu` is installed and active; absent otherwise, never failing.
 
 #### `somcp_add_menu_link`
-**State**: to write · [issue #30](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/30)
+**State**: draft · [issue #30](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/30)
 **Nature**: `acts(ADD, 'AdminModules')` · **Scope**: `mcp.appearance.write`
 
 **Does** - adds one custom link, a category or a CMS page to the main menu.
@@ -1118,7 +1123,7 @@ What the storefront looks like: the main menu of `ps_mainmenu`, the active theme
 **Notes** - written through `ps_mainmenu`'s own storage so its cache is cleared like the back office does. Not replayable.
 
 #### `somcp_update_menu_link`
-**State**: to write · [issue #31](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/31)
+**State**: draft · [issue #31](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/31)
 **Nature**: `acts(EDIT, 'AdminModules')` · **Scope**: `mcp.appearance.write`
 
 **Does** - changes the label, URL or target of one custom link in the main menu.
@@ -1138,7 +1143,7 @@ What the storefront looks like: the main menu of `ps_mainmenu`, the active theme
 **Returns** - `changed`, the fields written with their old and new values.
 
 #### `somcp_get_theme`
-**State**: to write · [issue #32](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/32)
+**State**: draft · [issue #32](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/32)
 **Nature**: `acts(VIEW, 'AdminThemes')` · **Scope**: `mcp.appearance.read`
 
 **Does** - returns the active theme: name, version, parent theme, logos and the layout used by each page.
@@ -1148,7 +1153,7 @@ What the storefront looks like: the main menu of `ps_mainmenu`, the active theme
 **Returns** - `name`, `version`, `parent`, `logos`, `layouts` (page → layout), `available_layouts`.
 
 #### `somcp_update_theme_setting`
-**State**: to write · [issue #33](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/33)
+**State**: draft · [issue #33](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/33)
 **Nature**: `acts(EDIT, 'AdminThemes')` · **Scope**: `mcp.appearance.write`
 
 **Does** - sets the layout of one page of the active theme, as Appearance > Theme & Logo > Choose layouts does.
@@ -1173,7 +1178,7 @@ How the shop runs: caching.
 **Not here**: the connection itself (→ Diagnostics).
 
 #### `somcp_get_cache_status`
-**State**: to write · [issue #34](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/34)
+**State**: draft · [issue #34](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/34)
 **Nature**: `acts(VIEW, 'AdminPerformance')` · **Scope**: `mcp.system.read`
 
 **Does** - returns how caching is configured: template compilation and cache, CCC for CSS and JavaScript, the caching system, debug mode.
@@ -1183,7 +1188,7 @@ How the shop runs: caching.
 **Returns** - `smarty_compile`, `smarty_cache`, `ccc_css`, `ccc_js`, `cache_enabled`, `cache_system`, `debug_mode`.
 
 #### `somcp_clear_cache`
-**State**: to write · [issue #35](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/35)
+**State**: draft · [issue #35](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/35)
 **Nature**: `acts(EDIT, 'AdminPerformance')` · **Scope**: `mcp.system.write`
 
 **Does** - clears the shop's caches, as the Clear cache button in Advanced parameters > Performance does.
@@ -1213,17 +1218,17 @@ pull request that adds a tool adds it to the prompt of its section, in both
 | `somcp-connection-check` | Diagnostics | written |
 | `somcp-order-lookup` | Orders | written |
 | `somcp-order-status-change` | Orders | written |
-| `somcp-catalogue-manage` | Catalogue | to write · [issue #36](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/36) |
-| `somcp-stock-check` | Stock | to write · [issue #37](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/37) |
-| `somcp-customer-lookup` | Customers | to write · [issue #38](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/38) |
-| `somcp-sales-report` | Statistics | to write · [issue #39](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/39) |
-| `somcp-content-pages` | Content | to write · [issue #40](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/40) |
-| `somcp-modules-review` | Modules | to write · [issue #41](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/41) |
-| `somcp-storefront-menu` | Appearance | to write · [issue #42](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/42) |
-| `somcp-cache-maintenance` | System | to write · [issue #43](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/43) |
+| `somcp-catalogue-manage` | Catalogue | draft · [issue #36](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/36) |
+| `somcp-stock-check` | Stock | draft · [issue #37](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/37) |
+| `somcp-customer-lookup` | Customers | draft · [issue #38](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/38) |
+| `somcp-sales-report` | Statistics | draft · [issue #39](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/39) |
+| `somcp-content-pages` | Content | draft · [issue #40](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/40) |
+| `somcp-modules-review` | Modules | draft · [issue #41](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/41) |
+| `somcp-storefront-menu` | Appearance | draft · [issue #42](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/42) |
+| `somcp-cache-maintenance` | System | draft · [issue #43](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/43) |
 
 #### `somcp-catalogue-manage`
-**State**: to write · [issue #36](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/36)
+**State**: draft · [issue #36](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/36)
 **Section**: Catalogue · **Scope**: `mcp.catalog.read` · **Permission**: `view` on `AdminProducts`
 
 **Title** - Manage products
@@ -1237,7 +1242,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
 
 #### `somcp-stock-check`
-**State**: to write · [issue #37](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/37)
+**State**: draft · [issue #37](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/37)
 **Section**: Stock · **Scope**: `mcp.stock.read` · **Permission**: `view` on `AdminStockManagement`
 
 **Title** - Check and adjust stock
@@ -1251,7 +1256,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - start from `somcp_list_low_stock` or a named product; a quantity is per combination when the product has some; a `delta` moves stock and is never retried: on a lost answer, read `somcp_get_stock` first.
 
 #### `somcp-customer-lookup`
-**State**: to write · [issue #38](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/38)
+**State**: draft · [issue #38](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/38)
 **Section**: Customers · **Scope**: `mcp.customers.read` · **Permission**: `view` on `AdminCustomers`
 
 **Title** - Find a customer
@@ -1265,7 +1270,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - search, then read the one customer the merchant means; the email is more reliable than the name; personal data stays in the answer it was asked for; no password ever goes through the conversation.
 
 #### `somcp-sales-report`
-**State**: to write · [issue #39](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/39)
+**State**: draft · [issue #39](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/39)
 **Section**: Statistics · **Scope**: `mcp.stats.read` · **Permission**: `view` on `AdminStats`
 
 **Title** - Sales report
@@ -1279,7 +1284,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - turn the period into two dates in the shop's time zone and say which; figures count valid orders only; compare with the previous period when it helps; amounts always with their currency and tax said.
 
 #### `somcp-content-pages`
-**State**: to write · [issue #40](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/40)
+**State**: draft · [issue #40](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/40)
 **Section**: Content · **Scope**: `mcp.content.read` · **Permission**: `view` on `AdminCmsContent`
 
 **Title** - Read content pages
@@ -1293,7 +1298,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - list, then read the page the merchant means; quote the content rather than paraphrasing it when asked what a page says.
 
 #### `somcp-modules-review`
-**State**: to write · [issue #41](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/41)
+**State**: draft · [issue #41](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/41)
 **Section**: Modules · **Scope**: `mcp.modules.read` · **Permission**: `view` on `AdminModules`
 
 **Title** - Review modules
@@ -1307,7 +1312,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - read before acting; name the module and what it does before installing or switching it; one module per call; a payment or carrier module switched off stops orders or deliveries, say so before doing it.
 
 #### `somcp-storefront-menu`
-**State**: to write · [issue #42](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/42)
+**State**: draft · [issue #42](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/42)
 **Section**: Appearance · **Scope**: `mcp.appearance.read` · **Permission**: `view` on `AdminThemes`
 
 **Title** - Storefront menu and layout
@@ -1321,7 +1326,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 **The guide must say** - read the menu or the theme first; take category and page identifiers from their list tools; one change per call.
 
 #### `somcp-cache-maintenance`
-**State**: to write · [issue #43](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/43)
+**State**: draft · [issue #43](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/43)
 **Section**: System · **Scope**: `mcp.system.read` · **Permission**: `view` on `AdminPerformance`
 
 **Title** - Cache maintenance
