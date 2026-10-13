@@ -610,40 +610,64 @@ The products and the categories they are sorted into: texts, prices, combination
 **State**: draft · [issue #3](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/3)
 **Nature**: `acts(ADD, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
-**Does** - creates one complete product: everything `somcp_get_product` reads can be given at creation, combinations and images included. Inactive by default. SEO gets particular care: every language filled in, friendly URL generated and checked, warnings returned.
+**Does** - creates one complete product: everything `somcp_get_product` reads can be given at creation, combinations and images included, in every language of the shop or the ones the merchant picks. Inactive by default. Each field says whether the merchant gives it or the assistant writes it; SEO is written by the assistant in every language, checked and warned about.
 
 **Do not use for** - changing an existing product (→ `somcp_update_product`), or creating several at once, which it refuses by design.
 
-**Parameters** - the groups and field names of `somcp_get_product`, so what one tool reads the other writes. Only `basics.name` (in the shop's default language) and `pricing.price_tax_excl` are required. Fields that are computed or read elsewhere are not accepted: `id_product`, `url`, `manufacturer_name`, `supplier_name`, `tax_rules_group_name`, `tax_rate`, `price_tax_incl`, `unit_price_tax_incl`, `quantity` totals.
+**Parameters** - the groups and field names of `somcp_get_product`, so what one tool reads the other writes. Only `basics.name` and `pricing.price_tax_excl` are required. Fields that are computed or read elsewhere are not accepted: `id_product`, `url`, `manufacturer_name`, `supplier_name`, `tax_rules_group_name`, `tax_rate`, `price_tax_incl`, `unit_price_tax_incl`, `quantity` totals.
 
-| Group | What is written | Rules |
-|---|---|---|
-| translatable texts | `name`, `description_short`, `description`, `available_now`, `available_later`, `delivery_in_stock`, `delivery_out_stock`, the SEO texts, feature custom values, customization field names, image legends | an object keyed by ISO code, `{"fr": "...", "en": "..."}`; a language left out takes the default language's text, as the back office does; HTML cleaned in the descriptions |
-| `basics` | `product_type` (standard by default) | `combinations` given means `product_type` combinations |
-| `categories` | `id_category_default`, `categories` (ids) | Home when none; the default category is added to `categories` if missing |
-| `brand` | `id_manufacturer` | must exist |
-| `related_products` | ids | must exist |
-| `references` | `reference`, `mpn`, `upc`, `ean13`, `isbn` | each checked with its `Validate` rule; a `reference` already used by another product or combination is refused |
-| `features` | `id_feature` with either `id_feature_value` or a custom value | must exist |
-| `attachments` | `id_attachment` of documents already in the shop | files do not travel through the call |
-| `condition` | `condition`, `show_condition` | values of the running PrestaShop version |
-| `customization` | the fields: `type`, `name`, `required` | `customizable`, `uploadable_files`, `text_fields` follow from them |
-| `stock` | `quantity`, `location`, `out_of_stock`, `available_date` | through `StockAvailable`, never a direct write |
-| `shipping` | `width`, `height`, `depth`, `weight`, `additional_delivery_times`, `additional_shipping_cost`, `carriers` (ids from `somcp_list_carriers`) | no carrier given means every carrier, as in the back office |
-| `pricing` | `price_tax_excl`, `id_tax_rules_group`, `wholesale_price`, `unit_price_tax_excl`, `unity`, `on_sale` | the tax rule must exist in the shop, never guessed |
-| `specific_prices` | as read by `somcp_get_product`, plus `priorities` | each written through `SpecificPrice::add()` |
-| `seo` | see **SEO** below | |
-| `options` | `visibility`, `available_for_order`, `show_price`, `online_only`, `active` | `active` false by default |
-| `suppliers` | `id_supplier_default`, and per supplier and combination `product_supplier_reference`, `product_supplier_price_te`, `id_currency` | supplier and currency must exist |
-| `images` | per image: `url`, `legend`, `cover`, `position`, combinations it illustrates | see **Images** below |
-| `combinations` | per combination: `attributes` (ids of attribute values), `default_on`, `reference`, `mpn`, `upc`, `ean13`, `isbn`, `quantity`, `location`, `available_date`, `available_now`, `available_later`, `price_impact_tax_excl`, `unit_price_impact_tax_excl`, `weight_impact`, `wholesale_price`, `minimal_quantity` | two combinations with the same attributes are refused; one is the default |
+**Who fills a field.** The tool cannot see who typed a value, so this is a rule for the assistant, written in the tool description and in the prompt `somcp-catalogue-manage`:
+- **merchant**: the assistant asks the merchant and never invents the value. It may suggest one, the merchant confirms.
+- **merchant, from the shop**: an object that already exists in the shop (category, brand, carrier, tax rule, supplier, attribute, feature). The assistant shows the shop's list and the merchant picks; the tool refuses an id that does not exist and never creates the object.
+- **assistant**: the assistant writes it, in every language being filled, and shows it to the merchant before the call.
+- **merchant and assistant**: the merchant gives the material (an image URL, the sizes and colours), the assistant prepares the rest (legends, combination codes) and shows it before the call.
+
+**Languages.** `languages`, a list of ISO codes among the shop's active languages, says which languages are filled; all of them by default. Every translatable text is an object keyed by ISO code, `{"fr": "...", "en": "..."}`, and must be given for each language in `languages`. A language of the shop left out of `languages` takes the default language's text, as the back office does. Lengths are counted in characters, spaces included, on the visible text (HTML tags not counted).
+
+| Group | Field | Who fills it | Rule |
+|---|---|---|---|
+| `basics` | `product_type` | merchant | a value of PrestaShop's `ProductType`: `standard`, `combinations`, `pack`, `virtual` |
+| | `name` | merchant | required; 128 characters at most per language (`ProductSettings::MAX_NAME_LENGTH`) |
+| | `description_short` (summary) | assistant | 100 to 200 characters per language, refused outside |
+| | `description` | assistant | free length; HTML cleaned |
+| `categories` | `categories` | merchant, from the shop | ids of existing categories |
+| | `id_category_default` | merchant, from the shop | one of `categories`, added to them if missing; Home when none |
+| `brand` | `id_manufacturer` | merchant, from the shop | existing brand |
+| `related_products` | ids | merchant | the assistant finds candidates with `somcp_search_products`, the merchant picks |
+| `references` | `reference` | merchant | 50 characters at most (PrestaShop allows 64); refused when another product or combination already uses it |
+| | `mpn`, `upc`, `ean13`, `isbn` | merchant | each checked with its `Validate` rule |
+| `features` | `id_feature` with `id_feature_value` or a custom value | merchant, from the shop | existing feature and value |
+| `attachments` | `id_attachment` | merchant, from the shop | documents already in the shop; files do not travel through the call |
+| `condition` | `condition`, `show_condition` | merchant | values of the running PrestaShop version |
+| `customization` | fields: `type` (file or text), `name`, `required` | merchant | `customizable`, `uploadable_files`, `text_fields` follow from them |
+| `stock` | `quantity`, `location` | merchant | written through `StockAvailable` |
+| | `out_of_stock` | merchant | deny, allow, or shop default |
+| | `available_now`, `available_later` | merchant | the merchant's text, or left out: the storefront then shows the shop's default label |
+| | `available_date` | merchant | a date, or left out: none |
+| `shipping` | `width`, `height`, `depth`, `weight` | merchant | |
+| | `additional_delivery_times` | merchant | none, shop default, or this product's |
+| | `delivery_in_stock`, `delivery_out_stock` | merchant | used when `additional_delivery_times` is this product's |
+| | `additional_shipping_cost` | merchant | |
+| | `carriers` | merchant, from the shop | ids from `somcp_list_carriers`; none given means every carrier, as in the back office |
+| `pricing` | `price_tax_excl` | merchant | required |
+| | `id_tax_rules_group` | merchant, from the shop | existing tax rule, never guessed |
+| | `wholesale_price`, `unit_price_tax_excl`, `unity`, `on_sale` | merchant | |
+| `specific_prices` | as read by `somcp_get_product`, plus `priorities` | merchant | each written through `SpecificPrice::add()` |
+| `seo` | `meta_title`, `meta_description`, `link_rewrite`, `redirect_type`, `id_type_redirected`, `meta_keywords` | assistant | every language being filled; see **SEO** below |
+| `options` | `visibility`, `available_for_order`, `show_price`, `online_only`, `active` | merchant | `active` false by default |
+| `suppliers` | `id_supplier_default` | merchant, from the shop | existing supplier |
+| | per supplier and combination: `product_supplier_reference`, `product_supplier_price_te`, `id_currency` | merchant | supplier and currency must exist |
+| `images` | `url` | merchant | see **Images** below |
+| | `legend`, `cover`, `position`, combinations illustrated | merchant and assistant | legend in every language being filled |
+| `combinations` | `attributes` | merchant, from the shop | ids of existing attribute values; two combinations with the same attributes are refused |
+| | `default_on`, `reference`, `mpn`, `upc`, `ean13`, `isbn`, `quantity`, `location`, `available_date`, `available_now`, `available_later`, `price_impact_tax_excl`, `unit_price_impact_tax_excl`, `weight_impact`, `wholesale_price`, `minimal_quantity` | merchant and assistant | same rules as the product's own fields; one combination is the default |
 
 **SEO**
 - Fields: `meta_title`, `meta_description`, `link_rewrite`, `redirect_type`, `id_type_redirected`, and `meta_keywords` where the column exists (PrestaShop 8; on 9 the field is refused with a clear message, not dropped silently).
 - `link_rewrite` left out: generated from the name in each language with `Tools::str2url()`. Given: passed through `Tools::str2url()`, then refused if `Validate::isLinkRewrite()` fails. Never empty in any language.
-- `meta_title` up to 255 characters and `meta_description` up to 512, the limits of `Product::$definition`: longer is refused, never cut.
+- `meta_title` 55 characters at most (stricter than PrestaShop's 255, so search engines show it whole) and `meta_description` 512 at most, the limit of `Product::$definition`: longer is refused, never cut.
 - `redirect_type` is what an inactive product does: the values of `RedirectType` in the running version (PrestaShop 9 adds `default`, `200-displayed`, `404-displayed`, `410-displayed`). A `301-product` or `302-product` needs an existing `id_type_redirected` product, a category redirect an existing category. Left out: the shop default.
-- The answer carries `seo_warnings`, per language: no `meta_title` or no `meta_description` (the storefront then falls back on the name), `meta_title` over 60 characters or `meta_description` over 160 (cut in search results), a `link_rewrite` or a `meta_title` already used by another product in that language. Warnings never block the creation.
+- The answer carries `seo_warnings`, per language: no `meta_title` or no `meta_description` (the storefront then falls back on the name), `meta_description` over 160 characters (cut in search results), a `link_rewrite` or a `meta_title` already used by another product in that language. Warnings never block the creation.
 
 **Images**
 - Files do not travel through the conversation: an image is given by a public `https` URL and the shop downloads it.
@@ -655,6 +679,7 @@ The products and the categories they are sorted into: texts, prices, combination
 **Notes**
 - Written through the core classes (`Product::add()`, `Combination`, `StockAvailable`, `SpecificPrice`, `Image`) so hooks fire and other modules see a normal product creation.
 - Everything or nothing for the product itself: if the product or a combination cannot be written, what was created is deleted and the call fails. Only images and SEO warnings are reported without failing.
+- Pack contents and the file of a virtual product are not written here: a `pack` or `virtual` product is created empty and completed in the back office.
 - Not replayable: the read tool to check is `somcp_search_products` with the reference.
 
 #### `somcp_update_product`
