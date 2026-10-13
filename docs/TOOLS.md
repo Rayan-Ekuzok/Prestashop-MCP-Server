@@ -494,6 +494,42 @@ them out before we see them. Removed rather than left lying.
 
 **Notes** - `id_carrier` changes each time a carrier is edited in PrestaShop; `id_reference` does not. Both are returned, and the description says which to keep.
 
+#### `somcp_list_tax_rules`
+**State**: draft
+**Nature**: `acts(VIEW, 'AdminTaxRulesGroup')` · **Scope**: `mcp.catalog.read`
+
+**Does** - lists the tax rules a product can take, with the rate each one applies in the shop's default country.
+
+**Do not use for** - the tax of one product (→ `somcp_get_product`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `active` | boolean | no | true by default |
+
+**Returns** - per rule: `id_tax_rules_group`, `name`, `active`, `rate` in the default country, `country` (ISO code of that country).
+
+**Notes** - scope `mcp.catalog.read`, not a configuration one: it is read to price a product. The rate depends on the country; the one returned is the one the back office product page shows.
+
+#### `somcp_list_customer_groups`
+**State**: draft
+**Nature**: `acts(VIEW, 'AdminGroups')` · **Scope**: `mcp.customers.read`
+
+**Does** - lists the customer groups (Visitor, Guest, Customer and the shop's own) with their identifiers.
+
+**Do not use for** - the customers of a group (→ `somcp_search_customers`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - per group: `id_group`, `name`, `reduction` (percent), `price_display_method` (tax included or excluded), `show_prices`, `members_count`.
+
+**Notes** - needed by a specific price aimed at one group.
+
 ### Diagnostics
 
 Tools that describe the connection itself and touch no shop data.
@@ -607,7 +643,7 @@ The products and the categories they are sorted into: texts, prices, combination
 - Read the product in the shop of the token (`product_shop`), never the default shop.
 
 #### `somcp_create_product`
-**State**: draft · [issue #3](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/3)
+**State**: to write · [issue #3](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/3)
 **Nature**: `acts(ADD, 'AdminProducts')` · **Scope**: `mcp.catalog.write`
 
 **Does** - creates one complete product: everything `somcp_get_product` reads can be given at creation, combinations and images included, in every language of the shop or the ones the merchant picks. Inactive by default. Each field says whether the merchant gives it or the assistant writes it; SEO is written by the assistant in every language, checked and warned about.
@@ -618,7 +654,7 @@ The products and the categories they are sorted into: texts, prices, combination
 
 **Who fills a field.** The tool cannot see who typed a value, so this is a rule for the assistant, written in the tool description and in the prompt `somcp-catalogue-manage`:
 - **merchant**: the assistant asks the merchant and never invents the value. It may suggest one, the merchant confirms.
-- **merchant, from the shop**: an object that already exists in the shop (category, brand, carrier, tax rule, supplier, attribute, feature). The assistant shows the shop's list and the merchant picks; the tool refuses an id that does not exist and never creates the object.
+- **merchant, from the shop**: an object that already exists in the shop (category, brand, carrier, tax rule, supplier, attribute, feature, document, customer group). The assistant shows the shop's list, read with the matching `somcp_list_*` tool, and the merchant picks; the tool refuses an id that does not exist and never creates the object.
 - **assistant**: the assistant writes it, in every language being filled, and shows it to the merchant before the call.
 - **merchant and assistant**: the merchant gives the material (an image URL, the sizes and colours), the assistant prepares the rest (legends, combination codes) and shows it before the call.
 
@@ -630,14 +666,14 @@ The products and the categories they are sorted into: texts, prices, combination
 | | `name` | merchant | required; 128 characters at most per language (`ProductSettings::MAX_NAME_LENGTH`) |
 | | `description_short` (summary) | assistant | 100 to 200 characters per language, refused outside |
 | | `description` | assistant | free length; HTML cleaned |
-| `categories` | `categories` | merchant, from the shop | ids of existing categories |
+| `categories` | `categories` | merchant, from the shop | ids from `somcp_list_categories` |
 | | `id_category_default` | merchant, from the shop | one of `categories`, added to them if missing; Home when none |
-| `brand` | `id_manufacturer` | merchant, from the shop | existing brand |
+| `brand` | `id_manufacturer` | merchant, from the shop | id from `somcp_list_manufacturers` |
 | `related_products` | ids | merchant | the assistant finds candidates with `somcp_search_products`, the merchant picks |
 | `references` | `reference` | merchant | 50 characters at most (PrestaShop allows 64); refused when another product or combination already uses it |
 | | `mpn`, `upc`, `ean13`, `isbn` | merchant | each checked with its `Validate` rule |
-| `features` | `id_feature` with `id_feature_value` or a custom value | merchant, from the shop | existing feature and value |
-| `attachments` | `id_attachment` | merchant, from the shop | documents already in the shop; files do not travel through the call |
+| `features` | `id_feature` with `id_feature_value` or a custom value | merchant, from the shop | ids from `somcp_list_features` |
+| `attachments` | `id_attachment` | merchant, from the shop | ids from `somcp_list_attachments`; files do not travel through the call |
 | `condition` | `condition`, `show_condition` | merchant | values of the running PrestaShop version |
 | `customization` | fields: `type` (file or text), `name`, `required` | merchant | `customizable`, `uploadable_files`, `text_fields` follow from them |
 | `stock` | `quantity`, `location` | merchant | written through `StockAvailable` |
@@ -650,16 +686,16 @@ The products and the categories they are sorted into: texts, prices, combination
 | | `additional_shipping_cost` | merchant | |
 | | `carriers` | merchant, from the shop | ids from `somcp_list_carriers`; none given means every carrier, as in the back office |
 | `pricing` | `price_tax_excl` | merchant | required |
-| | `id_tax_rules_group` | merchant, from the shop | existing tax rule, never guessed |
+| | `id_tax_rules_group` | merchant, from the shop | id from `somcp_list_tax_rules`, never guessed |
 | | `wholesale_price`, `unit_price_tax_excl`, `unity`, `on_sale` | merchant | |
-| `specific_prices` | as read by `somcp_get_product`, plus `priorities` | merchant | each written through `SpecificPrice::add()` |
+| `specific_prices` | as read by `somcp_get_product`, plus `priorities` | merchant | currency and country by ISO code, group from `somcp_list_customer_groups`; each written through `SpecificPrice::add()` |
 | `seo` | `meta_title`, `meta_description`, `link_rewrite`, `redirect_type`, `id_type_redirected`, `meta_keywords` | assistant | every language being filled; see **SEO** below |
 | `options` | `visibility`, `available_for_order`, `show_price`, `online_only`, `active` | merchant | `active` false by default |
-| `suppliers` | `id_supplier_default` | merchant, from the shop | existing supplier |
-| | per supplier and combination: `product_supplier_reference`, `product_supplier_price_te`, `id_currency` | merchant | supplier and currency must exist |
+| `suppliers` | `id_supplier_default` | merchant, from the shop | id from `somcp_list_suppliers` |
+| | per supplier and combination: `product_supplier_reference`, `product_supplier_price_te`, `currency` | merchant | currency by ISO code, among the shop's currencies |
 | `images` | `url` | merchant | see **Images** below |
 | | `legend`, `cover`, `position`, combinations illustrated | merchant and assistant | legend in every language being filled |
-| `combinations` | `attributes` | merchant, from the shop | ids of existing attribute values; two combinations with the same attributes are refused |
+| `combinations` | `attributes` | merchant, from the shop | `id_attribute` values from `somcp_list_attributes`; two combinations with the same attributes are refused |
 | | `default_on`, `reference`, `mpn`, `upc`, `ean13`, `isbn`, `quantity`, `location`, `available_date`, `available_now`, `available_later`, `price_impact_tax_excl`, `unit_price_impact_tax_excl`, `weight_impact`, `wholesale_price`, `minimal_quantity` | merchant and assistant | same rules as the product's own fields; one combination is the default |
 
 **SEO**
@@ -844,6 +880,104 @@ The products and the categories they are sorted into: texts, prices, combination
 **Returns** - `deleted`, `id_category`, `name`, `products_moved`.
 
 **Notes** - irreversible. Products whose default category it was are moved to its parent, which is what the back office does by default. Root and Home are refused.
+
+#### `somcp_list_manufacturers`
+**State**: draft
+**Nature**: `acts(VIEW, 'AdminManufacturers')` · **Scope**: `mcp.catalog.read`
+
+**Does** - lists the brands of this shop with their identifiers.
+
+**Do not use for** - the products of a brand (→ `somcp_search_products`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `name` | string | no | part of the name |
+| `active` | boolean | no | |
+| `limit` / `offset` | integer | no | 20 by default, 100 at most |
+
+**Returns** - per brand: `id_manufacturer`, `name`, `active`, `products_count`. Plus `returned`, `total_count` and `offset`.
+
+**Notes** - called before a write that takes a brand, which must never guess an identifier.
+
+#### `somcp_list_suppliers`
+**State**: draft
+**Nature**: `acts(VIEW, 'AdminSuppliers')` · **Scope**: `mcp.catalog.read`
+
+**Does** - lists the suppliers of this shop with their identifiers.
+
+**Do not use for** - the supplier references of one product (→ `somcp_get_product`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `name` | string | no | part of the name |
+| `active` | boolean | no | |
+| `limit` / `offset` | integer | no | 20 by default, 100 at most |
+
+**Returns** - per supplier: `id_supplier`, `name`, `active`, `products_count`. Plus `returned`, `total_count` and `offset`.
+
+**Notes** - called before a write that takes a supplier.
+
+#### `somcp_list_attributes`
+**State**: draft
+**Nature**: `acts(VIEW, 'AdminAttributesGroups')` · **Scope**: `mcp.catalog.read`
+
+**Does** - lists the attribute groups (Size, Colour...) and their values, with the identifiers a combination is built from.
+
+**Do not use for** - the combinations of one product (→ `somcp_get_product`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_attribute_group` | integer | no | one group only |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - per group: `id_attribute_group`, `name`, `public_name`, `group_type` (select, radio, color), and its `values`: `id_attribute`, `name`, `color` for a colour group.
+
+**Notes** - a combination is a set of `id_attribute`, never of names: names are translated and two groups can hold the same value name.
+
+#### `somcp_list_features`
+**State**: draft
+**Nature**: `acts(VIEW, 'AdminFeatures')` · **Scope**: `mcp.catalog.read`
+
+**Does** - lists the features (Material, Composition...) and their predefined values, with their identifiers.
+
+**Do not use for** - the features of one product (→ `somcp_get_product`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_feature` | integer | no | one feature only |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - per feature: `id_feature`, `name`, and its predefined `values`: `id_feature_value`, `value`. Custom values typed on a single product are not listed.
+
+**Notes** - a product takes either a predefined value or a custom one; the list lets the assistant offer the predefined ones first.
+
+#### `somcp_list_attachments`
+**State**: draft
+**Nature**: `acts(VIEW, 'AdminAttachments')` · **Scope**: `mcp.catalog.read`
+
+**Does** - lists the documents already uploaded to the shop (manuals, data sheets) that a product can carry.
+
+**Do not use for** - the documents of one product (→ `somcp_get_product`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `name` | string | no | part of the name |
+| `language` | string | no | ISO code, shop default otherwise |
+| `limit` / `offset` | integer | no | 20 by default, 100 at most |
+
+**Returns** - per document: `id_attachment`, `name`, `description`, `file_name`, `mime`, `file_size`, `products_count`. Plus `returned`, `total_count` and `offset`.
+
+**Notes** - lists only, never uploads: files do not travel through the conversation.
 
 ### Stock
 
@@ -1328,7 +1462,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 
 **Arguments** - `product` (name, reference or ean13 of a product).
 
-**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_price`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_create_category`, `somcp_update_category`, `somcp_delete_category`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_price`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_create_category`, `somcp_update_category`, `somcp_delete_category`, `somcp_list_manufacturers`, `somcp_list_suppliers`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
 
 **The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
 
