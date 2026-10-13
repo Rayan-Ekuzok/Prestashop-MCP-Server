@@ -31,7 +31,7 @@ specified in [docs/TOOLS.md](docs/TOOLS.md), each with its own issue labelled
 The simplest ones, mostly reads, are also labelled
 [`good first issue`](https://github.com/novalo-dev/Prestashop-MCP-Server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 Each design is approved by the maintainer before it opens: an issue labelled
-`spec pending` is not open yet. Once it is, comment on the issue to take it, so
+`draft` is not open yet. Once it is, comment on the issue to take it, so
 two people do not write the same tool.
 
 Every tool is described in `docs/TOOLS.md` before it is written, follows the

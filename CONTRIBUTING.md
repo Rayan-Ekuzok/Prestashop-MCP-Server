@@ -94,7 +94,7 @@ names. The entry is the specification: follow it, and if it turns out wrong,
 say so in the issue before writing something else.
 
 Only entries marked **to write** can be taken. An entry marked **draft**, whose
-issue carries the `spec pending` label, waits for the maintainer to approve its
+issue carries the `draft` label, waits for the maintainer to approve its
 design: do not start it.
 
 1. **Take the issue.** Comment on it so nobody else starts the same tool. Read
@@ -141,7 +141,7 @@ see [docs/EXTENDING.md](docs/EXTENDING.md).
 
 There is one prompt per section, specified at the end of
 [docs/TOOLS.md](docs/TOOLS.md#prompts) with an issue labelled `new prompt`. As for
-tools, a prompt marked **draft** (label `spec pending`) is not open yet. A
+tools, a prompt marked **draft** (its issue labelled `draft`) is not open yet. A
 prompt is a folder in `prompts/` named after it, holding `prompt.json` (title,
 description, arguments, scopes, permission, tools) and `prompt.md`, the guide
 the assistant reads. Copy `prompts/somcp-order-lookup/`.

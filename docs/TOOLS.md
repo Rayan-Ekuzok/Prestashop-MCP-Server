@@ -266,7 +266,7 @@ tool, named.
 ## Sections
 
 An entry marked **draft** is not open yet: the maintainer still has to approve
-its design, and its issue carries the `spec pending` label. Do not start it;
+its design, and its issue carries the `draft` label. Do not start it;
 comment on the issue if you have something to say about the design.
 
 An entry marked **to write** is approved and is the specification: pick its
