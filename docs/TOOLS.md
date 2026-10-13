@@ -905,44 +905,201 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 **Notes** - hiding a category does not switch its products off: they stay reachable through search and their other categories. The description says so, so the merchant is not surprised. Root and Home are refused.
 
 #### `somcp_list_manufacturers`
-**State**: draft · [issue #45](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/45)
+**State**: to write · [issue #45](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/45)
 **Nature**: `acts(VIEW, 'AdminManufacturers')` · **Scope**: `mcp.catalog.read`
 
-**Does** - lists the brands of this shop with their identifiers.
+**Does** - lists the brands of this shop: identifier and name, nothing else.
 
-**Do not use for** - the products of a brand (→ `somcp_search_products`).
+**Do not use for** - everything about one brand (→ `somcp_get_manufacturer`), or the products of a brand (→ `somcp_search_products`).
 
 **Parameters**
 
 | Name | Type | Required | Role |
 |---|---|---|---|
-| `name` | string | no | part of the name |
-| `active` | boolean | no | |
-| `limit` / `offset` | integer | no | 20 by default, 100 at most |
+| `language` | string | no | ISO code, shop default otherwise |
 
-**Returns** - per brand: `id_manufacturer`, `name`, `active`, `products_count`. Plus `returned`, `total_count` and `offset`.
+**Returns** - per brand: `id_manufacturer`, `name`. Plus `count`.
 
-**Notes** - called before a write that takes a brand, which must never guess an identifier.
+**Notes** - same shape as `somcp_list_categories`: the list an assistant reads before a write that takes a brand, which must never guess an identifier. Inactive ones are listed too, since a product can still point to them.
+
+#### `somcp_get_manufacturer`
+**State**: to write · [issue #54](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/54)
+**Nature**: `acts(VIEW, 'AdminManufacturers')` · **Scope**: `mcp.catalog.read`
+
+**Does** - returns everything the back office brand form shows for one brand.
+
+**Do not use for** - the list (→ `somcp_list_manufacturers`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_manufacturer` | integer | yes | from `somcp_list_manufacturers` |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - `id_manufacturer`, `name`, `short_description`, `description`, `meta_title`, `meta_description`, `meta_keywords`, `logo` (URL), `active`, `products_count`.
+
+**Notes** - columns of `manufacturer` and `manufacturer_lang`, checked against PrestaShop 8.0.3 and 9.2; `meta_keywords` exists on PrestaShop 8 only and is `null` on 9. A brand's postal addresses are a separate back office list and are not part of the brand form.
+
+#### `somcp_create_manufacturer`
+**State**: to write · [issue #55](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/55)
+**Nature**: `acts(ADD, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
+
+**Does** - creates one brand with every field of the back office brand form, in every language of the shop or the ones the merchant picks.
+
+**Do not use for** - changing one (→ `somcp_update_manufacturer`), or switching it on or off (→ `somcp_set_manufacturer_active`).
+
+**Parameters** - the rules of `somcp_create_product` apply: `languages`, translatable texts as an object keyed by ISO code, who fills each field, lengths counted in characters, spaces included, on the visible text.
+
+| Field | Who fills it | Rule |
+|---|---|---|
+| `name` | merchant | required; 64 characters at most; forbidden characters `<>;=#{}` (`Validate::isCatalogName`) |
+| `short_description` | assistant | rich text, cleaned by `Validate::isCleanHtml()` |
+| `description` | assistant | rich text, cleaned by `Validate::isCleanHtml()` |
+| `meta_title` | assistant | forbidden characters `<>={}` (`Validate::isGenericName`); 255 characters at most |
+| `meta_description` | assistant | forbidden characters `<>={}`; 512 characters at most |
+| `meta_keywords` | assistant | PrestaShop 8 only, refused on 9 with a clear message; 5 keywords at most, comma separated; forbidden characters `<>={}` |
+| `logo` | merchant | a public `https` URL, downloaded with the guards of `somcp_create_product` |
+| `active` | merchant | true by default |
+
+**Returns** - `created`, `id_manufacturer`, `seo_warnings` (no meta title or description in a language), `logo` (stored or the reason it was refused), and the brand as `somcp_get_manufacturer` returns it.
+
+**Notes** - written through `Manufacturer::add()`; the logo through the core's image uploader for brands, so thumbnails are generated as in the back office. Not replayable: the read tool to check is `somcp_list_manufacturers`.
+
+#### `somcp_update_manufacturer`
+**State**: to write · [issue #56](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/56)
+**Nature**: `acts(EDIT, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
+
+**Does** - changes one brand with everything `somcp_create_manufacturer` can write, under the same rules. Only what is given changes.
+
+**Do not use for** - creating one (→ `somcp_create_manufacturer`), or only switching it on or off (→ `somcp_set_manufacturer_active`).
+
+**Parameters** - `id_manufacturer` (required), `languages`, then the fields of `somcp_create_manufacturer`, all optional. A text given replaces the languages given and keeps the others. `remove_logo` removes the logo explicitly.
+
+**Returns** - `changed`, per field its old and new value, `seo_warnings`, `logo`, and the brand as `somcp_get_manufacturer` returns it.
+
+**Notes** - an `id_manufacturer` that does not exist is refused. Replayable: the same values again change nothing and say `changed: false`.
+
+#### `somcp_set_manufacturer_active`
+**State**: to write · [issue #57](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/57)
+**Nature**: `acts(EDIT, 'AdminManufacturers')` · **Scope**: `mcp.catalog.write`
+
+**Does** - switches one brand on or off: the **Enabled** toggle of the back office brand list, and nothing else.
+
+**Do not use for** - any other change (→ `somcp_update_manufacturer`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_manufacturer` | integer | yes |  |
+| `active` | boolean | yes |  |
+
+**Returns** - `changed`, `active`. When it is already in that state: `changed: false` and nothing happens.
+
+**Notes** - switching a brand off hides its page on the storefront; its products stay on sale.
 
 #### `somcp_list_suppliers`
-**State**: draft · [issue #46](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/46)
+**State**: to write · [issue #46](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/46)
 **Nature**: `acts(VIEW, 'AdminSuppliers')` · **Scope**: `mcp.catalog.read`
 
-**Does** - lists the suppliers of this shop with their identifiers.
+**Does** - lists the suppliers of this shop: identifier and name, nothing else.
 
-**Do not use for** - the supplier references of one product (→ `somcp_get_product`).
+**Do not use for** - everything about one supplier (→ `somcp_get_supplier`), or the products of a supplier (→ `somcp_search_products`).
 
 **Parameters**
 
 | Name | Type | Required | Role |
 |---|---|---|---|
-| `name` | string | no | part of the name |
-| `active` | boolean | no | |
-| `limit` / `offset` | integer | no | 20 by default, 100 at most |
+| `language` | string | no | ISO code, shop default otherwise |
 
-**Returns** - per supplier: `id_supplier`, `name`, `active`, `products_count`. Plus `returned`, `total_count` and `offset`.
+**Returns** - per supplier: `id_supplier`, `name`. Plus `count`.
 
-**Notes** - called before a write that takes a supplier.
+**Notes** - same shape as `somcp_list_categories`: the list an assistant reads before a write that takes a supplier, which must never guess an identifier. Inactive ones are listed too, since a product can still point to them.
+
+#### `somcp_get_supplier`
+**State**: to write · [issue #58](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/58)
+**Nature**: `acts(VIEW, 'AdminSuppliers')` · **Scope**: `mcp.catalog.read`
+
+**Does** - returns everything the back office supplier form shows for one supplier.
+
+**Do not use for** - the list (→ `somcp_list_suppliers`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_supplier` | integer | yes | from `somcp_list_suppliers` |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - `id_supplier`, `name`, `description`, `phone`, `phone_mobile`, `address1`, `address2`, `postcode`, `city`, `country` (ISO code), `state` (ISO code, when the country has states), `dni` (national ID number), `meta_title`, `meta_description`, `meta_keywords`, `logo` (URL), `active`, `products_count`.
+
+**Notes** - columns of `supplier` and `supplier_lang`, and of the supplier's row in `address` for the contact fields, checked against PrestaShop 8.0.3 and 9.2; `meta_keywords` exists on PrestaShop 8 only and is `null` on 9.
+
+#### `somcp_create_supplier`
+**State**: to write · [issue #59](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/59)
+**Nature**: `acts(ADD, 'AdminSuppliers')` · **Scope**: `mcp.catalog.write`
+
+**Does** - creates one supplier with every field of the back office supplier form, in every language of the shop or the ones the merchant picks.
+
+**Do not use for** - changing one (→ `somcp_update_supplier`), or switching it on or off (→ `somcp_set_supplier_active`).
+
+**Parameters** - the rules of `somcp_create_product` apply: `languages`, translatable texts as an object keyed by ISO code, who fills each field, lengths counted in characters, spaces included, on the visible text.
+
+| Field | Who fills it | Rule |
+|---|---|---|
+| `name` | merchant | required; 64 characters at most; forbidden characters `<>;=#{}` (`Validate::isCatalogName`) |
+| `description` | assistant | rich text, cleaned by `Validate::isCleanHtml()` |
+| `phone`, `phone_mobile` | merchant | `Validate::isPhoneNumber()` |
+| `address1` | merchant | required by PrestaShop for a supplier |
+| `address2` | merchant | |
+| `postcode` | merchant | checked against the country's format (`Country::checkZipCode()`) |
+| `city` | merchant | required |
+| `country` | merchant | ISO code, required, among the shop's countries |
+| `state` | merchant | ISO code, required when the country uses states |
+| `dni` | merchant | national ID number, required when the country asks for one (`Country::isNeedDni()`) |
+| `meta_title` | assistant | forbidden characters `<>={}` (`Validate::isGenericName`); 255 characters at most |
+| `meta_description` | assistant | forbidden characters `<>={}`; 512 characters at most |
+| `meta_keywords` | assistant | PrestaShop 8 only, refused on 9 with a clear message; 5 keywords at most, comma separated; forbidden characters `<>={}` |
+| `logo` | merchant | a public `https` URL, downloaded with the guards of `somcp_create_product` |
+| `active` | merchant | true by default |
+
+**Returns** - `created`, `id_supplier`, `seo_warnings` (no meta title or description in a language), `logo` (stored or the reason it was refused), and the supplier as `somcp_get_supplier` returns it.
+
+**Notes** - written through `Supplier::add()` and its `Address` (`id_supplier` set); the logo through the core's image uploader for suppliers, so thumbnails are generated as in the back office. Not replayable: the read tool to check is `somcp_list_suppliers`.
+
+#### `somcp_update_supplier`
+**State**: to write · [issue #60](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/60)
+**Nature**: `acts(EDIT, 'AdminSuppliers')` · **Scope**: `mcp.catalog.write`
+
+**Does** - changes one supplier with everything `somcp_create_supplier` can write, under the same rules. Only what is given changes.
+
+**Do not use for** - creating one (→ `somcp_create_supplier`), or only switching it on or off (→ `somcp_set_supplier_active`).
+
+**Parameters** - `id_supplier` (required), `languages`, then the fields of `somcp_create_supplier`, all optional. A text given replaces the languages given and keeps the others. `remove_logo` removes the logo explicitly.
+
+**Returns** - `changed`, per field its old and new value, `seo_warnings`, `logo`, and the supplier as `somcp_get_supplier` returns it.
+
+**Notes** - an `id_supplier` that does not exist is refused. Replayable: the same values again change nothing and say `changed: false`.
+
+#### `somcp_set_supplier_active`
+**State**: to write · [issue #61](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/61)
+**Nature**: `acts(EDIT, 'AdminSuppliers')` · **Scope**: `mcp.catalog.write`
+
+**Does** - switches one supplier on or off: the **Enabled** toggle of the back office supplier list, and nothing else.
+
+**Do not use for** - any other change (→ `somcp_update_supplier`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_supplier` | integer | yes |  |
+| `active` | boolean | yes |  |
+
+**Returns** - `changed`, `active`. When it is already in that state: `changed: false` and nothing happens.
+
+**Notes** - a disabled supplier stays attached to its products; only its page on the storefront goes.
 
 #### `somcp_list_attributes`
 **State**: draft · [issue #47](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/47)
@@ -1485,7 +1642,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 
 **Arguments** - `product` (name, reference or ean13 of a product).
 
-**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_list_manufacturers`, `somcp_list_suppliers`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_list_manufacturers`, `somcp_get_manufacturer`, `somcp_create_manufacturer`, `somcp_update_manufacturer`, `somcp_set_manufacturer_active`, `somcp_list_suppliers`, `somcp_get_supplier`, `somcp_create_supplier`, `somcp_update_supplier`, `somcp_set_supplier_active`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
 
 **The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
 
