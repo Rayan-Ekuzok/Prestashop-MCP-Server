@@ -796,68 +796,114 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 - Through `Product::delete()`, so hooks fire and other modules clean up after it.
 
 #### `somcp_list_categories`
-**State**: draft · [issue #8](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/8)
+**State**: to write · [issue #8](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/8)
 **Nature**: `acts(VIEW, 'AdminCategories')` · **Scope**: `mcp.catalog.read`
 
-**Does** - lists the categories as a tree, with their identifiers.
+**Does** - lists the categories of this shop: identifier and name, nothing else.
 
-**Do not use for** - listing the products of a category (→ `somcp_search_products` with `id_category`).
+**Do not use for** - everything about one category (→ `somcp_get_category`), or the products of a category (→ `somcp_search_products` with `id_category`).
 
 **Parameters**
 
 | Name | Type | Required | Role |
 |---|---|---|---|
-| `id_parent` | integer | no | a branch only, the whole tree otherwise |
-| `active` | boolean | no |  |
 | `language` | string | no | ISO code, shop default otherwise |
 
-**Returns** - per category: `id_category`, `name`, `id_parent`, `level`, `active`, `products_count`.
+**Returns** - per category: `id_category`, `name`. Plus `count`.
 
-**Notes** - called before any write that takes a category, which must never guess an identifier.
+**Notes**
+- Kept that short on purpose, as the maintainer decided: it is the list an assistant reads before any write that takes a category, which must never guess an identifier.
+- Two categories can share a name in different branches (Men > T-shirts, Women > T-shirts): the assistant reads `somcp_get_category` to tell them apart before writing.
+- The root category is left out: nothing can be placed in it. Home is listed.
+
+#### `somcp_get_category`
+**State**: to write · [issue #52](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/52)
+**Nature**: `acts(VIEW, 'AdminCategories')` · **Scope**: `mcp.catalog.read`
+
+**Does** - returns everything the back office category form shows for one category.
+
+**Do not use for** - the list of categories (→ `somcp_list_categories`).
+
+**Parameters**
+
+| Name | Type | Required | Role |
+|---|---|---|---|
+| `id_category` | integer | yes | from `somcp_list_categories` |
+| `language` | string | no | ISO code, shop default otherwise |
+
+**Returns** - `id_category`, `name`, `active` (Displayed), `id_parent` and `parent_name`, `level`, `position`, `description`, `additional_description`, `groups` (id and name of each customer group with access), `link_rewrite`, `url`, `meta_title`, `meta_description`, `meta_keywords`, `cover_image` (URL), `menu_thumbnails` (URLs), `products_count`, `children_count`, and on PrestaShop 9 `redirect_type` with `id_type_redirected`.
+
+**Notes**
+- Columns of `category`, `category_lang`, `category_group`, checked against PrestaShop 8.0.3 and 9.2. `meta_keywords` exists on PrestaShop 8 only and is `null` on 9; `redirect_type` exists on 9 only and is `null` on 8.
+- Read in the shop of the token.
 
 #### `somcp_create_category`
 **State**: draft · [issue #9](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/9)
 **Nature**: `acts(ADD, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
 
-**Does** - creates one category under a given parent.
+**Does** - creates one category with every field of the back office category form, in every language of the shop or the ones the merchant picks.
 
-**Do not use for** - renaming or moving a category (→ `somcp_update_category`).
+**Do not use for** - changing a category (→ `somcp_update_category`), or switching it on or off (→ `somcp_set_category_active`).
 
-**Parameters**
+**Parameters** - the fields of `somcp_get_category`, except those computed by PrestaShop (`id_category`, `parent_name`, `level`, `position`, `url`, counts). The rules of `somcp_create_product` apply: `languages`, translatable texts as an object keyed by ISO code, who fills each field, lengths counted in characters, spaces included, on the visible text.
 
-| Name | Type | Required | Role |
-|---|---|---|---|
-| `name` | string | yes |  |
-| `id_parent` | integer | yes | from `somcp_list_categories` |
-| `description` | string | no |  |
-| `active` | boolean | no | true by default |
+| Field | Who fills it | Rule |
+|---|---|---|
+| `name` | merchant | required; 128 characters at most; forbidden characters `<>;=#{}` (`Validate::isCatalogName`) |
+| `id_parent` | merchant, from the shop | from `somcp_list_categories`; Home when left out; never the root |
+| `active` (Displayed) | merchant | true by default |
+| `description` | assistant | to be settled, see below |
+| `additional_description` (additional information) | assistant | to be settled, see below |
+| `groups` (group access) | merchant, from the shop | ids from `somcp_list_customer_groups`; every group when left out, as in the back office |
+| `link_rewrite` | assistant | generated from the name when left out; `Tools::str2url()` then `Validate::isLinkRewrite()`; 128 characters at most |
+| `meta_title` | assistant | 70 characters at most |
+| `meta_description` | assistant | 150 characters at most |
+| `meta_keywords` | assistant | PrestaShop 8 only, refused on 9 with a clear message; 5 keywords at most, comma separated; forbidden characters `<>;=#{}` |
+| `cover_image` | merchant | a public `https` URL, downloaded with the guards of `somcp_create_product` |
+| `menu_thumbnails` | merchant | up to 3 public `https` URLs, same guards |
 
-**Returns** - `created`, `id_category`.
+**Returns** - `created`, `id_category`, `seo_warnings` (no meta title or description in a language, a `link_rewrite` already used by another category), `images` (per URL: stored or the reason it was refused), and the category as `somcp_get_category` returns it.
 
-**Notes** - not replayable: the read tool to check is `somcp_list_categories`.
+**Notes**
+- Written through `Category::add()` and the core's category image uploaders (`src/Adapter/Image/Uploader/Category*`, whose names differ between PrestaShop 8 and 9), so hooks fire and thumbnails are generated as in the back office.
+- Not replayable: the read tool to check is `somcp_list_categories`.
+- **To settle before this entry opens**: the maintainer listed `<>;=#{}` as forbidden in the description and the additional information. In PrestaShop both are rich text (`isCleanHtml`), so forbidding `<` and `>` means no formatting at all (no paragraphs, no bold, no lists). Either the rule holds and both are plain text, or HTML is allowed and cleaned as in the back office.
 
 #### `somcp_update_category`
 **State**: draft · [issue #10](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/10)
 **Nature**: `acts(EDIT, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
 
-**Does** - changes one category: name, description, SEO fields, parent, active.
+**Does** - changes one category with everything `somcp_create_category` can write, under the same rules. Only what is given changes.
 
-**Do not use for** - creating one (→ `somcp_create_category`).
+**Do not use for** - creating one (→ `somcp_create_category`), or only switching it on or off (→ `somcp_set_category_active`).
+
+**Parameters** - `id_category` (required), `languages`, then the fields of `somcp_create_category`, all optional. A text given replaces the languages given and keeps the others; `groups` given replaces the whole set; `menu_thumbnails` given replaces the existing ones, and `remove_cover_image` / `remove_menu_thumbnails` remove explicitly.
+
+**Returns** - `changed`, per field its old and new value, `seo_warnings`, `images`, and the category as `somcp_get_category` returns it.
+
+**Notes**
+- The root and Home categories are refused, as in the back office. A category cannot be moved under itself or one of its children.
+- `link_rewrite` changed on a displayed category: the old URL stops working, said in `seo_warnings`.
+- Opens together with `somcp_create_category`, once the description rule is settled.
+
+#### `somcp_set_category_active`
+**State**: to write · [issue #53](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/53)
+**Nature**: `acts(EDIT, 'AdminCategories')` · **Scope**: `mcp.catalog.write`
+
+**Does** - shows or hides one category on the storefront: the **Displayed** toggle of the back office category list, and nothing else.
+
+**Do not use for** - deleting a category (→ `somcp_delete_category`), or any other change (→ `somcp_update_category`).
 
 **Parameters**
 
 | Name | Type | Required | Role |
 |---|---|---|---|
 | `id_category` | integer | yes |  |
-| `language` | string | no | for the texts |
-| `name` | string | no |  |
-| `description` | string | no |  |
-| `id_parent` | integer | no | moving it |
-| `active` | boolean | no |  |
+| `active` | boolean | yes |  |
 
-**Returns** - `changed`, the fields written with their old and new values.
+**Returns** - `changed`, `active`. When the category is already in that state: `changed: false` and nothing happens.
 
-**Notes** - the root and Home categories are refused, as in the back office.
+**Notes** - hiding a category does not switch its products off: they stay reachable through search and their other categories. The description says so, so the merchant is not surprised. Root and Home are refused.
 
 #### `somcp_delete_category`
 **State**: draft · [issue #11](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/11)
@@ -865,7 +911,7 @@ Removing is always explicit, never inferred from a missing item: `remove_combina
 
 **Does** - deletes one category.
 
-**Do not use for** - hiding it (→ `somcp_update_category` with `active: false`).
+**Do not use for** - hiding it (→ `somcp_set_category_active`).
 
 **Parameters**
 
@@ -1458,7 +1504,7 @@ pull request that adds a tool adds it to the prompt of its section, in both
 
 **Arguments** - `product` (name, reference or ean13 of a product).
 
-**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_create_category`, `somcp_update_category`, `somcp_delete_category`, `somcp_list_manufacturers`, `somcp_list_suppliers`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
+**Tools** - `somcp_ping`, `somcp_search_products`, `somcp_get_product`, `somcp_list_categories`, `somcp_create_product`, `somcp_update_product`, `somcp_set_product_active`, `somcp_delete_product`, `somcp_get_category`, `somcp_create_category`, `somcp_update_category`, `somcp_set_category_active`, `somcp_delete_category`, `somcp_list_manufacturers`, `somcp_list_suppliers`, `somcp_list_attributes`, `somcp_list_features`, `somcp_list_attachments`, `somcp_list_tax_rules`, `somcp_list_customer_groups`. A tool joins the prompt in the pull request that writes it; the prompt ships with the first tool of its section.
 
 **The guide must say** - search before reading, and read before changing; take category identifiers from `somcp_list_categories`, never guess them; say whether a price is tax included or excluded; one product per write, never retried on a lost answer; switching a product off is reversible, deleting it is not, and the merchant is told which is happening.
 
