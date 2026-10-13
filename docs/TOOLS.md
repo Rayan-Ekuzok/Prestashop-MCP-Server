@@ -1492,7 +1492,7 @@ The quantities the storefront sells against, per product and combination.
 **Not here**: prices and texts (→ Catalogue).
 
 #### `somcp_get_stock`
-**State**: draft · [issue #12](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/12)
+**State**: to write · [issue #12](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/12)
 **Nature**: `acts(VIEW, 'AdminStockManagement')` · **Scope**: `mcp.stock.read`
 
 **Does** - returns the quantities of one product, per combination.
@@ -1510,7 +1510,7 @@ The quantities the storefront sells against, per product and combination.
 **Notes** - read from `StockAvailable`, the quantities the storefront sells against.
 
 #### `somcp_list_low_stock`
-**State**: draft · [issue #13](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/13)
+**State**: to write · [issue #13](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/13)
 **Nature**: `acts(VIEW, 'AdminStockManagement')` · **Scope**: `mcp.stock.read`
 
 **Does** - lists the products and combinations at or under a quantity.
@@ -1528,7 +1528,7 @@ The quantities the storefront sells against, per product and combination.
 **Returns** - per line: `id_product`, `id_product_attribute`, `reference`, `name`, `quantity`, `threshold`. Plus `total_count`.
 
 #### `somcp_set_stock_quantity`
-**State**: draft · [issue #14](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/14)
+**State**: to write · [issue #14](https://github.com/novalo-dev/Prestashop-MCP-Server/issues/14)
 **Nature**: `acts(EDIT, 'AdminStockManagement')` · **Scope**: `mcp.stock.write`
 
 **Does** - sets the available quantity of one product or one combination.
