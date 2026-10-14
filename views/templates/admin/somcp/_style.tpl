@@ -20,26 +20,35 @@
    sit in views/css and was only ever loaded by the consent screen, so none of
    these rules applied to the settings page at all. *}
 <style type="text/css">
-/* Address panel. The address is the object of this block, so it leads the line
-   in a fixed-width face; the shop name sits above it as a quiet heading, and
-   the copy button ends the line. Everything on one row per shop, because a
-   merchant scans this list looking for one shop and copies one address. */
-.somcp .somcp-endpoints {
-    border: 1px solid #dfe3e8;
-    border-radius: 4px;
-    background: #fff;
+/* Tabs and panels are PrestaShop's own; only the spacing between them and
+   the hidden state of a pane are set here. A pane is hidden, never removed,
+   because the settings form spans two of them and posts every field. */
+.somcp .somcp-tabs {
+    margin-bottom: 15px;
 }
 
+.somcp .somcp-pane[hidden] {
+    display: none;
+}
+
+/* The back office draws a heavy outline on every focused link and button
+   (.bootstrap a:focus), and a clicked tab keeps the focus, so the box stayed
+   around it until the merchant clicked elsewhere. It is dropped for a mouse
+   click only: :focus-visible keeps it for someone moving with the keyboard. */
+.somcp .somcp-tabs a:focus:not(:focus-visible),
+.somcp .btn:focus:not(:focus-visible) {
+    outline: 0;
+}
+
+.somcp .somcp-foot {
+    font-size: 12px;
+}
+
+/* Address block: one row per shop, the shop name as a quiet heading above
+   PrestaShop's own input group, so the address and its Copy button look like
+   every other field of the back office. */
 .somcp .somcp-endpoint + .somcp-endpoint {
-    border-top: 1px solid #eef1f4;
-}
-
-.somcp .somcp-endpoint {
-    padding: 14px 16px;
-}
-
-.somcp .somcp-endpoint:hover {
-    background: #fafbfc;
+    margin-top: 12px;
 }
 
 .somcp .somcp-endpoint-shop {
@@ -59,30 +68,10 @@
     margin-left: 6px;
 }
 
-.somcp .somcp-endpoint-url {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.somcp .somcp-endpoint-url input {
-    flex: 1 1 auto;
-    min-width: 0;
-    border: 0;
-    background: transparent;
-    padding: 0;
+.somcp .somcp-endpoint input[readonly] {
     font-family: "SFMono-Regular", Menlo, Consolas, monospace;
-    font-size: 13px;
-    color: #363a41;
+    background: #fff;
     cursor: text;
-}
-
-.somcp .somcp-endpoint-url input:focus {
-    outline: none;
-}
-
-.somcp .somcp-endpoint-url .btn {
-    flex: 0 0 auto;
 }
 
 /* The diagnostic bar: shop picker and button on one line, so the merchant

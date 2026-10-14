@@ -26,28 +26,7 @@
         {if $somcp_may_grant}
             <hr>
             <p>{l s='Your account may connect an assistant. Paste this address into it, then approve the connection when the shop asks you to sign in.' d='Modules.Somcp.Admin'}</p>
-            <div class="somcp-endpoints">
-                {foreach from=$somcp_endpoints item=endpoint}
-                    <div class="somcp-endpoint">
-                        {if $somcp_multistore}
-                            <div class="somcp-endpoint-shop">
-                                {$endpoint.name|escape:'html':'UTF-8'}
-                                {if $endpoint.current}
-                                    <span class="badge somcp-badge">{l s='current shop' d='Modules.Somcp.Admin'}</span>
-                                {/if}
-                            </div>
-                        {/if}
-                        <div class="somcp-endpoint-url">
-                            <input type="text" id="somcp-endpoint-{$endpoint.id|intval}" readonly
-                                   value="{$endpoint.url|escape:'html':'UTF-8'}">
-                            <button type="button" class="btn btn-default btn-sm"
-                                    data-somcp-copy="somcp-endpoint-{$endpoint.id|intval}">
-                                <i class="icon-copy"></i> {l s='Copy' d='Modules.Somcp.Admin'}
-                            </button>
-                        </div>
-                    </div>
-                {/foreach}
-            </div>
+            {include file='./_endpoints.tpl'}
 
             {if $somcp_multistore}
                 <p class="somcp-note">

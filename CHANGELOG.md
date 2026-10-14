@@ -16,6 +16,24 @@ are:
 
 ## Unreleased
 
+### Changed
+
+**Settings page.** The page was one long column of panels. It is now split
+into five tabs, drawn with PrestaShop's own tabs and panels: Configuration,
+Tools and prompts, Access and security, Connected assistants, Security log.
+The switch that turns the MCP server on and off leads the first tab and saves
+as soon as it moves, without a trip to the Save button. The address to give an
+assistant now sits in a regular back office field with its Copy button, on
+the settings page and on the page shown to employees who may only connect an
+assistant. The page remembers the tab you were on after saving. Every setting
+keeps its meaning and is saved the same way.
+
+### Added
+
+**Feedback and source code.** A card at the bottom of the settings page leads
+to the module's GitHub repository, to report a problem, suggest a tool or read
+the code.
+
 ## 1.0.0 - Initial version
 
 ### Added
