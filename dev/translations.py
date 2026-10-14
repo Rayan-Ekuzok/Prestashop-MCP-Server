@@ -782,6 +782,54 @@ T = {
  "El conjunto era demasiado grande para enviarlo de una vez. Envíe menos archivos cada vez.",
  "Alles zusammen war zu groß für einen Versand. Senden Sie weniger Dateien auf einmal."),
 
+"Configuration": (
+ "Configuration",
+ "Configuración",
+ "Konfiguration"),
+"Tools and prompts": (
+ "Outils et prompts",
+ "Herramientas y prompts",
+ "Tools und Prompts"),
+"Access and security": (
+ "Accès et sécurité",
+ "Acceso y seguridad",
+ "Zugang und Sicherheit"),
+"When the MCP server is off, no assistant can reach this shop or act on it. Tokens already issued stop working.": (
+ "Quand le serveur MCP est désactivé, aucun assistant ne peut joindre cette boutique ni y agir. Les jetons déjà émis cessent de fonctionner.",
+ "Cuando el servidor MCP está desactivado, ningún asistente puede acceder a esta tienda ni actuar en ella. Los tokens ya emitidos dejan de funcionar.",
+ "Wenn der MCP-Server ausgeschaltet ist, kann kein Assistent diesen Shop erreichen oder darin handeln. Bereits ausgestellte Token funktionieren nicht mehr."),
+"Authentication": (
+ "Authentification",
+ "Autenticación",
+ "Authentifizierung"),
+"OAuth 2.1: every connection is approved by an employee, and an assistant never gets more rights than that employee.": (
+ "OAuth 2.1 : chaque connexion est validée par un employé, et un assistant n'obtient jamais plus de droits que cet employé.",
+ "OAuth 2.1: cada conexión la aprueba un empleado, y un asistente nunca obtiene más derechos que ese empleado.",
+ "OAuth 2.1: Jede Verbindung wird von einem Mitarbeiter freigegeben, und ein Assistent erhält nie mehr Rechte als dieser Mitarbeiter."),
+"Who can connect": (
+ "Qui peut connecter",
+ "Quién puede conectar",
+ "Wer verbinden darf"),
+"Share your feedback": (
+ "Donnez votre avis",
+ "Danos tu opinión",
+ "Ihr Feedback"),
+"A bug, an idea, a tool you are missing? The module is built in the open on GitHub: tell us there.": (
+ "Un bug, une idée, un outil qui vous manque ? Le module est développé en open source sur GitHub : dites-le-nous là-bas.",
+ "¿Un error, una idea, una herramienta que echa en falta? El módulo se desarrolla en abierto en GitHub: cuéntenoslo allí.",
+ "Ein Fehler, eine Idee, ein fehlendes Tool? Das Modul wird offen auf GitHub entwickelt: Sagen Sie es uns dort."),
+"Give feedback": (
+ "Donner mon avis",
+ "Dar mi opinión",
+ "Feedback geben"),
+"Source code": (
+ "Code source",
+ "Código fuente",
+ "Quellcode"),
+"Open source under the AFL-3.0 licence": (
+ "Open source sous licence AFL-3.0",
+ "Código abierto bajo licencia AFL-3.0",
+ "Open Source unter der Lizenz AFL-3.0"),
 }
 LANGS = [("fr-FR", 0), ("es-ES", 1), ("de-DE", 2)]
 BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "translations")

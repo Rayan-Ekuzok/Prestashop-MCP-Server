@@ -15,13 +15,15 @@
  *}
 
 {* Shown only where a level can inherit from another: a single shop or a group.
-   In the all-shops context there is nothing above to inherit from. *}
+   In the all-shops context there is nothing above to inherit from. A field
+   shown outside the settings form passes that form's id as $form, so its
+   checkbox is still submitted with the rest. *}
 {if $somcp_inheritable}
     {assign var=state value=$somcp_inherit[$field]}
     <div class="somcp-inherit">
         <label>
             <input type="checkbox" name="somcp_own_{$field|escape:'html':'UTF-8'}" value="1"
-                   data-somcp-own="{$field|escape:'html':'UTF-8'}"{if $state.own} checked{/if}>
+                   {if isset($form)}form="{$form|escape:'html':'UTF-8'}" {/if}data-somcp-own="{$field|escape:'html':'UTF-8'}"{if $state.own} checked{/if}>
             {l s='Value of its own here' d='Modules.Somcp.Admin'}
         </label>
         {if !$state.own}

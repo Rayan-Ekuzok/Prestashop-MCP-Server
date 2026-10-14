@@ -16,6 +16,23 @@ are:
 
 ## Unreleased
 
+### Changed
+
+**Settings page.** The page was one long column of panels. It now opens on the
+module's name and purpose, with five tabs: Configuration, Tools and prompts,
+Access and security, Connected assistants, Security log. The switch that turns
+the MCP server on and off sits at the top of the first tab and saves as soon as
+it moves, without a trip to the Save button. The address to give an assistant,
+with its Copy button, and the diagnostic follow it. The page remembers the tab
+you were on after saving. Every setting is where it was before in meaning, and
+is saved the same way.
+
+### Added
+
+**Feedback and source code.** A card at the bottom of the settings page leads
+to the module's GitHub repository, to report a problem, suggest a tool or read
+the code.
+
 ## 1.0.0 - Initial version
 
 ### Added

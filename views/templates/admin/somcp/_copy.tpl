@@ -22,6 +22,79 @@
     (function () {
         var copied = '{l s='Copied' d='Modules.Somcp.Admin' js=1}';
 
+        // Tabs. Every pane stays in the page - hidden, not removed - because the
+        // settings form spans two of them and must post all its fields from
+        // whichever one holds the Save button. The tab survives the reload that
+        // follows every save, so a merchant lands back where they were.
+        var tabs = document.querySelector('.somcp-tabs');
+        if (tabs) {
+            var links = tabs.querySelectorAll('[data-somcp-tab]');
+            var panes = document.querySelectorAll('[data-somcp-pane]');
+            var remembered = null;
+
+            try {
+                remembered = window.sessionStorage.getItem('somcp.tab');
+            } catch (e) {
+                // Storage refused (private window, blocked site data): start on
+                // the first tab, which is what a new visit does anyway.
+            }
+
+            var show = function (name) {
+                var found = false;
+                links.forEach(function (link) {
+                    var on = link.getAttribute('data-somcp-tab') === name;
+                    link.classList.toggle('is-active', on);
+                    link.setAttribute('aria-selected', on ? 'true' : 'false');
+                    found = found || on;
+                });
+                if (!found) {
+                    return false;
+                }
+                panes.forEach(function (pane) {
+                    pane.hidden = pane.getAttribute('data-somcp-pane') !== name;
+                });
+                try {
+                    window.sessionStorage.setItem('somcp.tab', name);
+                } catch (e) {
+                    // Not remembered; nothing else depends on it.
+                }
+                return true;
+            };
+
+            links.forEach(function (link) {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    show(link.getAttribute('data-somcp-tab'));
+                });
+            });
+
+            // A diagnostic just run is shown on the first tab, whatever tab the
+            // merchant last had open: they pressed the button to read it.
+            var start = /[?&]somcp_diag=/.test(window.location.search) ? 'config' : remembered;
+            if (!start || !show(start)) {
+                show(links[0].getAttribute('data-somcp-tab'));
+            }
+            tabs.hidden = false;
+        }
+
+        // The server switch saves as soon as it moves, like every on/off switch
+        // of the back office: a merchant who turns it off in an emergency must
+        // not also have to find a Save button in another tab.
+        document.querySelectorAll('[data-somcp-autosave]').forEach(function (field) {
+            field.addEventListener('change', function () {
+                var form = field.form;
+                if (!form) {
+                    return;
+                }
+                var marker = document.createElement('input');
+                marker.type = 'hidden';
+                marker.name = 'submitSomcpSettings';
+                marker.value = '1';
+                form.appendChild(marker);
+                form.submit();
+            });
+        });
+
         // The list of tools, a page at a time. Every row stays in the form -
         // hidden, not removed - because the checkboxes of a page nobody looked
         // at must still be submitted. Without a browser the whole list shows,

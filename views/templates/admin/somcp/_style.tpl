@@ -20,7 +20,159 @@
    sit in views/css and was only ever loaded by the consent screen, so none of
    these rules applied to the settings page at all. *}
 <style type="text/css">
-/* Address panel. The address is the object of this block, so it leads the line
+/* Page frame, after PrestaShop's own modules of the 9.x generation: a title
+   and a two-line promise, tabs underneath, and white cards on the back office
+   grey instead of the old stacked panels. The merchant sees at a glance where
+   each setting lives, and the page reads as part of the back office. */
+.somcp .somcp-head {
+    margin: 4px 0 18px;
+}
+
+.somcp .somcp-title {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .01em;
+    color: #363a41;
+}
+
+.somcp .somcp-lead {
+    max-width: 820px;
+    margin: 0;
+    color: #6c868e;
+    font-size: 14px;
+}
+
+.somcp .somcp-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    margin: 0 0 20px;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid #dfe3e8;
+}
+
+.somcp .somcp-tabs[hidden] {
+    display: none;
+}
+
+.somcp .somcp-tabs a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 0;
+    margin-bottom: -1px;
+    border-bottom: 3px solid transparent;
+    color: #6c868e;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.somcp .somcp-tabs a:hover,
+.somcp .somcp-tabs a:focus {
+    color: #363a41;
+    text-decoration: none;
+}
+
+.somcp .somcp-tabs a.is-active {
+    color: #363a41;
+    border-bottom-color: #363a41;
+}
+
+/* How many assistants are connected, on the tab itself: the one number a
+   merchant opening the page may want before anything else. */
+.somcp .somcp-count {
+    display: inline-block;
+    min-width: 20px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: #eef1f4;
+    color: #363a41;
+    font-size: 11px;
+    text-align: center;
+}
+
+.somcp .somcp-pane[hidden] {
+    display: none;
+}
+
+.somcp .somcp-card {
+    background: #fff;
+    border: 1px solid #dfe3e8;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+    padding: 20px 24px;
+    margin-bottom: 18px;
+}
+
+.somcp .somcp-card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #363a41;
+    text-transform: none;
+}
+
+.somcp .somcp-card h4 {
+    margin: 18px 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #363a41;
+}
+
+/* The server switch: the text on the left, the switch on the right, the way
+   every on/off setting of the 9.x back office is laid out. It undoes the
+   form-group margins it carries for the inheritance script. */
+.somcp .somcp-card-switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.somcp .somcp-card-switch p {
+    margin: 0;
+    color: #6c868e;
+}
+
+.somcp .somcp-card-switch .switch {
+    flex: 0 0 auto;
+}
+
+.somcp .somcp-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #eef1f4;
+}
+
+/* Feedback sits apart from the settings, on the grey of a side note. */
+.somcp .somcp-card-muted {
+    background: #f8f9fb;
+    box-shadow: none;
+}
+
+.somcp .somcp-card-muted p {
+    color: #6c868e;
+}
+
+.somcp .somcp-card-muted .btn-link {
+    margin-left: 8px;
+}
+
+.somcp .somcp-foot {
+    margin: 6px 0 0;
+    text-align: center;
+    color: #98a3b0;
+    font-size: 12px;
+}
+
+/* Address block. The address is the object of this block, so it leads the line
    in a fixed-width face; the shop name sits above it as a quiet heading, and
    the copy button ends the line. Everything on one row per shop, because a
    merchant scans this list looking for one shop and copies one address. */
