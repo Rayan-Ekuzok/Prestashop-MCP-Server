@@ -982,66 +982,6 @@
       <source>Everything together was too large to send at once. Send fewer files at a time.</source>
       <target>El conjunto era demasiado grande para enviarlo de una vez. Envíe menos archivos cada vez.</target>
     </trans-unit>
-    <!-- Configuration -->
-    <trans-unit id="254f642527b45bc260048e30704edb39" resname="Configuration">
-      <source>Configuration</source>
-      <target>Configuración</target>
-    </trans-unit>
-    <!-- Tools and prompts -->
-    <trans-unit id="a74acb52238fc800fdfcf8520b55ab72" resname="Tools and prompts">
-      <source>Tools and prompts</source>
-      <target>Herramientas y prompts</target>
-    </trans-unit>
-    <!-- Access and security -->
-    <trans-unit id="2d3cc64e2f702a214b7b98245fa79085" resname="Access and security">
-      <source>Access and security</source>
-      <target>Acceso y seguridad</target>
-    </trans-unit>
-    <!-- When the MCP server is off, no assistant can reach this shop or act on it. Tokens already issued stop working. -->
-    <trans-unit id="4427a312247cbf2bbb6a772b797f9681" resname="When the MCP server is off, no assistant can reach this shop or act on it. Tokens already issued stop working.">
-      <source>When the MCP server is off, no assistant can reach this shop or act on it. Tokens already issued stop working.</source>
-      <target>Cuando el servidor MCP está desactivado, ningún asistente puede acceder a esta tienda ni actuar en ella. Los tokens ya emitidos dejan de funcionar.</target>
-    </trans-unit>
-    <!-- Authentication -->
-    <trans-unit id="c75f7811d70d17dbcd88e9d03752cbed" resname="Authentication">
-      <source>Authentication</source>
-      <target>Autenticación</target>
-    </trans-unit>
-    <!-- OAuth 2.1: every connection is approved by an employee, and an assistant never gets more rights than that employee. -->
-    <trans-unit id="d60c9065831129716f609a874c67e82a" resname="OAuth 2.1: every connection is approved by an employee, and an assistant never gets more rights than that employee.">
-      <source>OAuth 2.1: every connection is approved by an employee, and an assistant never gets more rights than that employee.</source>
-      <target>OAuth 2.1: cada conexión la aprueba un empleado, y un asistente nunca obtiene más derechos que ese empleado.</target>
-    </trans-unit>
-    <!-- Who can connect -->
-    <trans-unit id="464a94ba43f252a2f720b7599cfc91b4" resname="Who can connect">
-      <source>Who can connect</source>
-      <target>Quién puede conectar</target>
-    </trans-unit>
-    <!-- Share your feedback -->
-    <trans-unit id="e45a0b7b6ab5f712cb7569ac3a5d9375" resname="Share your feedback">
-      <source>Share your feedback</source>
-      <target>Danos tu opinión</target>
-    </trans-unit>
-    <!-- A bug, an idea, a tool you are missing? The module is built in the open on GitHub: tell us there. -->
-    <trans-unit id="25deeea8a69cd485a62f83b3cea97fa6" resname="A bug, an idea, a tool you are missing? The module is built in the open on GitHub: tell us there.">
-      <source>A bug, an idea, a tool you are missing? The module is built in the open on GitHub: tell us there.</source>
-      <target>¿Un error, una idea, una herramienta que echa en falta? El módulo se desarrolla en abierto en GitHub: cuéntenoslo allí.</target>
-    </trans-unit>
-    <!-- Give feedback -->
-    <trans-unit id="70aaba87e569caaf0a02a08c79916a85" resname="Give feedback">
-      <source>Give feedback</source>
-      <target>Dar mi opinión</target>
-    </trans-unit>
-    <!-- Source code -->
-    <trans-unit id="a98df7359ac52361af81fa897d556a6a" resname="Source code">
-      <source>Source code</source>
-      <target>Código fuente</target>
-    </trans-unit>
-    <!-- Open source under the AFL-3.0 licence -->
-    <trans-unit id="c670648db949fca4d11ac24fa3806100" resname="Open source under the AFL-3.0 licence">
-      <source>Open source under the AFL-3.0 licence</source>
-      <target>Código abierto bajo licencia AFL-3.0</target>
-    </trans-unit>
     </body>
   </file>
 </xliff>
