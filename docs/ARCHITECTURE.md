@@ -9,7 +9,7 @@ authorization server** that issues tokens, and an **MCP server** that accepts
 them.
 
 ---
-
+eee
 ## The addresses
 
 Everything is served by the module's front controllers, under the shop's own
